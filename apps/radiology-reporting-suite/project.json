@@ -85,6 +85,14 @@
         "staticFilePath": "dist/apps/radiology-reporting-suite/browser",
         "spa": true
       }
+    },
+    "stylelint": {
+      "executor": "nx-stylelint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/radiology-reporting-suite/**/*.css"],
+        "formatter": "unix"
+      }
     }
   }
 }
