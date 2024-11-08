@@ -2,5 +2,8 @@
     "editor.formatOnSave": true,
     "prettier.documentSelectors": [
         "**/*.{ts,js,html,css,scss,json}"
-    ]
+    ],
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit",
+    }
 }

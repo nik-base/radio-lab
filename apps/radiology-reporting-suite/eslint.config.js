@@ -22,6 +22,11 @@ module.exports = [
     files: ['**/*.ts'], // We use TS config only for TS files
   })),
   {
+    plugins: {
+      'eslint-plugin-import': importPlugin,
+    },
+  },
+  {
     ...rxjsPlugin.configs.recommended,
     ...importPlugin.flatConfigs.recommended,
     languageOptions: {
@@ -47,6 +52,24 @@ module.exports = [
           type: 'element',
           prefix: 'radio',
           style: 'kebab-case',
+        },
+      ],
+      'eslint-plugin-import/order': [
+        'error',
+        {
+          groups: [
+            'builtin',
+            'external',
+            'internal',
+            'parent',
+            'sibling',
+            'index',
+          ],
+          'newlines-between': 'always',
+          alphabetize: {
+            order: 'asc',
+            caseInsensitive: true,
+          },
         },
       ],
     },
