@@ -90,7 +90,7 @@
       "executor": "nx-stylelint:lint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["apps/radiology-reporting-suite/**/*.css"],
+        "lintFilePatterns": ["apps/radiology-reporting-suite/**/*.css", "apps/radiology-reporting-suite/**/*.scss"],
         "formatter": "unix"
       }
     }
