@@ -54,7 +54,7 @@ export class RadioDBService {
         map((findingAreas: RadioFindingAreaDBModel[]) =>
           findingAreas.map(
             (findingArea: RadioFindingAreaDBModel): RadioFindingAreaDto =>
-              this.mapFindingAreasDBModelToFindingAreasDto(findingArea)
+              this.mapFindingAreaDBModelToFindingAreaDto(findingArea)
           )
         )
       );
@@ -82,21 +82,53 @@ export class RadioDBService {
   }
 
   createTemplate$(
-    temlate: RadioTemplateCreateRequestDto
+    template: RadioTemplateCreateRequestDto
   ): Observable<RadioTemplateDto> {
-    throw new Error('Method not implemented.');
+    const dbModel: RadioTemplateDBModel =
+      this.mapTemplateCreateRequestToTemplateDBModel(template);
+
+    return this.radioDBService
+      .add<RadioTemplateDBModel>('templates', dbModel)
+      .pipe(
+        map(
+          (data: RadioTemplateDBModel): RadioTemplateDto =>
+            this.mapTemplateDBModelToTemplateDto(data)
+        )
+      );
   }
 
   createFindingArea$(
     findingArea: RadioFindingAreaCreateRequestDto
   ): Observable<RadioFindingAreaDto> {
-    throw new Error('Method not implemented.');
+    const dbModel: RadioFindingAreaDBModel =
+      this.mapFindingAreaCreateRequestToFindingAreaDBModel(findingArea);
+
+    return this.radioDBService
+      .add<RadioFindingAreaDBModel>('protocols', dbModel)
+      .pipe(
+        map(
+          (data: RadioFindingAreaDBModel): RadioFindingAreaDto =>
+            this.mapFindingAreaDBModelToFindingAreaDto(data)
+        )
+      );
   }
 
   createFindingDetails$(
     findingDetails: RadioFindingDetailsCreateRequestDto
   ): Observable<RadioFindingDetailsDto> {
-    throw new Error('Method not implemented.');
+    const dbModel: RadioFindingDetailsDBModel =
+      this.mapFindingDetailsCreateRequestToFindingDetailsDBModel(
+        findingDetails
+      );
+
+    return this.radioDBService
+      .add<RadioFindingDetailsDBModel>('findings', dbModel)
+      .pipe(
+        map(
+          (data: RadioFindingDetailsDBModel): RadioFindingDetailsDto =>
+            this.mapFindingDetailsDBModelToFindingDetailsDto(data)
+        )
+      );
   }
 
   updateTemplate$(
@@ -157,10 +189,29 @@ export class RadioDBService {
     throw new Error('Method not implemented.');
   }
 
-  cloneFindingDetails$(
+  public cloneFindingDetails$(
     findingDetailsId: string
   ): Observable<RadioFindingDetailsDto> {
     throw new Error('Method not implemented.');
+  }
+
+  private generateId(): string {
+    return crypto.randomUUID();
+  }
+
+  private mapTemplateCreateRequestToTemplateDBModel(
+    template: RadioTemplateCreateRequestDto
+  ): RadioTemplateDBModel {
+    return {
+      id: this.generateId(),
+      name: template.name,
+      ...this.mapRTFEditorContentToTemplateProtocolEditorContent(
+        template.protocol
+      ),
+      ...this.mapRTFEditorContentToTemplatePatientInfoEditorContent(
+        template.patientInfo
+      ),
+    };
   }
 
   private mapTemplateDBModelToTemplateDto(
@@ -176,7 +227,18 @@ export class RadioDBService {
     };
   }
 
-  private mapFindingAreasDBModelToFindingAreasDto(
+  private mapFindingAreaCreateRequestToFindingAreaDBModel(
+    findingArea: RadioFindingAreaCreateRequestDto
+  ): RadioFindingAreaDBModel {
+    return {
+      id: this.generateId(),
+      name: findingArea.name,
+      order: findingArea.sortOrder,
+      templateId: findingArea.templateId,
+    };
+  }
+
+  private mapFindingAreaDBModelToFindingAreaDto(
     findingArea: RadioFindingAreaDBModel
   ): RadioFindingAreaDto {
     return {
@@ -184,6 +246,28 @@ export class RadioDBService {
       name: findingArea.name,
       sortOrder: findingArea.order,
       templateId: findingArea.templateId,
+    };
+  }
+
+  private mapFindingDetailsCreateRequestToFindingDetailsDBModel(
+    findingDetail: RadioFindingDetailsCreateRequestDto
+  ): RadioFindingDetailsDBModel {
+    return {
+      id: this.generateId(),
+      title: findingDetail.name,
+      group: findingDetail.group ?? undefined,
+      order: findingDetail.sortOrder,
+      isNormal: findingDetail.isNormal,
+      protocolId: findingDetail.findingAreaId,
+      ...this.mapRTFEditorContentToFindingDetailsDescriptionEditorContent(
+        findingDetail.description
+      ),
+      ...this.mapRTFEditorContentToFindingDetailsImpressionEditorContent(
+        findingDetail.impression
+      ),
+      ...this.mapRTFEditorContentToFindingDetailsRecommendationEditorContent(
+        findingDetail.recommendation
+      ),
     };
   }
 
@@ -217,8 +301,8 @@ export class RadioDBService {
   ): RTFEditorContentDto {
     return {
       text: editorContent.description ?? '',
-      html: editorContent.decriptionHTML ?? '',
-      json: editorContent.decriptionJSON ?? '',
+      html: editorContent.descriptionHTML ?? '',
+      json: editorContent.descriptionJSON ?? '',
     };
   }
 
@@ -226,12 +310,12 @@ export class RadioDBService {
     editorContent: RTFEditorContentDto
   ): Pick<
     RadioTemplateDBModel,
-    'description' | 'decriptionHTML' | 'decriptionJSON'
+    'description' | 'descriptionHTML' | 'descriptionJSON'
   > {
     return {
       description: editorContent.text,
-      decriptionHTML: editorContent.html,
-      decriptionJSON: editorContent.json,
+      descriptionHTML: editorContent.html,
+      descriptionJSON: editorContent.json,
     };
   }
 
@@ -250,11 +334,19 @@ export class RadioDBService {
   }
 
   private mapRTFEditorContentToTemplatePatientInfoEditorContent(
-    editorContent: RTFEditorContentDto
+    editorContent: RTFEditorContentDto | null
   ): Pick<
     RadioTemplateDBModel,
     'patientInfo' | 'patientInfoHTML' | 'patientInfoJSON'
   > {
+    if (!editorContent) {
+      return {
+        patientInfo: undefined,
+        patientInfoHTML: undefined,
+        patientInfoJSON: undefined,
+      };
+    }
+
     return {
       patientInfo: editorContent.text,
       patientInfoHTML: editorContent.html,
@@ -267,8 +359,8 @@ export class RadioDBService {
   ): RTFEditorContentDto {
     return {
       text: editorContent.description ?? '',
-      html: editorContent.decriptionHTML ?? '',
-      json: editorContent.decriptionJSON ?? '',
+      html: editorContent.descriptionHTML ?? '',
+      json: editorContent.descriptionJSON ?? '',
     };
   }
 
@@ -276,12 +368,12 @@ export class RadioDBService {
     editorContent: RTFEditorContentDto
   ): Pick<
     RadioFindingDetailsDBModel,
-    'description' | 'decriptionHTML' | 'decriptionJSON'
+    'description' | 'descriptionHTML' | 'descriptionJSON'
   > {
     return {
       description: editorContent.text,
-      decriptionHTML: editorContent.html,
-      decriptionJSON: editorContent.json,
+      descriptionHTML: editorContent.html,
+      descriptionJSON: editorContent.json,
     };
   }
 
@@ -300,11 +392,19 @@ export class RadioDBService {
   }
 
   private mapRTFEditorContentToFindingDetailsImpressionEditorContent(
-    editorContent: RTFEditorContentDto
+    editorContent: RTFEditorContentDto | null
   ): Pick<
     RadioFindingDetailsDBModel,
     'impression' | 'impressionHTML' | 'impressionJSON'
   > {
+    if (!editorContent) {
+      return {
+        impression: undefined,
+        impressionHTML: undefined,
+        impressionJSON: undefined,
+      };
+    }
+
     return {
       impression: editorContent.text,
       impressionHTML: editorContent.html,
@@ -327,11 +427,19 @@ export class RadioDBService {
   }
 
   private mapRTFEditorContentToFindingDetailsRecommendationEditorContent(
-    editorContent: RTFEditorContentDto
+    editorContent: RTFEditorContentDto | null
   ): Pick<
     RadioFindingDetailsDBModel,
     'recommendation' | 'recommendationHTML' | 'recommendationJSON'
   > {
+    if (!editorContent) {
+      return {
+        recommendation: undefined,
+        recommendationHTML: undefined,
+        recommendationJSON: undefined,
+      };
+    }
+
     return {
       recommendation: editorContent.text,
       recommendationHTML: editorContent.html,

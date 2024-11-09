@@ -12,32 +12,32 @@ const radioDbConfig: DBConfig = {
         { name: 'name', keypath: 'name', options: { unique: false } },
         {
           name: 'decription',
-          keypath: 'protocol.text',
+          keypath: 'description',
           options: { unique: false },
         },
         {
           name: 'decriptionHTML',
-          keypath: 'protocol.html',
+          keypath: 'descriptioHTMLn',
           options: { unique: false },
         },
         {
           name: 'decriptionJSON',
-          keypath: 'protocol.json',
+          keypath: 'descriptionJSON',
           options: { unique: false },
         },
         {
           name: 'patientInfo',
-          keypath: 'patientInfo.text',
+          keypath: 'patientInfo',
           options: { unique: false },
         },
         {
           name: 'patientInfoHTML',
-          keypath: 'patientInfo.html',
+          keypath: 'patientInfoHTML',
           options: { unique: false },
         },
         {
           name: 'patientInfoJSON',
-          keypath: 'patientInfo.json',
+          keypath: 'patientInfoJSON',
           options: { unique: false },
         },
       ],
@@ -47,7 +47,7 @@ const radioDbConfig: DBConfig = {
       storeConfig: { keyPath: 'id', autoIncrement: false },
       storeSchema: [
         { name: 'name', keypath: 'name', options: { unique: false } },
-        { name: 'order', keypath: 'sortOrder', options: { unique: false } },
+        { name: 'order', keypath: 'order', options: { unique: false } },
         {
           name: 'templateId',
           keypath: 'templateId',
@@ -61,55 +61,55 @@ const radioDbConfig: DBConfig = {
       storeSchema: [
         { name: 'title', keypath: 'title', options: { unique: false } },
         { name: 'group', keypath: 'group', options: { unique: false } },
-        { name: 'order', keypath: 'sortOrder', options: { unique: false } },
+        { name: 'order', keypath: 'order', options: { unique: false } },
         {
           name: 'protocolId',
-          keypath: 'findingAreaId',
+          keypath: 'protocolId',
           options: { unique: false },
         },
         {
           name: 'decription',
-          keypath: 'decription.text',
+          keypath: 'description',
           options: { unique: false },
         },
         {
           name: 'decriptionHTML',
-          keypath: 'decription.html',
+          keypath: 'descriptionHTML',
           options: { unique: false },
         },
         {
           name: 'decriptionJSON',
-          keypath: 'decription.json',
+          keypath: 'descriptionJSON',
           options: { unique: false },
         },
         {
           name: 'impression',
-          keypath: 'impression.text',
+          keypath: 'impression',
           options: { unique: false },
         },
         {
           name: 'impressionHTML',
-          keypath: 'impression.html',
+          keypath: 'impressionHTML',
           options: { unique: false },
         },
         {
           name: 'impressionJSON',
-          keypath: 'impression.json',
+          keypath: 'impressionJSON',
           options: { unique: false },
         },
         {
           name: 'recommendation',
-          keypath: 'recommendation.text',
+          keypath: 'recommendation',
           options: { unique: false },
         },
         {
           name: 'recommendationHTML',
-          keypath: 'recommendation.html',
+          keypath: 'recommendationHTML',
           options: { unique: false },
         },
         {
           name: 'recommendationJSON',
-          keypath: 'recommendation.json',
+          keypath: 'recommendationJSON',
           options: { unique: false },
         },
         {
