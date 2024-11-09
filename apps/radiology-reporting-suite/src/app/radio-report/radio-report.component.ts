@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { Observable } from 'rxjs';
 
 import { RadioDBModule } from '../db/radio-db.module';
 import { RadioDBService } from '../db/radio-db.service';
@@ -19,7 +19,6 @@ export class RadioReportComponent {
   private readonly radioDataService: RadioDataService =
     inject(RadioDataService);
 
-  templates$: Observable<RadioTemplateDto[]> = this.radioDataService
-    .fetchTemplates$()
-    .pipe(tap((templates: RadioTemplateDto[]) => console.log(templates)));
+  templates$: Observable<RadioTemplateDto[]> =
+    this.radioDataService.fetchTemplates$();
 }

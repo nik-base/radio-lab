@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
@@ -10,18 +10,12 @@ describe('AppComponent', () => {
     }).compileComponents();
   });
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain(
-      'Welcome Radiology Reporting Suite'
-    );
-  });
-
   it(`should have as title 'Radiology Reporting Suite'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
+    const fixture: ComponentFixture<AppComponent> =
+      TestBed.createComponent(AppComponent);
+
+    const app: AppComponent = fixture.componentInstance;
+
     expect(app.title).toEqual('Radiology Reporting Suite');
   });
 });

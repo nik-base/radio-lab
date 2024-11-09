@@ -18,7 +18,10 @@ import {
   RadioTemplateUpdateRequestDto,
 } from '../models/data';
 
-import { RadioTemplateDBModel } from './radio-db.models';
+import {
+  RadioFindingAreaDBModel,
+  RadioTemplateDBModel,
+} from './radio-db.models';
 
 @Injectable()
 export class RadioDBService {
@@ -27,7 +30,7 @@ export class RadioDBService {
 
   fetchTemplates$(): Observable<RadioTemplateDto[]> {
     return this.radioDBService.getAll<RadioTemplateDBModel>('templates').pipe(
-      map((templates) =>
+      map((templates: RadioTemplateDBModel[]) =>
         templates.map(
           (template: RadioTemplateDBModel): RadioTemplateDto => ({
             id: template.id,
@@ -49,7 +52,24 @@ export class RadioDBService {
   }
 
   fetchFindingAreas$(templateId: string): Observable<RadioFindingAreaDto[]> {
-    throw new Error('Method not implemented.');
+    return this.radioDBService
+      .getAllByIndex<RadioFindingAreaDBModel>(
+        'protocols',
+        'templateId',
+        IDBKeyRange.only(templateId)
+      )
+      .pipe(
+        map((protocols: RadioFindingAreaDBModel[]) => {
+          return protocols.map(
+            (protocol: RadioFindingAreaDBModel): RadioFindingAreaDto => ({
+              id: protocol.id,
+              name: protocol.name,
+              sortOrder: protocol.order,
+              templateId: protocol.templateId,
+            })
+          );
+        })
+      );
   }
 
   fetchFindingDetails$(

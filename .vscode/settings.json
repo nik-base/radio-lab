@@ -5,5 +5,11 @@
     ],
     "editor.codeActionsOnSave": {
         "source.organizeImports": "explicit",
-    }
+    },
+    "eslint.validate": ["javascript", "typescript", "html", "scss", "css"],
+    "stylelint.validate": [
+        "css",
+        "postcss",
+        "scss"
+    ]
 }

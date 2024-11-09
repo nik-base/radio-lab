@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -27,94 +26,94 @@ export class RadioDataService {
   }
 
   fetchFindingAreas$(templateId: string): Observable<RadioFindingAreaDto[]> {
-    throw new Error('Method not implemented.');
+    return this.radioDBService.fetchFindingAreas$(templateId);
   }
 
   fetchFindingDetails$(
     findingAreaId: string
   ): Observable<RadioFindingDetailsDto[]> {
-    throw new Error('Method not implemented.');
+    return this.radioDBService.fetchFindingDetails$(findingAreaId);
   }
 
   createTemplate$(
-    temlate: RadioTemplateCreateRequestDto
+    template: RadioTemplateCreateRequestDto
   ): Observable<RadioTemplateDto> {
-    throw new Error('Method not implemented.');
+    return this.radioDBService.createTemplate$(template);
   }
 
   createFindingArea$(
     findingArea: RadioFindingAreaCreateRequestDto
   ): Observable<RadioFindingAreaDto> {
-    throw new Error('Method not implemented.');
+    return this.radioDBService.createFindingArea$(findingArea);
   }
 
   createFindingDetails$(
     findingDetails: RadioFindingDetailsCreateRequestDto
   ): Observable<RadioFindingDetailsDto> {
-    throw new Error('Method not implemented.');
+    return this.radioDBService.createFindingDetails$(findingDetails);
   }
 
   updateTemplate$(
     template: RadioTemplateUpdateRequestDto
   ): Observable<RadioTemplateDto> {
-    throw new Error('Method not implemented.');
+    return this.radioDBService.updateTemplate$(template);
   }
 
   updateFindingArea$(
     findingArea: RadioFindingAreaUpdateRequestDto
   ): Observable<RadioFindingAreaDto> {
-    throw new Error('Method not implemented.');
+    return this.radioDBService.updateFindingArea$(findingArea);
   }
 
   updateFindingDetails$(
     findingDetails: RadioFindingDetailsUpdateRequestDto
   ): Observable<RadioFindingDetailsDto> {
-    throw new Error('Method not implemented.');
+    return this.radioDBService.updateFindingDetails$(findingDetails);
   }
 
   deleteTemplate$(templateId: string): Observable<RadioTemplateDto> {
-    throw new Error('Method not implemented.');
+    return this.radioDBService.deleteTemplate$(templateId);
   }
 
   deleteFindingArea$(findingAreaId: string): Observable<RadioFindingAreaDto> {
-    throw new Error('Method not implemented.');
+    return this.radioDBService.deleteFindingArea$(findingAreaId);
   }
 
   deleteFindingDetails$(
     findingDetailsId: string
   ): Observable<RadioFindingDetailsDto> {
-    throw new Error('Method not implemented.');
+    return this.radioDBService.deleteFindingDetails$(findingDetailsId);
   }
 
   updateFindingAreaSortOrder$(
     sortOrders: RadioSortOrderUpdateRequestDto
   ): Observable<void> {
-    throw new Error('Method not implemented.');
+    return this.radioDBService.updateFindingAreaSortOrder$(sortOrders);
   }
 
   updateFindingDetailsSortOrder$(
     sortOrders: RadioSortOrderUpdateRequestDto
   ): Observable<void> {
-    throw new Error('Method not implemented.');
+    return this.radioDBService.updateFindingDetailsSortOrder$(sortOrders);
   }
 
   fetchTemplate$(templateId: string): Observable<RadioTemplateModelDto> {
-    throw new Error('Method not implemented.');
+    return this.radioDBService.fetchTemplate$(templateId);
   }
 
   importTemplate$(
     template: RadioTemplateImportModelDto
   ): Observable<RadioTemplateDto> {
-    throw new Error('Method not implemented.');
+    return this.radioDBService.importTemplate$(template);
   }
 
   cloneFindingArea$(findingAreaId: string): Observable<RadioFindingAreaDto> {
-    throw new Error('Method not implemented.');
+    return this.radioDBService.cloneFindingArea$(findingAreaId);
   }
 
   cloneFindingDetails$(
     findingDetailsId: string
   ): Observable<RadioFindingDetailsDto> {
-    throw new Error('Method not implemented.');
+    return this.radioDBService.cloneFindingDetails$(findingDetailsId);
   }
 }

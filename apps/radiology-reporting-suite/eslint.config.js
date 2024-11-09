@@ -38,6 +38,33 @@ module.exports = [
     },
     files: ['**/*.ts'],
     rules: {
+      '@typescript-eslint/typedef': [
+        'error',
+        {
+          arrayDestructuring: true,
+          arrowParameter: true,
+          memberVariableDeclaration: true,
+          objectDestructuring: true,
+          parameter: true,
+          propertyDeclaration: true,
+          variableDeclaration: true,
+          variableDeclarationIgnoreFunction: true,
+        },
+      ],
+      '@typescript-eslint/no-inferrable-types': 'off',
+      '@typescript-eslint/explicit-function-return-type': [
+        'error', 
+        {
+          allowConciseArrowFunctionExpressionsStartingWithVoid: false,
+          allowDirectConstAssertionInArrowFunctions: true,
+          allowedNames: [],
+          allowExpressions: false,
+          allowFunctionsWithoutTypeParameters: true,
+          allowHigherOrderFunctions: true,
+          allowIIFEs: false,
+          allowTypedFunctionExpressions: true,
+        }
+      ],
       '@angular-eslint/directive-selector': [
         'error',
         {
