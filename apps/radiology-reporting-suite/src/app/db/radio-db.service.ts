@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { NgxIndexedDBService } from 'ngx-indexed-db';
+import { map, Observable } from 'rxjs';
 
-import { RadioDBService } from '../db/radio-db.service';
 import {
   RadioFindingAreaCreateRequestDto,
   RadioFindingAreaDto,
@@ -18,12 +18,34 @@ import {
   RadioTemplateUpdateRequestDto,
 } from '../models/data';
 
+import { RadioTemplateDBModel } from './radio-db.models';
+
 @Injectable()
-export class RadioDataService {
-  private readonly radioDBService: RadioDBService = inject(RadioDBService);
+export class RadioDBService {
+  private readonly radioDBService: NgxIndexedDBService =
+    inject(NgxIndexedDBService);
 
   fetchTemplates$(): Observable<RadioTemplateDto[]> {
-    return this.radioDBService.fetchTemplates$();
+    return this.radioDBService.getAll<RadioTemplateDBModel>('templates').pipe(
+      map((templates) =>
+        templates.map(
+          (template: RadioTemplateDBModel): RadioTemplateDto => ({
+            id: template.id,
+            name: template.name,
+            protocol: {
+              text: template.description ?? '',
+              html: template.decriptionHTML ?? '',
+              json: template.decriptionJSON ?? '',
+            },
+            patientInfo: {
+              text: template.patientInfo ?? '',
+              html: template.patientInfoHTML ?? '',
+              json: template.patientInfoJSON ?? '',
+            },
+          })
+        )
+      )
+    );
   }
 
   fetchFindingAreas$(templateId: string): Observable<RadioFindingAreaDto[]> {

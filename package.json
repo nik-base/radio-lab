@@ -13,6 +13,8 @@
     "@angular/platform-browser": "~18.2.0",
     "@angular/platform-browser-dynamic": "~18.2.0",
     "@angular/router": "~18.2.0",
+    "lodash": "^4.17.21",
+    "ngx-indexed-db": "^19.0.1",
     "rxjs": "~7.8.0",
     "zone.js": "~0.14.3"
   },
@@ -40,6 +42,7 @@
     "@swc/core": "~1.5.7",
     "@swc/helpers": "~0.5.11",
     "@types/jest": "^29.5.12",
+    "@types/lodash": "^4.17.13",
     "@types/node": "18.16.9",
     "@typescript-eslint/utils": "^8.0.0",
     "angular-eslint": "^18.3.0",
