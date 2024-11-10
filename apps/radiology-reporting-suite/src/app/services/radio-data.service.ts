@@ -71,30 +71,32 @@ export class RadioDataService {
     return this.radioDBService.updateFindingDetails$(findingDetails);
   }
 
-  deleteTemplate$(templateId: string): Observable<RadioTemplateDto> {
+  deleteTemplate$(templateId: string): Observable<void> {
     return this.radioDBService.deleteTemplate$(templateId);
   }
 
-  deleteFindingArea$(findingAreaId: string): Observable<RadioFindingAreaDto> {
+  deleteFindingArea$(findingAreaId: string): Observable<void> {
     return this.radioDBService.deleteFindingArea$(findingAreaId);
   }
 
-  deleteFindingDetails$(
-    findingDetailsId: string
-  ): Observable<RadioFindingDetailsDto> {
+  deleteFindingDetails$(findingDetailsId: string): Observable<void> {
     return this.radioDBService.deleteFindingDetails$(findingDetailsId);
   }
 
   updateFindingAreaSortOrder$(
-    sortOrders: RadioSortOrderUpdateRequestDto
+    sortOrderUpdateRequest: RadioSortOrderUpdateRequestDto
   ): Observable<void> {
-    return this.radioDBService.updateFindingAreaSortOrder$(sortOrders);
+    return this.radioDBService.updateFindingAreaSortOrder$(
+      sortOrderUpdateRequest
+    );
   }
 
   updateFindingDetailsSortOrder$(
-    sortOrders: RadioSortOrderUpdateRequestDto
+    sortOrderUpdateRequest: RadioSortOrderUpdateRequestDto
   ): Observable<void> {
-    return this.radioDBService.updateFindingDetailsSortOrder$(sortOrders);
+    return this.radioDBService.updateFindingDetailsSortOrder$(
+      sortOrderUpdateRequest
+    );
   }
 
   fetchTemplate$(templateId: string): Observable<RadioTemplateModelDto> {

@@ -17,6 +17,7 @@ export { RadioFindingDetailsCreateRequestDto } from './radio-finding-details-cre
 export { RadioFindingDetailsUpdateRequestDto } from './radio-finding-details-update-request.interface.dto';
 export { RadioFindingDetailsDto } from './radio-finding-details.interface.dto';
 
+export { RadioSortOrderModelDto } from './radio-sort-order-model.interface.dto';
 export { RadioSortOrderUpdateRequestDto } from './radio-sort-order-update-request.interface.dto';
 
 export { RTFEditorContentDto } from './rtf-editor-content.interface.dto';
