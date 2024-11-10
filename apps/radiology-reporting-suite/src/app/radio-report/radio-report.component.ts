@@ -2,16 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { RadioDBModule } from '../db/radio-db.module';
-import { RadioDBService } from '../db/radio-db.service';
 import { RadioTemplateDto } from '../models/data';
 import { RadioDataService } from '../services/radio-data.service';
 
 @Component({
   selector: 'radio-report',
   standalone: true,
-  imports: [CommonModule, RadioDBModule],
-  providers: [RadioDataService, RadioDBService],
+  imports: [CommonModule],
   templateUrl: './radio-report.component.html',
   styleUrl: './radio-report.component.scss',
 })

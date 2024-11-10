@@ -17,7 +17,7 @@ import {
   RadioTemplateUpdateRequestDto,
 } from '../models/data';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class RadioDataService {
   private readonly radioDBService: RadioDBService = inject(RadioDBService);
 

@@ -30,7 +30,7 @@ import {
   RadioTemplateDBModel,
 } from './radio-db.models';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class RadioDBService {
   private readonly radioDBService: NgxIndexedDBService =
     inject(NgxIndexedDBService);
