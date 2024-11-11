@@ -1,23 +1,23 @@
-export { RadioTemplateBaseDto } from './radio-template-base.interface.dto';
-export { RadioTemplateCreateRequestDto } from './radio-template-create-request.interface.dto';
-export { RadioTemplateImportModelDto } from './radio-template-import-model.interface.dto';
-export { RadioTemplateModelDto } from './radio-template-model.interface.dto';
-export { RadioTemplateUpdateRequestDto } from './radio-template-update-request.interface.dto';
-export { RadioTemplateDto } from './radio-template.interface.dto';
+export { TemplateBaseDto } from './template/template-base-dto.interface';
+export { TemplateCreateDto } from './template/template-create-dto.interface';
+export { TemplateDataDto } from './template/template-data-dto.interface';
+export { TemplateDto } from './template/template-dto.interface';
+export { TemplateImportDto } from './template/template-import-dto.interface';
+export { TemplateUpdateDto } from './template/template-update-dto.interface';
 
-export { RadioFindingAreaBaseDto } from './radio-finding-area-base.interface.dto';
-export { RadioFindingAreaCreateRequestDto } from './radio-finding-area-create-request.interface.dto';
-export { RadioFindingAreaImportModelDto } from './radio-finding-area-import-model.interface.dto';
-export { RadioFindingAreaModelDto } from './radio-finding-area-model.interface.dto';
-export { RadioFindingAreaUpdateRequestDto } from './radio-finding-area-update-request.interface.dto';
-export { RadioFindingAreaDto } from './radio-finding-area.interface.dto';
+export { ScopeBaseDto } from './scope/scope-base-dto.interface';
+export { ScopeCreateDto } from './scope/scope-create-dto.interface';
+export { ScopeDataDto } from './scope/scope-data-dto.interface';
+export { ScopeDto } from './scope/scope-dto.interface';
+export { ScopeImportDto } from './scope/scope-import-dto.interface';
+export { ScopeUpdateDto } from './scope/scope-update-dto.interface';
 
-export { RadioFindingDetailsBaseDto } from './radio-finding-details-base.interface.dto';
-export { RadioFindingDetailsCreateRequestDto } from './radio-finding-details-create-request.interface.dto';
-export { RadioFindingDetailsUpdateRequestDto } from './radio-finding-details-update-request.interface.dto';
-export { RadioFindingDetailsDto } from './radio-finding-details.interface.dto';
+export { FindingBaseDto } from './finding/finding-base-dto.interface';
+export { FindingCreateDto } from './finding/finding-create-dto.interface';
+export { FindingDto } from './finding/finding-dto.interface';
+export { FindingUpdateDto } from './finding/finding-update-dto.interface';
 
-export { RadioSortOrderModelDto } from './radio-sort-order-model.interface.dto';
-export { RadioSortOrderUpdateRequestDto } from './radio-sort-order-update-request.interface.dto';
+export { SortOrderItemDto } from './sort-order-item-dto.interface';
+export { SortOrderUpdateDto } from './sort-order-update-dto.interface';
 
-export { RTFEditorContentDto } from './rtf-editor-content.interface.dto';
+export { EditorContentDto } from './editor-content-dto.interface';

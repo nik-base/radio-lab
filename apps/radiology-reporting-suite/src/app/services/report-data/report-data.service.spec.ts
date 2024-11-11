@@ -1,16 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 import { mockProvider } from '@ngneat/spectator/jest';
 
-import { RadioDataService } from './radio-data.service';
+import { ReportDataService } from './report-data.service';
 
-describe('RadioDataService', () => {
-  let service: RadioDataService;
+describe('ReportDataService', () => {
+  let service: ReportDataService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [mockProvider(RadioDataService)],
+      providers: [mockProvider(ReportDataService)],
     });
-    service = TestBed.inject(RadioDataService);
+    service = TestBed.inject(ReportDataService);
   });
 
   it('should be created', () => {

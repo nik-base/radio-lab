@@ -3,7 +3,7 @@ import { Component, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { RadioTemplateDto } from '../models/data';
-import { RadioDataService } from '../services/radio-data.service';
+import { ReportDataService } from '../services/admin/report-data.service';
 
 @Component({
   selector: 'radio-report',
@@ -13,8 +13,8 @@ import { RadioDataService } from '../services/radio-data.service';
   styleUrl: './radio-report.component.scss',
 })
 export class RadioReportComponent {
-  private readonly radioDataService: RadioDataService =
-    inject(RadioDataService);
+  private readonly radioDataService: ReportDataService =
+    inject(ReportDataService);
 
   templates$: Observable<RadioTemplateDto[]> =
     this.radioDataService.fetchTemplates$();

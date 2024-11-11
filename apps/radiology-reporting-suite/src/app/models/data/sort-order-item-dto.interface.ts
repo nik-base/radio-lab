@@ -1,4 +1,4 @@
-export interface RadioSortOrderModelDto {
+export interface SortOrderItemDto {
   readonly id: string;
   readonly sortOrder: number;
 }

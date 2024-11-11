@@ -6,7 +6,7 @@ import {
 import { provideRouter } from '@angular/router';
 
 import { appRoutes } from './app.routes';
-import { RadioDBModule } from './db/radio-db.module';
+import { RadioDBModule } from './db/report-db.module';
 
 export const appConfig: ApplicationConfig = {
   providers: [

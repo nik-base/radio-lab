@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { DBConfig, NgxIndexedDBModule } from 'ngx-indexed-db';
 
-const radioDbConfig: DBConfig = {
+const reportDBConfig: DBConfig = {
   name: 'RadioReportDB',
   version: 2,
   objectStoresMeta: [
@@ -123,6 +123,6 @@ const radioDbConfig: DBConfig = {
 };
 
 @NgModule({
-  imports: [NgxIndexedDBModule.forRoot(radioDbConfig)],
+  imports: [NgxIndexedDBModule.forRoot(reportDBConfig)],
 })
 export class RadioDBModule {}

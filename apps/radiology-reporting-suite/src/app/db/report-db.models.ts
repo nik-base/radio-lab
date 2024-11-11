@@ -1,4 +1,4 @@
-export interface RadioTemplateDBModel {
+export interface TemplateDBModel {
   readonly id: string;
   readonly name: string;
   readonly description?: string;
@@ -9,14 +9,14 @@ export interface RadioTemplateDBModel {
   readonly patientInfoJSON?: string;
 }
 
-export interface RadioFindingAreaDBModel {
+export interface ScopeDBModel {
   readonly id: string;
   readonly name: string;
   readonly order: number;
   readonly templateId: string;
 }
 
-export interface RadioFindingDetailsDBModel {
+export interface FindingDBModel {
   readonly id: string;
   readonly title: string;
   readonly group?: string;
