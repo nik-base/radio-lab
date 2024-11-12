@@ -1,4 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { mockProvider } from '@ngneat/spectator/jest';
+
+import { ReportBuilderService } from '../services/report-builder/report-builder.service';
 
 import { RadioReportComponent } from './radio-report.component';
 
@@ -9,6 +12,7 @@ describe('RadioReportComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [RadioReportComponent],
+      providers: [mockProvider(ReportBuilderService)],
     }).compileComponents();
 
     fixture = TestBed.createComponent(RadioReportComponent);

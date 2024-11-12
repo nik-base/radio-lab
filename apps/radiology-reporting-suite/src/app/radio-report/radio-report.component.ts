@@ -2,8 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { RadioTemplateDto } from '../models/data';
-import { ReportDataService } from '../services/admin/report-data.service';
+import { TemplateDto } from '../models/data';
+import { ReportBuilderService } from '../services/report-builder/report-builder.service';
 
 @Component({
   selector: 'radio-report',
@@ -13,9 +13,9 @@ import { ReportDataService } from '../services/admin/report-data.service';
   styleUrl: './radio-report.component.scss',
 })
 export class RadioReportComponent {
-  private readonly radioDataService: ReportDataService =
-    inject(ReportDataService);
+  private readonly reportBuilderService: ReportBuilderService =
+    inject(ReportBuilderService);
 
-  templates$: Observable<RadioTemplateDto[]> =
-    this.radioDataService.fetchTemplates$();
+  templates$: Observable<TemplateDto[]> =
+    this.reportBuilderService.fetchTemplates$();
 }
