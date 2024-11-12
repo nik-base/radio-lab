@@ -72,13 +72,13 @@ export class ReportApiService extends ReportBaseService {
     throw new Error('Method not implemented.');
   }
 
-  override updateScopesSortOrder$(
+  override reorderScopes$(
     sortOrderUpdateRequest: SortOrderUpdateDto
   ): Observable<void> {
     throw new Error('Method not implemented.');
   }
 
-  override updateFindingsSortOrder$(
+  override reorderFindings$(
     sortOrderUpdateRequest: SortOrderUpdateDto
   ): Observable<void> {
     throw new Error('Method not implemented.');

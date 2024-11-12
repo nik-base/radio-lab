@@ -44,11 +44,11 @@ export abstract class ReportBaseService {
 
   abstract deleteFinding$(findingId: string): Observable<void>;
 
-  abstract updateScopesSortOrder$(
+  abstract reorderScopes$(
     sortOrderUpdateRequest: SortOrderUpdateDto
   ): Observable<void>;
 
-  abstract updateFindingsSortOrder$(
+  abstract reorderFindings$(
     sortOrderUpdateRequest: SortOrderUpdateDto
   ): Observable<void>;
 
@@ -57,7 +57,11 @@ export abstract class ReportBaseService {
   abstract importTemplate$(
     template: TemplateImportDto
   ): Observable<TemplateDto>;
-  abstract cloneScope$(scopeId: string): Observable<ScopeDto>;
+
+  abstract cloneScope$(
+    scopeId: string,
+    templateId: string
+  ): Observable<ScopeDto>;
 
   abstract cloneFinding$(findingId: string): Observable<FindingDto>;
 }

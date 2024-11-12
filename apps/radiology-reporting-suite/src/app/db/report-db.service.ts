@@ -166,7 +166,7 @@ export class ReportDBService extends ReportBaseService {
       .pipe(map(() => void 0));
   }
 
-  override updateScopesSortOrder$(
+  override reorderScopes$(
     sortOrderUpdateRequest: SortOrderUpdateDto
   ): Observable<void> {
     const scopeIds: string[] = sortOrderUpdateRequest.sortOrdersMap.map(
@@ -194,7 +194,7 @@ export class ReportDBService extends ReportBaseService {
     );
   }
 
-  override updateFindingsSortOrder$(
+  override reorderFindings$(
     sortOrderUpdateRequest: SortOrderUpdateDto
   ): Observable<void> {
     const findingIds: string[] = sortOrderUpdateRequest.sortOrdersMap.map(
@@ -260,11 +260,16 @@ export class ReportDBService extends ReportBaseService {
     );
   }
 
-  override cloneScope$(scopeId: string): Observable<ScopeDto> {
+  override cloneScope$(
+    scopeId: string,
+    templateId: string
+  ): Observable<ScopeDto> {
     return this.fetchScopesData$(scopeId).pipe(
       mergeMap((scope: ScopeDataDto): Observable<ScopeDto> => {
-        const scopeDbModel: ScopeDBModel =
-          this.mapScopeCreateDtoToDBModel(scope);
+        const scopeDbModel: ScopeDBModel = this.mapScopeBaseDtoToCloneDBModel(
+          scope,
+          templateId
+        );
 
         const findings: FindingDBModel[] = this.generateFindingsForClone$(
           scope,
@@ -595,6 +600,17 @@ export class ReportDBService extends ReportBaseService {
       ...this.mapScopeBaseDtoToDBModel(scope),
       id: this.generateId(),
       templateId: scope.templateId,
+    };
+  }
+
+  private mapScopeBaseDtoToCloneDBModel(
+    scope: ScopeBaseDto,
+    templateId: string
+  ): ScopeDBModel {
+    return {
+      ...this.mapScopeBaseDtoToDBModel(scope),
+      id: this.generateId(),
+      templateId,
     };
   }
 

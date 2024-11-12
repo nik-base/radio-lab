@@ -18,7 +18,7 @@ import {
 import { ReportBaseService } from '../report-base.service';
 
 @Injectable({ providedIn: 'root' })
-export class ReportDataService {
+export class ReportManagerService {
   private readonly reportService: ReportBaseService = inject(ReportBaseService);
 
   fetchTemplates$(): Observable<TemplateDto[]> {
@@ -69,16 +69,14 @@ export class ReportDataService {
     return this.reportService.deleteFinding$(findingId);
   }
 
-  updateScopesSortOrder$(
-    sortOrderUpdateRequest: SortOrderUpdateDto
-  ): Observable<void> {
-    return this.reportService.updateScopesSortOrder$(sortOrderUpdateRequest);
+  reorderScopes$(sortOrderUpdateRequest: SortOrderUpdateDto): Observable<void> {
+    return this.reportService.reorderScopes$(sortOrderUpdateRequest);
   }
 
-  updateFindingsSortOrder$(
+  reorderFindings$(
     sortOrderUpdateRequest: SortOrderUpdateDto
   ): Observable<void> {
-    return this.reportService.updateFindingsSortOrder$(sortOrderUpdateRequest);
+    return this.reportService.reorderFindings$(sortOrderUpdateRequest);
   }
 
   fetchTemplate$(templateId: string): Observable<TemplateDataDto> {
@@ -89,8 +87,8 @@ export class ReportDataService {
     return this.reportService.importTemplate$(template);
   }
 
-  cloneScope$(scopeId: string): Observable<ScopeDto> {
-    return this.reportService.cloneScope$(scopeId);
+  cloneScope$(scopeId: string, templateId: string): Observable<ScopeDto> {
+    return this.reportService.cloneScope$(scopeId, templateId);
   }
 
   cloneFinding$(findingId: string): Observable<FindingDto> {
