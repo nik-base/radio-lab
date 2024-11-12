@@ -11,13 +11,13 @@ const reportDBConfig: DBConfig = {
       storeSchema: [
         { name: 'name', keypath: 'name', options: { unique: false } },
         {
-          name: 'decription',
+          name: 'description',
           keypath: 'description',
           options: { unique: false },
         },
         {
           name: 'decriptionHTML',
-          keypath: 'descriptioHTMLn',
+          keypath: 'descriptioHTML',
           options: { unique: false },
         },
         {
@@ -68,7 +68,7 @@ const reportDBConfig: DBConfig = {
           options: { unique: false },
         },
         {
-          name: 'decription',
+          name: 'description',
           keypath: 'description',
           options: { unique: false },
         },
@@ -125,4 +125,4 @@ const reportDBConfig: DBConfig = {
 @NgModule({
   imports: [NgxIndexedDBModule.forRoot(reportDBConfig)],
 })
-export class RadioDBModule {}
+export class ReportDBModule {}

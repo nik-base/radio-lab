@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { PushPipe } from '@ngrx/component';
 import { Observable } from 'rxjs';
 
 import { TemplateDto } from '../models/data';
@@ -8,11 +9,11 @@ import { ReportBuilderService } from '../services/report-builder/report-builder.
 @Component({
   selector: 'radio-report',
   standalone: true,
-  imports: [CommonModule],
-  templateUrl: './radio-report.component.html',
-  styleUrl: './radio-report.component.scss',
+  imports: [CommonModule, PushPipe],
+  templateUrl: './report-builder.component.html',
+  styleUrl: './report-builder.component.scss',
 })
-export class RadioReportComponent {
+export class ReportBuilderComponent {
   private readonly reportBuilderService: ReportBuilderService =
     inject(ReportBuilderService);
 

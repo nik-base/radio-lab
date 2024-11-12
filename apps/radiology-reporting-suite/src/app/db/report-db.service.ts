@@ -35,7 +35,7 @@ import {
 export class ReportDBService extends ReportBaseService {
   private readonly dbService: NgxIndexedDBService = inject(NgxIndexedDBService);
 
-  fetchTemplates$(): Observable<TemplateDto[]> {
+  override fetchTemplates$(): Observable<TemplateDto[]> {
     return this.dbService
       .getAll<TemplateDBModel>('templates')
       .pipe(
@@ -48,7 +48,7 @@ export class ReportDBService extends ReportBaseService {
       );
   }
 
-  fetchScopes$(templateId: string): Observable<ScopeDto[]> {
+  override fetchScopes$(templateId: string): Observable<ScopeDto[]> {
     return this.dbService
       .getAllByIndex<ScopeDBModel>(
         'protocols',
@@ -64,7 +64,7 @@ export class ReportDBService extends ReportBaseService {
       );
   }
 
-  fetchFindings$(scopeId: string): Observable<FindingDto[]> {
+  override fetchFindings$(scopeId: string): Observable<FindingDto[]> {
     return this.dbService
       .getAllByIndex<FindingDBModel>(
         'findings',
@@ -81,20 +81,22 @@ export class ReportDBService extends ReportBaseService {
       );
   }
 
-  createTemplate$(template: TemplateCreateDto): Observable<TemplateDto> {
+  override createTemplate$(
+    template: TemplateCreateDto
+  ): Observable<TemplateDto> {
     const dbModel: TemplateDBModel =
       this.mapTemplateCreateDtoToDBModel(template);
 
     return this.createTemplateInDb$(dbModel);
   }
 
-  createScope$(scope: ScopeCreateDto): Observable<ScopeDto> {
+  override createScope$(scope: ScopeCreateDto): Observable<ScopeDto> {
     const dbModel: ScopeDBModel = this.mapScopeCreateDtoToDBModel(scope);
 
     return this.createScopeInDb$(dbModel);
   }
 
-  createFinding$(finding: FindingCreateDto): Observable<FindingDto> {
+  override createFinding$(finding: FindingCreateDto): Observable<FindingDto> {
     const dbModel: FindingDBModel = this.mapFindingCreateDtoToDBModel(finding);
 
     return this.dbService
@@ -107,7 +109,9 @@ export class ReportDBService extends ReportBaseService {
       );
   }
 
-  updateTemplate$(template: TemplateUpdateDto): Observable<TemplateDto> {
+  override updateTemplate$(
+    template: TemplateUpdateDto
+  ): Observable<TemplateDto> {
     const dbModel: TemplateDBModel =
       this.mapTemplateUpdateDtoToDBModel(template);
 
@@ -121,7 +125,7 @@ export class ReportDBService extends ReportBaseService {
       );
   }
 
-  updateScope$(scope: ScopeUpdateDto): Observable<ScopeDto> {
+  override updateScope$(scope: ScopeUpdateDto): Observable<ScopeDto> {
     const dbModel: ScopeDBModel = this.mapScopeUpdateDtoToDBModel(scope);
 
     return this.dbService
@@ -131,7 +135,7 @@ export class ReportDBService extends ReportBaseService {
       );
   }
 
-  updateFinding$(finding: FindingUpdateDto): Observable<FindingDto> {
+  override updateFinding$(finding: FindingUpdateDto): Observable<FindingDto> {
     const dbModel: FindingDBModel = this.mapFindingUpdateDtoToDBModel(finding);
 
     return this.dbService
@@ -144,25 +148,25 @@ export class ReportDBService extends ReportBaseService {
       );
   }
 
-  deleteTemplate$(templateId: string): Observable<void> {
+  override deleteTemplate$(templateId: string): Observable<void> {
     return this.dbService
       .delete<TemplateDBModel>('templates', templateId)
       .pipe(map(() => void 0));
   }
 
-  deleteScope$(scopeId: string): Observable<void> {
+  override deleteScope$(scopeId: string): Observable<void> {
     return this.dbService
       .delete<ScopeDBModel>('protocols', scopeId)
       .pipe(map(() => void 0));
   }
 
-  deleteFinding$(findingId: string): Observable<void> {
+  override deleteFinding$(findingId: string): Observable<void> {
     return this.dbService
       .delete<FindingDBModel>('findings', findingId)
       .pipe(map(() => void 0));
   }
 
-  updateScopesSortOrder$(
+  override updateScopesSortOrder$(
     sortOrderUpdateRequest: SortOrderUpdateDto
   ): Observable<void> {
     const scopeIds: string[] = sortOrderUpdateRequest.sortOrdersMap.map(
@@ -190,7 +194,7 @@ export class ReportDBService extends ReportBaseService {
     );
   }
 
-  updateFindingsSortOrder$(
+  override updateFindingsSortOrder$(
     sortOrderUpdateRequest: SortOrderUpdateDto
   ): Observable<void> {
     const findingIds: string[] = sortOrderUpdateRequest.sortOrdersMap.map(
@@ -217,7 +221,7 @@ export class ReportDBService extends ReportBaseService {
     );
   }
 
-  fetchTemplate$(templateId: string): Observable<TemplateDataDto> {
+  override fetchTemplate$(templateId: string): Observable<TemplateDataDto> {
     return this.dbService
       .getByID<TemplateDBModel>('templates', templateId)
       .pipe(
@@ -228,7 +232,9 @@ export class ReportDBService extends ReportBaseService {
       );
   }
 
-  importTemplate$(template: TemplateImportDto): Observable<TemplateDto> {
+  override importTemplate$(
+    template: TemplateImportDto
+  ): Observable<TemplateDto> {
     const templateDbModel: TemplateDBModel =
       this.mapTemplateCreateDtoToDBModel(template);
 
@@ -254,7 +260,7 @@ export class ReportDBService extends ReportBaseService {
     );
   }
 
-  cloneScope$(scopeId: string): Observable<ScopeDto> {
+  override cloneScope$(scopeId: string): Observable<ScopeDto> {
     return this.fetchScopesData$(scopeId).pipe(
       mergeMap((scope: ScopeDataDto): Observable<ScopeDto> => {
         const scopeDbModel: ScopeDBModel =
@@ -273,7 +279,7 @@ export class ReportDBService extends ReportBaseService {
     );
   }
 
-  cloneFinding$(findingId: string): Observable<FindingDto> {
+  override cloneFinding$(findingId: string): Observable<FindingDto> {
     return this.dbService.getByID<FindingDBModel>('findings', findingId).pipe(
       mergeMap(
         (finding: FindingDBModel): Observable<FindingDto> =>

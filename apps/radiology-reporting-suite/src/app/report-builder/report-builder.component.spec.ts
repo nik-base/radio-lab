@@ -3,19 +3,19 @@ import { mockProvider } from '@ngneat/spectator/jest';
 
 import { ReportBuilderService } from '../services/report-builder/report-builder.service';
 
-import { RadioReportComponent } from './radio-report.component';
+import { ReportBuilderComponent } from './report-builder.component';
 
-describe('RadioReportComponent', () => {
-  let component: RadioReportComponent;
-  let fixture: ComponentFixture<RadioReportComponent>;
+describe('ReportBuilderComponent', () => {
+  let component: ReportBuilderComponent;
+  let fixture: ComponentFixture<ReportBuilderComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RadioReportComponent],
+      imports: [ReportBuilderComponent],
       providers: [mockProvider(ReportBuilderService)],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(RadioReportComponent);
+    fixture = TestBed.createComponent(ReportBuilderComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

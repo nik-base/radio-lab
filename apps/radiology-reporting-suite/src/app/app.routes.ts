@@ -1,10 +1,10 @@
 import { Route } from '@angular/router';
 
-import { RadioReportComponent } from './radio-report/radio-report.component';
+import { ReportBuilderComponent } from './report-builder/report-builder.component';
 
 export const appRoutes: Route[] = [
   {
     path: '',
-    component: RadioReportComponent,
+    component: ReportBuilderComponent,
   },
 ];
