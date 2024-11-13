@@ -21,3 +21,5 @@ export { SortOrderItemDto } from './sort-order-item-dto.interface';
 export { SortOrderUpdateDto } from './sort-order-update-dto.interface';
 
 export { EditorContentDto } from './editor-content-dto.interface';
+
+export { ApplicationErrorDto } from './application-error-dto.interface';

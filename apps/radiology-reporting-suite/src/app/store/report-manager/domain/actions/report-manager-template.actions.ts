@@ -1,53 +1,53 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
-import { ErrorNotificationModel } from '../../../../models';
 import {
-  TemplateCreateDto,
-  TemplateDto,
-  TemplateImportDto,
-  TemplateUpdateDto,
-} from '../../../../models/data';
+  ApplicationError,
+  Template,
+  TemplateCreate,
+  TemplateImport,
+  TemplateUpdate,
+} from '@app/models/domain';
 
 // eslint-disable-next-line @typescript-eslint/typedef
 export const ReportManagerTemplateActions = createActionGroup({
   source: 'Report Manager Template',
   events: {
     Fetch: emptyProps(),
-    'Fetch Success': props<{ readonly templates: TemplateDto[] }>(),
+    'Fetch Success': props<{ readonly templates: Template[] }>(),
     'Fetch Failure': props<{
-      readonly error: ErrorNotificationModel;
+      readonly error: ApplicationError;
     }>(),
 
-    Create: props<{ readonly template: TemplateCreateDto }>(),
-    'Create Success': props<{ readonly template: TemplateDto }>(),
+    Create: props<{ readonly template: TemplateCreate }>(),
+    'Create Success': props<{ readonly template: Template }>(),
     'Create Failure': props<{
-      readonly error: ErrorNotificationModel<TemplateCreateDto>;
+      readonly error: ApplicationError<TemplateCreate>;
     }>(),
 
-    Update: props<{ readonly template: TemplateUpdateDto }>(),
-    'Update Success': props<{ readonly template: TemplateDto }>(),
+    Update: props<{ readonly template: TemplateUpdate }>(),
+    'Update Success': props<{ readonly template: Template }>(),
     'Update Failure': props<{
-      readonly error: ErrorNotificationModel<TemplateUpdateDto>;
+      readonly error: ApplicationError<TemplateUpdate>;
     }>(),
 
-    Delete: props<{ readonly template: TemplateDto }>(),
-    'Delete Success': props<{ readonly template: TemplateDto }>(),
+    Delete: props<{ readonly template: Template }>(),
+    'Delete Success': props<{ readonly template: Template }>(),
     'Delete Failure': props<{
-      readonly error: ErrorNotificationModel<TemplateDto>;
+      readonly error: ApplicationError<Template>;
     }>(),
 
-    Export: props<{ readonly template: TemplateDto }>(),
-    'Export Success': props<{ readonly template: TemplateDto }>(),
+    Export: props<{ readonly template: Template }>(),
+    'Export Success': props<{ readonly template: Template }>(),
     'Export Failure': props<{
-      readonly error: ErrorNotificationModel<TemplateDto>;
+      readonly error: ApplicationError<Template>;
     }>(),
 
-    Import: props<{ readonly template: TemplateImportDto }>(),
+    Import: props<{ readonly template: TemplateImport }>(),
     'Import Success': props<{
-      readonly template: TemplateDto;
+      readonly template: Template;
     }>(),
     'Import Failure': props<{
-      readonly error: ErrorNotificationModel<TemplateImportDto>;
+      readonly error: ApplicationError<TemplateImport>;
     }>(),
   },
 });

@@ -1,12 +1,12 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
-import { ErrorNotificationModel } from '../../../../models';
 import {
+  ApplicationErrorDto,
   ScopeCreateDto,
   ScopeDto,
   ScopeUpdateDto,
   SortOrderUpdateDto,
-} from '../../../../models/data';
+} from '@app/models/data';
 
 // eslint-disable-next-line @typescript-eslint/typedef
 export const ReportManagerScopeDataActions = createActionGroup({
@@ -15,31 +15,31 @@ export const ReportManagerScopeDataActions = createActionGroup({
     Fetch: props<{ readonly templateId: string }>(),
     'Fetch Success': props<{ readonly scopes: ScopeDto[] }>(),
     'Fetch Failure': props<{
-      readonly error: ErrorNotificationModel<string>;
+      readonly error: ApplicationErrorDto<string>;
     }>(),
 
     Create: props<{ readonly scope: ScopeCreateDto }>(),
     'Create Success': props<{ readonly scope: ScopeDto }>(),
     'Create Failure': props<{
-      readonly error: ErrorNotificationModel<ScopeCreateDto>;
+      readonly error: ApplicationErrorDto<ScopeCreateDto>;
     }>(),
 
     Update: props<{ readonly scope: ScopeUpdateDto }>(),
     'Update Success': props<{ readonly scope: ScopeDto }>(),
     'Update Failure': props<{
-      readonly error: ErrorNotificationModel<ScopeUpdateDto>;
+      readonly error: ApplicationErrorDto<ScopeUpdateDto>;
     }>(),
 
     Delete: props<{ readonly scope: ScopeDto }>(),
     'Delete Success': props<{ readonly scope: ScopeDto }>(),
     'Delete Failure': props<{
-      readonly error: ErrorNotificationModel<ScopeDto>;
+      readonly error: ApplicationErrorDto<ScopeDto>;
     }>(),
 
     Reorder: props<{ readonly sortOrders: SortOrderUpdateDto }>(),
     'Reorder Success': emptyProps(),
     'Reorder Failure': props<{
-      readonly error: ErrorNotificationModel;
+      readonly error: ApplicationErrorDto;
     }>(),
 
     Clone: props<{
@@ -50,7 +50,7 @@ export const ReportManagerScopeDataActions = createActionGroup({
       readonly scope: ScopeDto;
     }>(),
     'Clone Failure': props<{
-      readonly error: ErrorNotificationModel<ScopeDto>;
+      readonly error: ApplicationErrorDto<ScopeDto>;
     }>(),
   },
 });
