@@ -4,6 +4,7 @@ import { catchError, exhaustMap, map, of, switchMap } from 'rxjs';
 
 import { ScopeDto } from '@app/models/data';
 import { ReportManagerService } from '@app/services/report-manager/report-manager.service';
+
 import { ReportManagerScopeDataActions } from '../actions/report-manager-scope-data.actions';
 
 @Injectable()

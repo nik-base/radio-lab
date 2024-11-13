@@ -3,7 +3,8 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, exhaustMap, map, of, switchMap } from 'rxjs';
 
 import { FindingDto } from '@app/models/data';
-import { ReportManagerService } from 'app/services/report-manager/report-manager.service';
+import { ReportManagerService } from '@app/services/report-manager/report-manager.service';
+
 import { ReportManagerFindingDataActions } from '../actions/report-manager-finding-data.actions';
 
 @Injectable()

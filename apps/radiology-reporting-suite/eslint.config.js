@@ -5,7 +5,6 @@ const rxjsPlugin = require('eslint-plugin-rxjs-x');
 const ngrxPlugin = require('@ngrx/eslint-plugin/v9');
 const angularTemplateParser = require('@angular-eslint/template-parser');
 const typscriptParser = require('@typescript-eslint/parser');
-const eslintImportResolver = require('eslint-import-resolver-typescript');
 const tseslint = require('typescript-eslint');
 const eslint = require('@eslint/js');
 
@@ -25,7 +24,6 @@ module.exports = [
   {
     plugins: {
       'eslint-plugin-import': importPlugin,
-      'eslint-import-resolver-typescript': eslintImportResolver,
     },
   },
   {
@@ -37,12 +35,6 @@ module.exports = [
         tsconfigRootDir: __dirname,
         parser: typscriptParser,
       }
-    },
-    settings: {
-      'eslint-plugin-import/resolver': {
-        typescript: true,
-        node: true,
-      },
     },
     files: ['**/*.ts'],
     rules: {
@@ -91,7 +83,7 @@ module.exports = [
       ],
       'eslint-plugin-import/order': [
         'error',
-        {
+        {          
           groups: [
             'builtin',
             'external',
@@ -100,7 +92,6 @@ module.exports = [
             'sibling',
             'index',
           ],
-          'newlines-between': 'always',
           'pathGroups': [
             {
               'pattern': '@app/**',
@@ -108,7 +99,8 @@ module.exports = [
               'position': 'after'
             }
           ],
-          'pathGroupsExcludedImportTypes': ['builtin', 'external'],
+          'pathGroupsExcludedImportTypes': [],
+          'newlines-between': 'always',
           distinctGroup: false,
           alphabetize: {
             order: 'asc',
