@@ -19,7 +19,7 @@ export class ReportManagerFindingDataEffects {
   readonly fetch$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(ReportManagerFindingDataActions.fetch),
-      exhaustMap(
+      switchMap(
         ({
           scopeId,
         }: ReturnType<typeof ReportManagerFindingDataActions.fetch>) =>
@@ -121,12 +121,14 @@ export class ReportManagerFindingDataEffects {
   readonly reorder$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(ReportManagerFindingDataActions.reorder),
-      exhaustMap(
+      switchMap(
         ({
           sortOrders,
         }: ReturnType<typeof ReportManagerFindingDataActions.reorder>) =>
           this.reportManagerService.reorderFindings$(sortOrders).pipe(
-            map(() => ReportManagerFindingDataActions.reorderSuccess()),
+            map(() =>
+              ReportManagerFindingDataActions.reorderSuccess({ sortOrders })
+            ),
             catchError((error: unknown) =>
               of(
                 ReportManagerFindingDataActions.reorderFailure({

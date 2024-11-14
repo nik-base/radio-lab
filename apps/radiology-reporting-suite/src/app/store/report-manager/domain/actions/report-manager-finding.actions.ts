@@ -1,4 +1,4 @@
-import { createActionGroup, emptyProps, props } from '@ngrx/store';
+import { createActionGroup, props } from '@ngrx/store';
 
 import {
   ApplicationError,
@@ -9,8 +9,8 @@ import {
 } from '@app/models/domain';
 
 // eslint-disable-next-line @typescript-eslint/typedef
-export const ReportManagerFindingDataActions = createActionGroup({
-  source: 'Report Manager Finding Data',
+export const ReportManagerFindingActions = createActionGroup({
+  source: 'Report Manager Finding',
   events: {
     Fetch: props<{ readonly scopeId: string }>(),
     'Fetch Success': props<{ readonly findings: Finding[] }>(),
@@ -37,7 +37,7 @@ export const ReportManagerFindingDataActions = createActionGroup({
     }>(),
 
     Reorder: props<{ readonly sortOrders: SortOrderUpdate }>(),
-    'Reorder Success': emptyProps(),
+    'Reorder Success': props<{ readonly sortOrders: SortOrderUpdate }>(),
     'Reorder Failure': props<{
       readonly error: ApplicationError;
     }>(),

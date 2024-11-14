@@ -1,4 +1,4 @@
-import { createActionGroup, emptyProps, props } from '@ngrx/store';
+import { createActionGroup, props } from '@ngrx/store';
 
 import {
   ApplicationErrorDto,
@@ -37,7 +37,7 @@ export const ReportManagerFindingDataActions = createActionGroup({
     }>(),
 
     Reorder: props<{ readonly sortOrders: SortOrderUpdateDto }>(),
-    'Reorder Success': emptyProps(),
+    'Reorder Success': props<{ readonly sortOrders: SortOrderUpdateDto }>(),
     'Reorder Failure': props<{
       readonly error: ApplicationErrorDto;
     }>(),

@@ -19,7 +19,7 @@ export class ReportManagerTemplateDataEffects {
   readonly fetch$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(ReportManagerTemplateDataActions.fetch),
-      exhaustMap(() =>
+      switchMap(() =>
         this.reportManagerService.fetchTemplates$().pipe(
           map((templates: TemplateDto[]) =>
             ReportManagerTemplateDataActions.fetchSuccess({ templates })
@@ -118,7 +118,7 @@ export class ReportManagerTemplateDataEffects {
   readonly export$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(ReportManagerTemplateDataActions.export),
-      exhaustMap(
+      switchMap(
         ({
           template,
         }: ReturnType<typeof ReportManagerTemplateDataActions.export>) =>

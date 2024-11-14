@@ -1,8 +1,8 @@
-import { FindingDto, ScopeDto, TemplateDto } from '../../../models/data';
+import { Finding, Scope, Template } from '@app/models/domain';
 
 export interface ReportManagerState {
-  readonly templates: TemplateDto[];
-  readonly scopes: ScopeDto[];
-  readonly findings: FindingDto[];
+  readonly templates: Template[];
+  readonly scopes: Scope[];
+  readonly findings: Finding[];
   readonly groups: string[];
 }

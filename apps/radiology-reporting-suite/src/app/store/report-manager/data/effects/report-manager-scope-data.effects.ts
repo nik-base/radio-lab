@@ -19,7 +19,7 @@ export class ReportManagerScopeDataEffects {
   readonly fetch$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(ReportManagerScopeDataActions.fetch),
-      exhaustMap(
+      switchMap(
         ({
           templateId,
         }: ReturnType<typeof ReportManagerScopeDataActions.fetch>) =>
@@ -115,12 +115,14 @@ export class ReportManagerScopeDataEffects {
   readonly reorder$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(ReportManagerScopeDataActions.reorder),
-      exhaustMap(
+      switchMap(
         ({
           sortOrders,
         }: ReturnType<typeof ReportManagerScopeDataActions.reorder>) =>
           this.reportManagerService.reorderScopes$(sortOrders).pipe(
-            map(() => ReportManagerScopeDataActions.reorderSuccess()),
+            map(() =>
+              ReportManagerScopeDataActions.reorderSuccess({ sortOrders })
+            ),
             catchError((error: unknown) =>
               of(
                 ReportManagerScopeDataActions.reorderFailure({
@@ -146,6 +148,7 @@ export class ReportManagerScopeDataEffects {
             map((importedScope: ScopeDto) =>
               ReportManagerScopeDataActions.cloneSuccess({
                 scope: importedScope,
+                templateId,
               })
             ),
             catchError((error: unknown) =>

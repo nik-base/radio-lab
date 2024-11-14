@@ -1,4 +1,4 @@
-import { createActionGroup, emptyProps, props } from '@ngrx/store';
+import { createActionGroup, props } from '@ngrx/store';
 
 import {
   ApplicationErrorDto,
@@ -37,7 +37,7 @@ export const ReportManagerScopeDataActions = createActionGroup({
     }>(),
 
     Reorder: props<{ readonly sortOrders: SortOrderUpdateDto }>(),
-    'Reorder Success': emptyProps(),
+    'Reorder Success': props<{ readonly sortOrders: SortOrderUpdateDto }>(),
     'Reorder Failure': props<{
       readonly error: ApplicationErrorDto;
     }>(),
@@ -48,6 +48,7 @@ export const ReportManagerScopeDataActions = createActionGroup({
     }>(),
     'Clone Success': props<{
       readonly scope: ScopeDto;
+      readonly templateId: string;
     }>(),
     'Clone Failure': props<{
       readonly error: ApplicationErrorDto<ScopeDto>;
