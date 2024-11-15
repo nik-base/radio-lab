@@ -12,8 +12,8 @@ import { ReportManagerState } from './report-manager-state.interface';
 
 export const reportManagerInitialState: ReportManagerState = {
   templates: [],
-  scopes: [],
-  findings: [],
+  scopes: null,
+  findings: null,
   groups: [],
 };
 
@@ -102,6 +102,10 @@ export const reportManagerFeature = createFeature({
         { scope }: ReturnType<typeof ScopeActions.createSuccess>
       ): ReportManagerState =>
         produce(state, (draft: Writable<ReportManagerState>) => {
+          if (isNil(draft.scopes)) {
+            return;
+          }
+
           draft.scopes = [...draft.scopes, scope];
         })
     ),
@@ -112,6 +116,10 @@ export const reportManagerFeature = createFeature({
         { scope }: ReturnType<typeof ScopeActions.updateSuccess>
       ): ReportManagerState =>
         produce(state, (draft: Writable<ReportManagerState>) => {
+          if (isNil(draft.scopes)) {
+            return;
+          }
+
           const index: number = draft.scopes.findIndex(
             (item: Scope): boolean => item.id === scope.id
           );
@@ -130,6 +138,10 @@ export const reportManagerFeature = createFeature({
         { scope }: ReturnType<typeof ScopeActions.deleteSuccess>
       ): ReportManagerState =>
         produce(state, (draft: Writable<ReportManagerState>) => {
+          if (isNil(draft.scopes)) {
+            return;
+          }
+
           const index: number = draft.scopes.findIndex(
             (item: Scope): boolean => item.id === scope.id
           );
@@ -148,6 +160,10 @@ export const reportManagerFeature = createFeature({
         { sortOrders }: ReturnType<typeof ScopeActions.reorderSuccess>
       ): ReportManagerState =>
         produce(state, (draft: Writable<ReportManagerState>) => {
+          if (isNil(draft.scopes)) {
+            return;
+          }
+
           draft.scopes.map((scope: Scope): Scope => {
             const newSortOrderItem: SortOrderItem | undefined =
               sortOrders.sortOrdersMap.find(
@@ -172,11 +188,22 @@ export const reportManagerFeature = createFeature({
         { scope, templateId }: ReturnType<typeof ScopeActions.cloneSuccess>
       ): ReportManagerState =>
         produce(state, (draft: Writable<ReportManagerState>) => {
+          if (isNil(draft.scopes)) {
+            return;
+          }
+
           if (scope.templateId !== templateId) {
             return;
           }
 
           draft.scopes = [...draft.scopes, scope];
+        })
+    ),
+    on(
+      ScopeActions.reset,
+      (state: ReportManagerState): ReportManagerState =>
+        produce(state, (draft: Writable<ReportManagerState>) => {
+          draft.scopes = null;
         })
     ),
     // Finding Actions
@@ -202,6 +229,10 @@ export const reportManagerFeature = createFeature({
           | ReturnType<typeof FindingActions.cloneSuccess>
       ): ReportManagerState =>
         produce(state, (draft: Writable<ReportManagerState>) => {
+          if (isNil(draft.findings)) {
+            return;
+          }
+
           draft.findings = [...draft.findings, finding];
         })
     ),
@@ -212,6 +243,10 @@ export const reportManagerFeature = createFeature({
         { finding }: ReturnType<typeof FindingActions.updateSuccess>
       ): ReportManagerState =>
         produce(state, (draft: Writable<ReportManagerState>) => {
+          if (isNil(draft.findings)) {
+            return;
+          }
+
           const index: number = draft.findings.findIndex(
             (item: Finding): boolean => item.id === finding.id
           );
@@ -230,6 +265,10 @@ export const reportManagerFeature = createFeature({
         { finding }: ReturnType<typeof FindingActions.deleteSuccess>
       ): ReportManagerState =>
         produce(state, (draft: Writable<ReportManagerState>) => {
+          if (isNil(draft.findings)) {
+            return;
+          }
+
           const index: number = draft.findings.findIndex(
             (item: Finding): boolean => item.id === finding.id
           );
@@ -248,6 +287,10 @@ export const reportManagerFeature = createFeature({
         { sortOrders }: ReturnType<typeof FindingActions.reorderSuccess>
       ): ReportManagerState =>
         produce(state, (draft: Writable<ReportManagerState>) => {
+          if (isNil(draft.findings)) {
+            return;
+          }
+
           draft.findings.map((finding: Finding): Finding => {
             const newSortOrderItem: SortOrderItem | undefined =
               sortOrders.sortOrdersMap.find(
@@ -263,6 +306,13 @@ export const reportManagerFeature = createFeature({
               sortOrder: newSortOrderItem.sortOrder,
             };
           });
+        })
+    ),
+    on(
+      FindingActions.reset,
+      (state: ReportManagerState): ReportManagerState =>
+        produce(state, (draft: Writable<ReportManagerState>) => {
+          draft.findings = null;
         })
     )
   ),

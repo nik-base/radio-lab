@@ -11,6 +11,7 @@ import {
   TemplateUpdateDto,
 } from '@app/models/data';
 import { Template } from '@app/models/domain';
+import { ApplicationActions } from '@app/store/actions/application.actions';
 
 import { TemplateDataActions } from '../../data/actions/template-data.actions';
 import { TemplateActions } from '../actions/template.actions';
@@ -93,7 +94,7 @@ export class TemplateEffects {
         return TemplateActions.createFailure({
           error: this.errorMapper.mapFromDto(
             error,
-            'Failed to create template',
+            `Failed to create template: '${error.data?.name}'`,
             this.templateMapper.mapFromCreateDto.bind(error.data)
           ),
         });
@@ -137,7 +138,7 @@ export class TemplateEffects {
         return TemplateActions.updateFailure({
           error: this.errorMapper.mapFromDto(
             error,
-            'Failed to update template',
+            `Failed to update template: '${error.data?.name}'`,
             this.templateMapper.mapFromUpdateDto.bind(error.data)
           ),
         });
@@ -180,7 +181,7 @@ export class TemplateEffects {
         return TemplateActions.deleteFailure({
           error: this.errorMapper.mapFromDto(
             error,
-            'Failed to delete template',
+            `Failed to delete template: '${error.data?.name}'`,
             this.templateMapper.mapFromDto.bind(error.data)
           ),
         });
@@ -223,7 +224,7 @@ export class TemplateEffects {
         return TemplateActions.exportFailure({
           error: this.errorMapper.mapFromDto(
             error,
-            'Failed to export template',
+            `Failed to export template: '${error.data?.name}'`,
             this.templateMapper.mapFromDto.bind(error.data)
           ),
         });
@@ -267,7 +268,7 @@ export class TemplateEffects {
         return TemplateActions.importFailure({
           error: this.errorMapper.mapFromDto(
             error,
-            'Failed to import template',
+            `Failed to import template: '${error.data?.name}'`,
             this.templateMapper.mapFromImportDto.bind(error.data)
           ),
         });
@@ -284,6 +285,32 @@ export class TemplateEffects {
           TemplateActions.importSuccess({
             template: this.templateMapper.mapFromDto(template),
           })
+      )
+    );
+  });
+
+  // eslint-disable-next-line @typescript-eslint/typedef
+  readonly failure$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(
+        TemplateActions.fetchFailure,
+        TemplateActions.createFailure,
+        TemplateActions.updateFailure,
+        TemplateActions.deleteFailure,
+        TemplateActions.exportFailure,
+        TemplateActions.importFailure
+      ),
+      map(
+        ({
+          error,
+        }:
+          | ReturnType<typeof TemplateActions.fetchFailure>
+          | ReturnType<typeof TemplateActions.createFailure>
+          | ReturnType<typeof TemplateActions.updateFailure>
+          | ReturnType<typeof TemplateActions.deleteFailure>
+          | ReturnType<typeof TemplateActions.exportFailure>
+          | ReturnType<typeof TemplateActions.importFailure>) =>
+          ApplicationActions.error({ error })
       )
     );
   });

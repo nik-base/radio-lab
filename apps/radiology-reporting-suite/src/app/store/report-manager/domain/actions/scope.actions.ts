@@ -1,4 +1,4 @@
-import { createActionGroup, props } from '@ngrx/store';
+import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
 import {
   ApplicationError,
@@ -53,5 +53,7 @@ export const ScopeActions = createActionGroup({
     'Clone Failure': props<{
       readonly error: ApplicationError<Scope>;
     }>(),
+
+    Reset: emptyProps(),
   },
 });

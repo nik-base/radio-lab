@@ -8,7 +8,7 @@ import {
 } from '@app/models/domain';
 
 // eslint-disable-next-line @typescript-eslint/typedef
-export const ReportManagerTemplateUIActions = createActionGroup({
+export const TemplateUIActions = createActionGroup({
   source: 'Report Manager Template UI',
   events: {
     Fetch: emptyProps(),

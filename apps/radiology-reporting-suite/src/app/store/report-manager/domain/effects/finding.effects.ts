@@ -12,6 +12,7 @@ import {
   SortOrderUpdateDto,
 } from '@app/models/data';
 import { Finding } from '@app/models/domain';
+import { ApplicationActions } from '@app/store/actions/application.actions';
 
 import { FindingDataActions } from '../../data/actions/finding-data.actions';
 import { FindingActions } from '../actions/finding.actions';
@@ -94,7 +95,7 @@ export class FindingEffects {
         return FindingActions.createFailure({
           error: this.errorMapper.mapFromDto(
             error,
-            'Failed to create finding',
+            `Failed to create finding: ${error.data?.name}`,
             this.findingMapper.mapFromCreateDto.bind(error.data)
           ),
         });
@@ -137,7 +138,7 @@ export class FindingEffects {
         return FindingActions.updateFailure({
           error: this.errorMapper.mapFromDto(
             error,
-            'Failed to update finding',
+            `Failed to update finding: ${error.data?.name}`,
             this.findingMapper.mapFromUpdateDto.bind(error.data)
           ),
         });
@@ -179,7 +180,7 @@ export class FindingEffects {
         return FindingActions.deleteFailure({
           error: this.errorMapper.mapFromDto(
             error,
-            'Failed to delete finding',
+            `Failed to delete finding: ${error.data?.name}`,
             this.findingMapper.mapFromDto.bind(error.data)
           ),
         });
@@ -264,7 +265,7 @@ export class FindingEffects {
         return FindingActions.cloneFailure({
           error: this.errorMapper.mapFromDto(
             error,
-            'Failed to import finding',
+            `Failed to clone finding: ${error.data?.name}`,
             this.findingMapper.mapFromDto.bind(error.data)
           ),
         });
@@ -280,6 +281,32 @@ export class FindingEffects {
         FindingActions.cloneSuccess({
           finding: this.findingMapper.mapFromDto(finding),
         })
+      )
+    );
+  });
+
+  // eslint-disable-next-line @typescript-eslint/typedef
+  readonly failure$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(
+        FindingActions.fetchFailure,
+        FindingActions.createFailure,
+        FindingActions.updateFailure,
+        FindingActions.deleteFailure,
+        FindingActions.cloneFailure,
+        FindingActions.reorderFailure
+      ),
+      map(
+        ({
+          error,
+        }:
+          | ReturnType<typeof FindingActions.fetchFailure>
+          | ReturnType<typeof FindingActions.createFailure>
+          | ReturnType<typeof FindingActions.updateFailure>
+          | ReturnType<typeof FindingActions.deleteFailure>
+          | ReturnType<typeof FindingActions.cloneFailure>
+          | ReturnType<typeof FindingActions.reorderFailure>) =>
+          ApplicationActions.error({ error })
       )
     );
   });

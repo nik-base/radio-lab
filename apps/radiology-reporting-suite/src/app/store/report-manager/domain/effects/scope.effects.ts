@@ -12,6 +12,7 @@ import {
   SortOrderUpdateDto,
 } from '@app/models/data';
 import { Scope } from '@app/models/domain';
+import { ApplicationActions } from '@app/store/actions/application.actions';
 
 import { ScopeDataActions } from '../../data/actions/scope-data.actions';
 import { ScopeActions } from '../actions/scope.actions';
@@ -89,7 +90,7 @@ export class ScopeEffects {
         return ScopeActions.createFailure({
           error: this.errorMapper.mapFromDto(
             error,
-            'Failed to create scope',
+            `Failed to create scope: ${error.data?.name}`,
             this.scopeMapper.mapFromCreateDto.bind(error.data)
           ),
         });
@@ -131,7 +132,7 @@ export class ScopeEffects {
         return ScopeActions.updateFailure({
           error: this.errorMapper.mapFromDto(
             error,
-            'Failed to update scope',
+            `Failed to update scope: ${error.data?.name}`,
             this.scopeMapper.mapFromUpdateDto.bind(error.data)
           ),
         });
@@ -173,7 +174,7 @@ export class ScopeEffects {
         return ScopeActions.deleteFailure({
           error: this.errorMapper.mapFromDto(
             error,
-            'Failed to delete scope',
+            `Failed to delete scope: ${error.data?.name}`,
             this.scopeMapper.mapFromDto.bind(error.data)
           ),
         });
@@ -254,7 +255,7 @@ export class ScopeEffects {
         return ScopeActions.cloneFailure({
           error: this.errorMapper.mapFromDto(
             error,
-            'Failed to import scope',
+            `Failed to clone scope: ${error.data?.name}`,
             this.scopeMapper.mapFromDto.bind(error.data)
           ),
         });
@@ -275,6 +276,32 @@ export class ScopeEffects {
             scope: this.scopeMapper.mapFromDto(scope),
             templateId,
           })
+      )
+    );
+  });
+
+  // eslint-disable-next-line @typescript-eslint/typedef
+  readonly failure$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(
+        ScopeActions.fetchFailure,
+        ScopeActions.createFailure,
+        ScopeActions.updateFailure,
+        ScopeActions.deleteFailure,
+        ScopeActions.cloneFailure,
+        ScopeActions.reorderFailure
+      ),
+      map(
+        ({
+          error,
+        }:
+          | ReturnType<typeof ScopeActions.fetchFailure>
+          | ReturnType<typeof ScopeActions.createFailure>
+          | ReturnType<typeof ScopeActions.updateFailure>
+          | ReturnType<typeof ScopeActions.deleteFailure>
+          | ReturnType<typeof ScopeActions.cloneFailure>
+          | ReturnType<typeof ScopeActions.reorderFailure>) =>
+          ApplicationActions.error({ error })
       )
     );
   });
