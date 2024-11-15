@@ -9,7 +9,7 @@ import {
 } from '@app/models/domain';
 
 // eslint-disable-next-line @typescript-eslint/typedef
-export const ReportManagerScopeActions = createActionGroup({
+export const ScopeActions = createActionGroup({
   source: 'Report Manager Scope',
   events: {
     Fetch: props<{ readonly templateId: string }>(),

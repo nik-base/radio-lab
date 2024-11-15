@@ -5,9 +5,9 @@ import { isNil } from 'lodash';
 import { Finding, Scope, SortOrderItem, Template } from '@app/models/domain';
 import { Writable } from '@app/types';
 
-import { ReportManagerFindingActions } from './actions/report-manager-finding.actions';
-import { ReportManagerScopeActions } from './actions/report-manager-scope.actions';
-import { ReportManagerTemplateActions } from './actions/report-manager-template.actions';
+import { FindingActions } from './actions/finding.actions';
+import { ScopeActions } from './actions/scope.actions';
+import { TemplateActions } from './actions/template.actions';
 import { ReportManagerState } from './report-manager-state.interface';
 
 export const reportManagerInitialState: ReportManagerState = {
@@ -24,39 +24,35 @@ export const reportManagerFeature = createFeature({
     reportManagerInitialState,
     // Template Actions
     on(
-      ReportManagerTemplateActions.fetchSuccess,
+      TemplateActions.fetchSuccess,
       (
         state: ReportManagerState,
-        {
-          templates,
-        }: ReturnType<typeof ReportManagerTemplateActions.fetchSuccess>
+        { templates }: ReturnType<typeof TemplateActions.fetchSuccess>
       ): ReportManagerState =>
         produce(state, (draft: Writable<ReportManagerState>) => {
           draft.templates = templates;
         })
     ),
     on(
-      ReportManagerTemplateActions.createSuccess,
-      ReportManagerTemplateActions.importSuccess,
+      TemplateActions.createSuccess,
+      TemplateActions.importSuccess,
       (
         state: ReportManagerState,
         {
           template,
         }:
-          | ReturnType<typeof ReportManagerTemplateActions.createSuccess>
-          | ReturnType<typeof ReportManagerTemplateActions.importSuccess>
+          | ReturnType<typeof TemplateActions.createSuccess>
+          | ReturnType<typeof TemplateActions.importSuccess>
       ): ReportManagerState =>
         produce(state, (draft: Writable<ReportManagerState>) => {
           draft.templates = [...draft.templates, template];
         })
     ),
     on(
-      ReportManagerTemplateActions.updateSuccess,
+      TemplateActions.updateSuccess,
       (
         state: ReportManagerState,
-        {
-          template,
-        }: ReturnType<typeof ReportManagerTemplateActions.updateSuccess>
+        { template }: ReturnType<typeof TemplateActions.updateSuccess>
       ): ReportManagerState =>
         produce(state, (draft: Writable<ReportManagerState>) => {
           const index: number = draft.templates.findIndex(
@@ -71,12 +67,10 @@ export const reportManagerFeature = createFeature({
         })
     ),
     on(
-      ReportManagerTemplateActions.deleteSuccess,
+      TemplateActions.deleteSuccess,
       (
         state: ReportManagerState,
-        {
-          template,
-        }: ReturnType<typeof ReportManagerTemplateActions.deleteSuccess>
+        { template }: ReturnType<typeof TemplateActions.deleteSuccess>
       ): ReportManagerState =>
         produce(state, (draft: Writable<ReportManagerState>) => {
           const index: number = draft.templates.findIndex(
@@ -92,30 +86,30 @@ export const reportManagerFeature = createFeature({
     ),
     // Scope Actions
     on(
-      ReportManagerScopeActions.fetchSuccess,
+      ScopeActions.fetchSuccess,
       (
         state: ReportManagerState,
-        { scopes }: ReturnType<typeof ReportManagerScopeActions.fetchSuccess>
+        { scopes }: ReturnType<typeof ScopeActions.fetchSuccess>
       ): ReportManagerState =>
         produce(state, (draft: Writable<ReportManagerState>) => {
           draft.scopes = scopes;
         })
     ),
     on(
-      ReportManagerScopeActions.createSuccess,
+      ScopeActions.createSuccess,
       (
         state: ReportManagerState,
-        { scope }: ReturnType<typeof ReportManagerScopeActions.createSuccess>
+        { scope }: ReturnType<typeof ScopeActions.createSuccess>
       ): ReportManagerState =>
         produce(state, (draft: Writable<ReportManagerState>) => {
           draft.scopes = [...draft.scopes, scope];
         })
     ),
     on(
-      ReportManagerScopeActions.updateSuccess,
+      ScopeActions.updateSuccess,
       (
         state: ReportManagerState,
-        { scope }: ReturnType<typeof ReportManagerScopeActions.updateSuccess>
+        { scope }: ReturnType<typeof ScopeActions.updateSuccess>
       ): ReportManagerState =>
         produce(state, (draft: Writable<ReportManagerState>) => {
           const index: number = draft.scopes.findIndex(
@@ -130,10 +124,10 @@ export const reportManagerFeature = createFeature({
         })
     ),
     on(
-      ReportManagerScopeActions.deleteSuccess,
+      ScopeActions.deleteSuccess,
       (
         state: ReportManagerState,
-        { scope }: ReturnType<typeof ReportManagerScopeActions.deleteSuccess>
+        { scope }: ReturnType<typeof ScopeActions.deleteSuccess>
       ): ReportManagerState =>
         produce(state, (draft: Writable<ReportManagerState>) => {
           const index: number = draft.scopes.findIndex(
@@ -148,12 +142,10 @@ export const reportManagerFeature = createFeature({
         })
     ),
     on(
-      ReportManagerScopeActions.reorderSuccess,
+      ScopeActions.reorderSuccess,
       (
         state: ReportManagerState,
-        {
-          sortOrders,
-        }: ReturnType<typeof ReportManagerScopeActions.reorderSuccess>
+        { sortOrders }: ReturnType<typeof ScopeActions.reorderSuccess>
       ): ReportManagerState =>
         produce(state, (draft: Writable<ReportManagerState>) => {
           draft.scopes.map((scope: Scope): Scope => {
@@ -174,13 +166,10 @@ export const reportManagerFeature = createFeature({
         })
     ),
     on(
-      ReportManagerScopeActions.cloneSuccess,
+      ScopeActions.cloneSuccess,
       (
         state: ReportManagerState,
-        {
-          scope,
-          templateId,
-        }: ReturnType<typeof ReportManagerScopeActions.cloneSuccess>
+        { scope, templateId }: ReturnType<typeof ScopeActions.cloneSuccess>
       ): ReportManagerState =>
         produce(state, (draft: Writable<ReportManagerState>) => {
           if (scope.templateId !== templateId) {
@@ -192,39 +181,35 @@ export const reportManagerFeature = createFeature({
     ),
     // Finding Actions
     on(
-      ReportManagerFindingActions.fetchSuccess,
+      FindingActions.fetchSuccess,
       (
         state: ReportManagerState,
-        {
-          findings,
-        }: ReturnType<typeof ReportManagerFindingActions.fetchSuccess>
+        { findings }: ReturnType<typeof FindingActions.fetchSuccess>
       ): ReportManagerState =>
         produce(state, (draft: Writable<ReportManagerState>) => {
           draft.findings = findings;
         })
     ),
     on(
-      ReportManagerFindingActions.createSuccess,
-      ReportManagerFindingActions.cloneSuccess,
+      FindingActions.createSuccess,
+      FindingActions.cloneSuccess,
       (
         state: ReportManagerState,
         {
           finding,
         }:
-          | ReturnType<typeof ReportManagerFindingActions.createSuccess>
-          | ReturnType<typeof ReportManagerFindingActions.cloneSuccess>
+          | ReturnType<typeof FindingActions.createSuccess>
+          | ReturnType<typeof FindingActions.cloneSuccess>
       ): ReportManagerState =>
         produce(state, (draft: Writable<ReportManagerState>) => {
           draft.findings = [...draft.findings, finding];
         })
     ),
     on(
-      ReportManagerFindingActions.updateSuccess,
+      FindingActions.updateSuccess,
       (
         state: ReportManagerState,
-        {
-          finding,
-        }: ReturnType<typeof ReportManagerFindingActions.updateSuccess>
+        { finding }: ReturnType<typeof FindingActions.updateSuccess>
       ): ReportManagerState =>
         produce(state, (draft: Writable<ReportManagerState>) => {
           const index: number = draft.findings.findIndex(
@@ -239,12 +224,10 @@ export const reportManagerFeature = createFeature({
         })
     ),
     on(
-      ReportManagerFindingActions.deleteSuccess,
+      FindingActions.deleteSuccess,
       (
         state: ReportManagerState,
-        {
-          finding,
-        }: ReturnType<typeof ReportManagerFindingActions.deleteSuccess>
+        { finding }: ReturnType<typeof FindingActions.deleteSuccess>
       ): ReportManagerState =>
         produce(state, (draft: Writable<ReportManagerState>) => {
           const index: number = draft.findings.findIndex(
@@ -259,12 +242,10 @@ export const reportManagerFeature = createFeature({
         })
     ),
     on(
-      ReportManagerFindingActions.reorderSuccess,
+      FindingActions.reorderSuccess,
       (
         state: ReportManagerState,
-        {
-          sortOrders,
-        }: ReturnType<typeof ReportManagerFindingActions.reorderSuccess>
+        { sortOrders }: ReturnType<typeof FindingActions.reorderSuccess>
       ): ReportManagerState =>
         produce(state, (draft: Writable<ReportManagerState>) => {
           draft.findings.map((finding: Finding): Finding => {
