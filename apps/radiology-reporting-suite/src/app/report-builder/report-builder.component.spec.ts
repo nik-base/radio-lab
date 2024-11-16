@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { mockProvider } from '@ngneat/spectator/jest';
+import { provideMockStore } from '@ngrx/store/testing';
 
 import { ReportBuilderService } from '../services/report-builder/report-builder.service';
 
@@ -12,7 +13,12 @@ describe('ReportBuilderComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ReportBuilderComponent],
-      providers: [mockProvider(ReportBuilderService)],
+      providers: [
+        mockProvider(ReportBuilderService),
+        provideMockStore({
+          selectors: [{ selector: 'selectOrderedTemplates', value: [] }],
+        }),
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ReportBuilderComponent);
