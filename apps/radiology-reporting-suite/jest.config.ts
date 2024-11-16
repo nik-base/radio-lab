@@ -13,6 +13,9 @@ export default {
     ],
   },
   transformIgnorePatterns: ['node_modules/(?!.*\\.mjs$)'],
+  moduleNameMapper: {
+    '^lodash-es$': 'lodash',
+  },
   snapshotSerializers: [
     'jest-preset-angular/build/serializers/no-ng-attributes',
     'jest-preset-angular/build/serializers/ng-snapshot',
