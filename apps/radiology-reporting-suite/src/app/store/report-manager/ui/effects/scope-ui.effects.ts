@@ -115,7 +115,7 @@ export class ScopeUIEffects {
           | ReturnType<typeof ScopeActions.reorderFailure>) =>
           ApplicationUIActions.notify({
             notification: {
-              title: 'Failed',
+              title: 'Error',
               message: error.message,
               type: APP_NOTIFICATION_TYPE.Error,
             },

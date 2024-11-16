@@ -1,9 +1,15 @@
-import { createFeature, createReducer, on } from '@ngrx/store';
+import { createFeature, createReducer, createSelector, on } from '@ngrx/store';
 import { produce } from 'immer';
-import { isNil } from 'lodash';
+import { isNil, orderBy, uniq } from 'lodash';
 
 import { Finding, Scope, SortOrderItem, Template } from '@app/models/domain';
 import { Writable } from '@app/types';
+import { isNotNil } from '@app/utils/functions/common.functions';
+import {
+  orderFindings,
+  orderScopes,
+  orderTemplates,
+} from '@app/utils/functions/order.functions';
 
 import { FindingActions } from './actions/finding.actions';
 import { ScopeActions } from './actions/scope.actions';
@@ -14,7 +20,6 @@ export const reportManagerInitialState: ReportManagerState = {
   templates: [],
   scopes: null,
   findings: null,
-  groups: [],
 };
 
 // eslint-disable-next-line @typescript-eslint/typedef
@@ -316,4 +321,51 @@ export const reportManagerFeature = createFeature({
         })
     )
   ),
+  // eslint-disable-next-line @typescript-eslint/typedef
+  extraSelectors: ({ selectTemplates, selectScopes, selectFindings }) => ({
+    selectOrderedTemplates: createSelector(
+      selectTemplates,
+      (templates: Template[]): Template[] => orderTemplates(templates)
+    ),
+    selectOrderedScopes: createSelector(
+      selectScopes,
+      (scopes: Scope[] | null): Scope[] | null =>
+        isNil(scopes) ? null : orderScopes(scopes)
+    ),
+    selectOrderedFindings: createSelector(
+      selectFindings,
+      (findings: Finding[] | null): Finding[] | null =>
+        isNil(findings) ? null : orderFindings(findings)
+    ),
+    selectGroups: createSelector(
+      selectFindings,
+      (findings: Finding[] | null): string[] => {
+        if (isNil(findings)) {
+          return [];
+        }
+
+        const groups: string[] = uniq(
+          findings
+            .map((finding: Finding): string | null => finding.group)
+            .filter(isNotNil)
+        );
+
+        return orderBy(
+          groups,
+          (group: string): string => group.toLocaleLowerCase(),
+          'asc'
+        );
+      }
+    ),
+  }),
 });
+
+// eslint-disable-next-line @typescript-eslint/typedef
+export const {
+  name,
+  reducer,
+  selectOrderedTemplates,
+  selectOrderedScopes,
+  selectOrderedFindings,
+  selectGroups,
+} = reportManagerFeature;

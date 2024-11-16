@@ -104,7 +104,7 @@ export class TemplateUIEffects {
           | ReturnType<typeof TemplateActions.importFailure>) =>
           ApplicationUIActions.notify({
             notification: {
-              title: 'Failed',
+              title: 'Error',
               message: error.message,
               type: APP_NOTIFICATION_TYPE.Error,
             },

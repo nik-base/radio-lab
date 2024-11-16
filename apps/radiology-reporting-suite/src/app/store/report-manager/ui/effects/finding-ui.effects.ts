@@ -114,7 +114,7 @@ export class FindingUIEffects {
           | ReturnType<typeof FindingActions.reorderFailure>) =>
           ApplicationUIActions.notify({
             notification: {
-              title: 'Failed',
+              title: 'Error',
               message: error.message,
               type: APP_NOTIFICATION_TYPE.Error,
             },
