@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
   standalone: true,
-  imports: [RouterModule],
+  imports: [RouterModule, ToastModule],
   selector: 'radio-root',
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',

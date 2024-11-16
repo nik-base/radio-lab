@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { MessageService } from 'primeng/api';
 import { filter, tap } from 'rxjs';
 
 import { APP_NOTIFICATION_TYPE } from '@app/constants';
@@ -10,6 +11,8 @@ import { ApplicationUIActions } from '../actions/application-ui.actions';
 export class ApplicationUIEffects {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   private readonly actions$: Actions = inject(Actions);
+
+  private readonly uiMessageService: MessageService = inject(MessageService);
 
   // eslint-disable-next-line @typescript-eslint/typedef
   readonly notifyError$ = createEffect(
@@ -22,7 +25,12 @@ export class ApplicationUIEffects {
         ),
         tap(
           ({ notification }: ReturnType<typeof ApplicationUIActions.notify>) =>
-            console.log(notification)
+            this.uiMessageService.add({
+              severity: 'error',
+              summary: notification.title,
+              detail: notification.message,
+              life: 3000,
+            })
         )
       );
     },
@@ -40,7 +48,12 @@ export class ApplicationUIEffects {
         ),
         tap(
           ({ notification }: ReturnType<typeof ApplicationUIActions.notify>) =>
-            console.log(notification)
+            this.uiMessageService.add({
+              severity: 'success',
+              summary: notification.title,
+              detail: notification.message,
+              life: 3000,
+            })
         )
       );
     },
