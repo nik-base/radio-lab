@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { isEmpty, isNil } from 'lodash';
+import { isEmpty, isNil } from 'lodash-es';
 
 import { EditorContentDto } from '@app/models/data';
 import { EditorContent } from '@app/models/domain';

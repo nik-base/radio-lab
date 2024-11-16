@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { isNil } from 'lodash';
+import { isNil } from 'lodash-es';
 
 import { ApplicationErrorDto } from '@app/models/data';
 import { ApplicationError } from '@app/models/domain';

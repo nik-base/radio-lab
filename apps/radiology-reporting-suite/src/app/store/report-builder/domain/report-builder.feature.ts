@@ -1,6 +1,6 @@
 import { createFeature, createReducer, createSelector, on } from '@ngrx/store';
 import { produce } from 'immer';
-import { isNil, orderBy } from 'lodash';
+import { isNil, orderBy } from 'lodash-es';
 
 import { ScopeData, Template, TemplateData } from '@app/models/domain';
 import { Writable } from '@app/types';
