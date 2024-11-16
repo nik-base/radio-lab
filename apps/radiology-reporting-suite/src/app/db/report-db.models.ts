@@ -3,10 +3,10 @@ export interface TemplateDBModel {
   readonly name: string;
   readonly description?: string;
   readonly descriptionHTML?: string;
-  readonly descriptionJSON?: string;
+  readonly descriptionJSON?: string | null;
   readonly patientInfo?: string;
   readonly patientInfoHTML?: string;
-  readonly patientInfoJSON?: string;
+  readonly patientInfoJSON?: string | null;
 }
 
 export interface ScopeDBModel {
@@ -24,13 +24,13 @@ export interface FindingDBModel {
   readonly order?: number;
   readonly description?: string;
   readonly descriptionHTML?: string;
-  readonly descriptionJSON?: string;
+  readonly descriptionJSON?: string | null;
   readonly impression?: string;
   readonly impressionHTML?: string;
-  readonly impressionJSON?: string;
+  readonly impressionJSON?: string | null;
   readonly tags?: string[];
   readonly recommendation?: string;
   readonly recommendationHTML?: string;
-  readonly recommendationJSON?: string;
+  readonly recommendationJSON?: string | null;
   readonly protocolId: string;
 }

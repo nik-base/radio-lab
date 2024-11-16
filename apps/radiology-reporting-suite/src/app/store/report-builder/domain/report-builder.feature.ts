@@ -89,4 +89,9 @@ export const reportBuilderFeature = createFeature({
 });
 
 // eslint-disable-next-line @typescript-eslint/typedef
-export const { name, reducer, selectOrderedTemplates } = reportBuilderFeature;
+export const {
+  name,
+  reducer,
+  selectOrderedTemplates,
+  selectOrderedTemplateData,
+} = reportBuilderFeature;

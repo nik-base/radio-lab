@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { isNil } from 'lodash';
+import { isEmpty, isNil } from 'lodash';
 
 import { EditorContentDto } from '@app/models/data';
 import { EditorContent } from '@app/models/domain';
@@ -25,7 +25,9 @@ export class EditorContentMapperService {
     return {
       text: editorContent.text,
       html: editorContent.html,
-      json: this.jsonService.stringifySafe(editorContent.json),
+      json: isEmpty(editorContent.json)
+        ? null
+        : this.jsonService.stringifySafe(editorContent.json),
     };
   }
 
@@ -45,7 +47,9 @@ export class EditorContentMapperService {
     return {
       text: editorContent.text,
       html: editorContent.html,
-      json: this.jsonService.parseSafe<object>(editorContent.json) ?? null,
+      json: isEmpty(editorContent.json)
+        ? null
+        : (this.jsonService.parseSafe<object>(editorContent.json) ?? null),
     };
   }
 }

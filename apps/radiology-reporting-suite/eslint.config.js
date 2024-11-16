@@ -108,6 +108,7 @@ module.exports = [
           },
         },
       ],
+      '@ngrx/use-consistent-global-store-name': ['error', 'store$']
     },
   },
   {

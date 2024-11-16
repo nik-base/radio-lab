@@ -1,22 +1,29 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { PushPipe } from '@ngrx/component';
+import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 
-import { TemplateDto } from '../models/data';
-import { ReportBuilderService } from '../services/report-builder/report-builder.service';
+import { Template } from '@app/models/domain';
+import { selectOrderedTemplates } from '@app/store/report-builder/domain/report-builder.feature';
+import { ReportBuilderUIActions } from '@app/store/report-builder/ui/report-builder-ui.actions';
 
 @Component({
-  selector: 'radio-report',
+  selector: 'radio-report-builder',
   standalone: true,
   imports: [CommonModule, PushPipe],
   templateUrl: './report-builder.component.html',
   styleUrl: './report-builder.component.scss',
 })
-export class ReportBuilderComponent {
-  private readonly reportBuilderService: ReportBuilderService =
-    inject(ReportBuilderService);
+export class ReportBuilderComponent implements OnInit {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  private readonly store$: Store = inject(Store);
 
-  templates$: Observable<TemplateDto[]> =
-    this.reportBuilderService.fetchTemplates$();
+  readonly templates$: Observable<Template[]> = this.store$.select(
+    selectOrderedTemplates
+  );
+
+  ngOnInit(): void {
+    this.store$.dispatch(ReportBuilderUIActions.fetchTemplates());
+  }
 }
