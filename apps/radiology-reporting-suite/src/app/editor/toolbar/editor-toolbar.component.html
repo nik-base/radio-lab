@@ -15,6 +15,18 @@
             <radio-editor-button-underline [context]="{ editor: editor! }">
             </radio-editor-button-underline>
           }
+          @case (ToolbarItemType.AlignLeft) {
+            <radio-editor-button-align-left [context]="{ editor: editor! }">
+            </radio-editor-button-align-left>
+          }
+          @case (ToolbarItemType.AlignCenter) {
+            <radio-editor-button-align-center [context]="{ editor: editor! }">
+            </radio-editor-button-align-center>
+          }
+          @case (ToolbarItemType.AlignRight) {
+            <radio-editor-button-align-right [context]="{ editor: editor! }">
+            </radio-editor-button-align-right>
+          }
           @case (ToolbarItemType.Separator) {
             <p-divider styleClass="editor-button-divider" layout="vertical" />
           }

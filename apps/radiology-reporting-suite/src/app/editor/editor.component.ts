@@ -5,7 +5,9 @@ import { Underline } from '@tiptap/extension-underline';
 import { StarterKit } from '@tiptap/starter-kit';
 import { NgxTiptapModule } from 'ngx-tiptap';
 
-import { EditorBold } from './extensions/editor-extension-bold';
+import { EditorBold } from './extensions/editor-extension-bold.extension';
+import { EditorNodeAlign } from './extensions/editor-extension-node-align.extension';
+import { EditorTextAlign } from './extensions/editor-extension-text-align.extensin';
 import { EditorToolbarComponent } from './toolbar/editor-toolbar.component';
 
 @Component({
@@ -26,6 +28,8 @@ export class EditorComponent {
       }),
       EditorBold,
       Underline,
+      EditorTextAlign,
+      EditorNodeAlign,
     ],
     content: null,
     editorProps: {
