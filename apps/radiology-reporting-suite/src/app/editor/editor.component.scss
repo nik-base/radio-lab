@@ -1,0 +1,13 @@
+:host {
+  /* stylelint-disable-next-line selector-pseudo-element-no-unknown */
+  ::ng-deep {
+    .tiptap-container {
+      max-height: var(--editor-max-height, 80vh);
+      min-height: var(--editor-min-height, 80vh);
+      height: 100%;
+      overflow: auto;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+    }
+  }
+}

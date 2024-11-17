@@ -1,4 +1,5 @@
 import { inject, Injectable } from '@angular/core';
+import { JSONContent } from '@tiptap/core';
 import { isEmpty, isNil } from 'lodash-es';
 
 import { EditorContentDto } from '@app/models/data';
@@ -49,7 +50,7 @@ export class EditorContentMapperService {
       html: editorContent.html,
       json: isEmpty(editorContent.json)
         ? null
-        : (this.jsonService.parseSafe<object>(editorContent.json) ?? null),
+        : (this.jsonService.parseSafe<JSONContent>(editorContent.json) ?? null),
     };
   }
 }

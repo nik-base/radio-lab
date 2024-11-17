@@ -1,0 +1,17 @@
+.editor-button {
+  transition:
+    background-color 0.2s,
+    border-color 0.2s,
+    box-shadow 0.2s;
+
+  &.editor-button-inactive {
+    background: #fff;
+    border: 1px solid #d1d5db;
+    color: #4b5563;
+
+    &:hover {
+      background-color: rgb(241 245 249);
+      color: rgb(71 85 105);
+    }
+  }
+}

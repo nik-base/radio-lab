@@ -8,10 +8,12 @@ import { Template } from '@app/models/domain';
 import { selectOrderedTemplates } from '@app/store/report-builder/domain/report-builder.feature';
 import { ReportBuilderUIActions } from '@app/store/report-builder/ui/report-builder-ui.actions';
 
+import { EditorComponent } from '../editor/editor.component';
+
 @Component({
   selector: 'radio-report-builder',
   standalone: true,
-  imports: [CommonModule, PushPipe],
+  imports: [CommonModule, PushPipe, EditorComponent],
   templateUrl: './report-builder.component.html',
   styleUrl: './report-builder.component.scss',
 })

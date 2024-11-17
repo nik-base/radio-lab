@@ -1,0 +1,25 @@
+<p-toolbar styleClass="border-noround-bottom">
+  <ng-template pTemplate="start">
+    <div class="flex flex-row gap-1 flex-wrap">
+      @for (item of toolbarConfig.items; track item) {
+        @switch (item) {
+          @case (ToolbarItemType.Bold) {
+            <radio-editor-button-bold [context]="{ editor: editor! }">
+            </radio-editor-button-bold>
+          }
+          @case (ToolbarItemType.Italic) {
+            <radio-editor-button-italic [context]="{ editor: editor! }">
+            </radio-editor-button-italic>
+          }
+          @case (ToolbarItemType.Underline) {
+            <radio-editor-button-underline [context]="{ editor: editor! }">
+            </radio-editor-button-underline>
+          }
+          @case (ToolbarItemType.Separator) {
+            <p-divider styleClass="editor-button-divider" layout="vertical" />
+          }
+        }
+      }
+    </div>
+  </ng-template>
+</p-toolbar>
