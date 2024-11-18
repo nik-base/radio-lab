@@ -39,7 +39,7 @@ export class EditorComponent {
     editorProps: {
       attributes: {
         class:
-          'tiptap-container tiptap ProseMirror p-2 outline-none border-round-bottom-lg',
+          'tiptap-container tiptap ProseMirror p-2 bg-white outline-none border-1 surface-border border-solid border-round-bottom-lg h-full overflow-auto',
         spellCheck: 'false',
       },
     },

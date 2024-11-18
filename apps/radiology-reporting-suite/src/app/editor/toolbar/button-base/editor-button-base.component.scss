@@ -5,13 +5,12 @@
     box-shadow 0.2s;
 
   &.editor-button-inactive {
-    background: #fff;
-    border: 1px solid #d1d5db;
-    color: #4b5563;
+    background: var(--primary-color-text);
+    border: 1px solid var(--surface-300);
+    color: var(--surface-600);
 
     &:hover {
-      background-color: rgb(241 245 249);
-      color: rgb(71 85 105);
+      background-color: var(--surface-hover);
     }
   }
 }
