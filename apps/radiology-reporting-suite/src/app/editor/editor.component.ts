@@ -5,9 +5,11 @@ import { Underline } from '@tiptap/extension-underline';
 import { StarterKit } from '@tiptap/starter-kit';
 import { NgxTiptapModule } from 'ngx-tiptap';
 
-import { EditorBold } from './extensions/editor-extension-bold.extension';
-import { EditorNodeAlign } from './extensions/editor-extension-node-align.extension';
-import { EditorTextAlign } from './extensions/editor-extension-text-align.extensin';
+import { EditorBold } from './extensions/editor-bold.extension';
+import { EditorBulletedList } from './extensions/editor-bulleted-list.extension';
+import { EditorNodeAlign } from './extensions/editor-node-align.extension';
+import { EditorOrderedList } from './extensions/editor-ordered-list.extension';
+import { EditorTextAlign } from './extensions/editor-text-align.extensin';
 import { EditorToolbarComponent } from './toolbar/editor-toolbar.component';
 
 @Component({
@@ -24,12 +26,14 @@ export class EditorComponent {
         bold: false,
         bulletList: false,
         orderedList: false,
-        listItem: false,
+        listItem: undefined,
       }),
       EditorBold,
       Underline,
       EditorTextAlign,
       EditorNodeAlign,
+      EditorBulletedList,
+      EditorOrderedList,
     ],
     content: null,
     editorProps: {

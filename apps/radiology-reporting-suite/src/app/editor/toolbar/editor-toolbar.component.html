@@ -1,7 +1,7 @@
 <p-toolbar styleClass="border-noround-bottom">
   <ng-template pTemplate="start">
     <div class="flex flex-row gap-1 flex-wrap">
-      @for (item of toolbarConfig.items; track item) {
+      @for (item of toolbarConfig.items; track $index) {
         @switch (item) {
           @case (ToolbarItemType.Bold) {
             <radio-editor-button-bold [context]="{ editor: editor! }">
@@ -26,6 +26,22 @@
           @case (ToolbarItemType.AlignRight) {
             <radio-editor-button-align-right [context]="{ editor: editor! }">
             </radio-editor-button-align-right>
+          }
+          @case (ToolbarItemType.BulletedList) {
+            <radio-editor-button-bulleted-list [context]="{ editor: editor! }">
+            </radio-editor-button-bulleted-list>
+          }
+          @case (ToolbarItemType.OrderedList) {
+            <radio-editor-button-ordered-list [context]="{ editor: editor! }">
+            </radio-editor-button-ordered-list>
+          }
+          @case (ToolbarItemType.Undo) {
+            <radio-editor-button-undo [context]="{ editor: editor! }">
+            </radio-editor-button-undo>
+          }
+          @case (ToolbarItemType.Redo) {
+            <radio-editor-button-redo [context]="{ editor: editor! }">
+            </radio-editor-button-redo>
           }
           @case (ToolbarItemType.Separator) {
             <p-divider styleClass="editor-button-divider" layout="vertical" />

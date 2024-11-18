@@ -10,30 +10,14 @@ import {
 import { EditorToolbarItemContext } from '../models/editor-toolbar-item-context.interface';
 
 @Directive({
-  selector: '[radioEditorBold]',
+  selector: '[radioEditorBulletedList]',
   standalone: true,
 })
-export class EditorBoldDirective {
+export class EditorBulletedListDirective {
   @Input({ required: true }) context: EditorToolbarItemContext | undefined;
 
   @Output() clicked: EventEmitter<EditorToolbarItemContext | undefined> =
     new EventEmitter<EditorToolbarItemContext | undefined>();
-
-  @HostBinding('attr.disabled')
-  get disabled(): boolean {
-    if (!this.context) {
-      return false;
-    }
-
-    const disabled: boolean = !this.context.editor
-      .can()
-      .chain()
-      .focus()
-      .toggleBold()
-      .run();
-
-    return disabled;
-  }
 
   @HostBinding('attr.isactive')
   get isActive(): boolean {
@@ -41,7 +25,7 @@ export class EditorBoldDirective {
       return false;
     }
 
-    const isActive: boolean = this.context.editor.isActive('bold');
+    const isActive: boolean = this.context.editor.isActive('bulletList');
 
     return isActive;
   }
@@ -51,7 +35,12 @@ export class EditorBoldDirective {
       return;
     }
 
-    this.context.editor.chain().focus().toggleBold().run();
+    this.context.editor
+      .chain()
+      .focus()
+      .toggleBulletList()
+      .updateAttributes('bulletList', { listType: 'disc' })
+      .run();
 
     this.clicked.emit(this.context);
   }

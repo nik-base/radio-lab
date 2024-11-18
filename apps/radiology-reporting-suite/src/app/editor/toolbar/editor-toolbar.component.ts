@@ -11,8 +11,12 @@ import { EditorButtonAlignCenterComponent } from './button-align-center/editor-b
 import { EditorButtonAlignLeftComponent } from './button-align-left/editor-button-align-left.component';
 import { EditorButtonAlignRightComponent } from './button-align-right/editor-button-align-right.component';
 import { EditorButtonBoldComponent } from './button-bold/editor-button-bold.component';
+import { EditorButtonBulletedListComponent } from './button-bulleted-list/editor-button-bulleted-list.component';
 import { EditorButtonItalicComponent } from './button-italic/editor-button-italic.component';
+import { EditorButtonOrderedListComponent } from './button-ordered-list/editor-button-ordered-list.component';
+import { EditorButtonRedoComponent } from './button-redo/editor-button-redo.component';
 import { EditorButtonUnderlineComponent } from './button-underline/editor-button-underline.component';
+import { EditorButtonUndoComponent } from './button-undo/editor-button-undo.component';
 
 @Component({
   selector: 'radio-editor-toolbar',
@@ -27,6 +31,10 @@ import { EditorButtonUnderlineComponent } from './button-underline/editor-button
     EditorButtonAlignLeftComponent,
     EditorButtonAlignCenterComponent,
     EditorButtonAlignRightComponent,
+    EditorButtonBulletedListComponent,
+    EditorButtonOrderedListComponent,
+    EditorButtonUndoComponent,
+    EditorButtonRedoComponent,
   ],
   templateUrl: './editor-toolbar.component.html',
   styleUrls: ['./editor-toolbar.component.scss'],
@@ -58,6 +66,12 @@ export class EditorToolbarComponent {
       'align-left',
       'align-center',
       'align-right',
+      '|',
+      'bulleted-list',
+      'ordered-list',
+      '|',
+      'undo',
+      'redo',
     ],
   };
 

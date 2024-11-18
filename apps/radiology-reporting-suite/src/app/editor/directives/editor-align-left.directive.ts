@@ -9,13 +9,11 @@ import {
 
 import { EditorToolbarItemContext } from '../models/editor-toolbar-item-context.interface';
 
-import { EditorDirectiveButtonBase } from './editor-directive-button-base.interface';
-
 @Directive({
   selector: '[radioEditorAlignLeft]',
   standalone: true,
 })
-export class EditorAlignLeftDirective implements EditorDirectiveButtonBase {
+export class EditorAlignLeftDirective {
   @Input({ required: true }) context: EditorToolbarItemContext | undefined;
 
   @Output() clicked: EventEmitter<EditorToolbarItemContext | undefined> =

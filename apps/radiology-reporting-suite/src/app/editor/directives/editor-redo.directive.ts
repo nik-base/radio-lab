@@ -10,10 +10,10 @@ import {
 import { EditorToolbarItemContext } from '../models/editor-toolbar-item-context.interface';
 
 @Directive({
-  selector: '[radioEditorBold]',
+  selector: '[radioEditorRedo]',
   standalone: true,
 })
-export class EditorBoldDirective {
+export class EditorRedoDirective {
   @Input({ required: true }) context: EditorToolbarItemContext | undefined;
 
   @Output() clicked: EventEmitter<EditorToolbarItemContext | undefined> =
@@ -29,21 +29,10 @@ export class EditorBoldDirective {
       .can()
       .chain()
       .focus()
-      .toggleBold()
+      .redo()
       .run();
 
     return disabled;
-  }
-
-  @HostBinding('attr.isactive')
-  get isActive(): boolean {
-    if (!this.context) {
-      return false;
-    }
-
-    const isActive: boolean = this.context.editor.isActive('bold');
-
-    return isActive;
   }
 
   @HostListener('click') onClick(): void {
@@ -51,7 +40,7 @@ export class EditorBoldDirective {
       return;
     }
 
-    this.context.editor.chain().focus().toggleBold().run();
+    this.context.editor.chain().focus().redo().run();
 
     this.clicked.emit(this.context);
   }
