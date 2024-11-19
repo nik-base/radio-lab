@@ -21,7 +21,7 @@
       "{workspaceRoot}/.github/workflows/ci.yml"
     ]
   },
-  "nxCloudId": "67338671d66948bad17de336",
+  "nxCloudId": "672d30589eb3702453e132e8",
   "targetDefaults": {
     "@angular-devkit/build-angular:application": {
       "cache": true,
