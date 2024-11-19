@@ -14,3 +14,6 @@ export const EDITOR_TOOLBAR_ITEM_TYPE = {
   Redo: 'redo',
   Separator: '|',
 } as const;
+
+// eslint-disable-next-line @typescript-eslint/typedef
+export const EDITOR_FONT_DEFAULT = 'Default' as string;

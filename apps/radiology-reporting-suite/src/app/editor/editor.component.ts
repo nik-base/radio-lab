@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { Editor } from '@tiptap/core';
+import { FontFamily } from '@tiptap/extension-font-family';
 import { Underline } from '@tiptap/extension-underline';
 import { StarterKit } from '@tiptap/starter-kit';
 import { NgxTiptapModule } from 'ngx-tiptap';
@@ -34,6 +35,9 @@ export class EditorComponent {
       EditorNodeAlign,
       EditorBulletedList,
       EditorOrderedList,
+      FontFamily.configure({
+        types: ['textStyle'],
+      }),
     ],
     content: null,
     editorProps: {

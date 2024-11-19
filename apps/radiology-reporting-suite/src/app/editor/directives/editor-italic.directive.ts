@@ -47,12 +47,16 @@ export class EditorItalicDirective {
   }
 
   @HostListener('click') onClick(): void {
+    this.run();
+
+    this.clicked.emit(this.context);
+  }
+
+  run(): void {
     if (!this.context) {
       return;
     }
 
     this.context.editor.chain().focus().toggleItalic().run();
-
-    this.clicked.emit(this.context);
   }
 }

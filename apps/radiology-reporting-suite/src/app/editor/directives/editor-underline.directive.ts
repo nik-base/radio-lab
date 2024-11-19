@@ -47,12 +47,16 @@ export class EditorUnderlineDirective {
   }
 
   @HostListener('click') onClick(): void {
+    this.run();
+
+    this.clicked.emit(this.context);
+  }
+
+  run(): void {
     if (!this.context) {
       return;
     }
 
     this.context.editor.chain().focus().toggleUnderline().run();
-
-    this.clicked.emit(this.context);
   }
 }

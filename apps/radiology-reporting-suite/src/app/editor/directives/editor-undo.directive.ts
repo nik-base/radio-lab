@@ -36,12 +36,16 @@ export class EditorUndoDirective {
   }
 
   @HostListener('click') onClick(): void {
+    this.run();
+
+    this.clicked.emit(this.context);
+  }
+
+  run(): void {
     if (!this.context) {
       return;
     }
 
     this.context.editor.chain().focus().undo().run();
-
-    this.clicked.emit(this.context);
   }
 }

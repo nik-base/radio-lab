@@ -31,6 +31,12 @@ export class EditorBulletedListDirective {
   }
 
   @HostListener('click') onClick(): void {
+    this.run();
+
+    this.clicked.emit(this.context);
+  }
+
+  run(): void {
     if (!this.context) {
       return;
     }
@@ -41,7 +47,5 @@ export class EditorBulletedListDirective {
       .toggleBulletList()
       .updateAttributes('bulletList', { listType: 'disc' })
       .run();
-
-    this.clicked.emit(this.context);
   }
 }

@@ -46,6 +46,12 @@ export class EditorAlignCenterDirective {
   }
 
   @HostListener('click') onClick(): void {
+    this.run();
+
+    this.clicked.emit(this.context);
+  }
+
+  run(): void {
     if (!this.context) {
       return;
     }
@@ -61,7 +67,5 @@ export class EditorAlignCenterDirective {
     ) {
       this.context.editor.chain().focus().setNodeAlign('center').run();
     }
-
-    this.clicked.emit(this.context);
   }
 }

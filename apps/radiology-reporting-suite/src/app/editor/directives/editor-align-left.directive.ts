@@ -46,6 +46,12 @@ export class EditorAlignLeftDirective {
   }
 
   @HostListener('click') onClick(): void {
+    this.run();
+
+    this.clicked.emit(this.context);
+  }
+
+  run(): void {
     if (!this.context) {
       return;
     }
@@ -59,7 +65,5 @@ export class EditorAlignLeftDirective {
     ) {
       this.context.editor.chain().focus().setNodeAlign('flex-start').run();
     }
-
-    this.clicked.emit(this.context);
   }
 }

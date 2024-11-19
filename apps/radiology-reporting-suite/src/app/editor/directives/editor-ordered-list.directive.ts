@@ -31,6 +31,12 @@ export class EditorOrderedListDirective {
   }
 
   @HostListener('click') onClick(): void {
+    this.run();
+
+    this.clicked.emit(this.context);
+  }
+
+  run(): void {
     if (!this.context) {
       return;
     }
@@ -41,7 +47,5 @@ export class EditorOrderedListDirective {
       .toggleOrderedList()
       .updateAttributes('orderedList', { listType: 'decimal' })
       .run();
-
-    this.clicked.emit(this.context);
   }
 }
