@@ -1,8 +1,8 @@
 <p-dropdown
-  [options]="fonts"
+  [options]="fontFamilies"
   pTooltip="Font Family"
   tooltipPosition="bottom"
   styleClass="w-10rem"
   [ngModel]="hostDirective.fontFamily"
-  (onChange)="hostDirective.run($event.value)">
+  (onChange)="onFontFamilyChange($event.value)">
 </p-dropdown>

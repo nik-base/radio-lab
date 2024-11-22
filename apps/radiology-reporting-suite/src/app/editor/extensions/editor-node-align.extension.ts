@@ -6,21 +6,21 @@ export interface NodeAlignOptions {
    * @default []
    * @example ['heading', 'paragraph']
    */
-  types: string[];
+  readonly types: string[];
 
   /**
    * The alignments which are allowed.
    * @default ['left', 'center', 'right', 'justify']
    * @example ['left', 'right']
    */
-  alignments: string[];
+  readonly alignments: string[];
 
   /**
    * The default alignment.
    * @default 'left'
    * @example 'center'
    */
-  defaultAlignment: string;
+  readonly defaultAlignment: string;
 }
 
 declare module '@tiptap/core' {

@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
 import { TooltipModule } from 'primeng/tooltip';
 
-import { EDITOR_FONT_DEFAULT } from '@app/editor/constants';
+import { EDITOR_DEFAULT_FONT_FAMILY } from '@app/editor/constants';
 import { EditorFontFamilyDirective } from '@app/editor/directives/editor-font-family.directive';
 
 @Component({
@@ -20,10 +20,6 @@ import { EditorFontFamilyDirective } from '@app/editor/directives/editor-font-fa
   templateUrl: './editor-selector-font-family.component.html',
 })
 export class EditorSelectorFontFamilyComponent {
-  @Input({ transform: transformEmptyArray }) set fonts(value: string[]) {
-    this.fontFamilies = value;
-  }
-
   readonly hostDirective: EditorFontFamilyDirective = inject(
     EditorFontFamilyDirective,
     {
@@ -31,13 +27,21 @@ export class EditorSelectorFontFamilyComponent {
     }
   );
 
-  fontFamilies: string[] = [EDITOR_FONT_DEFAULT];
-}
+  private readonly defaultFontFamilies: string[] = [
+    'Aptos',
+    'Calibri',
+    'Times New Roman',
+    'Arial',
+    'Arial Nova',
+    'HP Simplified',
+    'Helvetica',
+  ];
 
-function transformEmptyArray(value: string[] | null | undefined): string[] {
-  if (!value?.length) {
-    return [];
+  fontFamilies: string[] = !this.hostDirective?.context?.options?.fonts?.length
+    ? [EDITOR_DEFAULT_FONT_FAMILY, ...this.defaultFontFamilies]
+    : [EDITOR_DEFAULT_FONT_FAMILY, ...this.hostDirective.context.options.fonts];
+
+  onFontFamilyChange(fontFamily: string): void {
+    this.hostDirective.fontFamily = fontFamily;
   }
-
-  return value;
 }

@@ -17,6 +17,8 @@ import { EditorButtonOrderedListComponent } from './button-ordered-list/editor-b
 import { EditorButtonRedoComponent } from './button-redo/editor-button-redo.component';
 import { EditorButtonUnderlineComponent } from './button-underline/editor-button-underline.component';
 import { EditorButtonUndoComponent } from './button-undo/editor-button-undo.component';
+import { EditorInputFontSizeComponent } from './input-font-size/editor-input-font-size.component';
+import { EditorSelectorFontFamilyComponent } from './selector-font-family/editor-selector-font-family.component';
 
 @Component({
   selector: 'radio-editor-toolbar',
@@ -35,6 +37,8 @@ import { EditorButtonUndoComponent } from './button-undo/editor-button-undo.comp
     EditorButtonOrderedListComponent,
     EditorButtonUndoComponent,
     EditorButtonRedoComponent,
+    EditorSelectorFontFamilyComponent,
+    EditorInputFontSizeComponent,
   ],
   templateUrl: './editor-toolbar.component.html',
   styleUrls: ['./editor-toolbar.component.scss'],
@@ -69,6 +73,9 @@ export class EditorToolbarComponent {
       '|',
       'bulleted-list',
       'ordered-list',
+      '|',
+      'font-family',
+      'font-size',
       '|',
       'undo',
       'redo',

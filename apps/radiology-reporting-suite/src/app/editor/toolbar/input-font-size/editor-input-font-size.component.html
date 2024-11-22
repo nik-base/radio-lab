@@ -1,0 +1,13 @@
+<p-inputNumber
+  [showButtons]="true"
+  pTooltip="Font Size"
+  tooltipPosition="bottom"
+  inputStyleClass="w-5rem"
+  [ngModel]="hostDirective.fontSize"
+  (onInput)="onFontSizeChange($event.value)"
+  [minFractionDigits]="0"
+  [maxFractionDigits]="1"
+  [step]="1"
+  mode="decimal"
+  [min]="minFontSize"
+  [max]="maxFontSize" />

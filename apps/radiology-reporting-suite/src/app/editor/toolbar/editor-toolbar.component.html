@@ -35,6 +35,14 @@
             <radio-editor-button-ordered-list [context]="{ editor: editor! }">
             </radio-editor-button-ordered-list>
           }
+          @case (ToolbarItemType.FontFamily) {
+            <radio-editor-selector-font-family [context]="{ editor: editor! }">
+            </radio-editor-selector-font-family>
+          }
+          @case (ToolbarItemType.FontSize) {
+            <radio-editor-input-font-size [context]="{ editor: editor! }">
+            </radio-editor-input-font-size>
+          }
           @case (ToolbarItemType.Undo) {
             <radio-editor-button-undo [context]="{ editor: editor! }">
             </radio-editor-button-undo>
