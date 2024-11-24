@@ -174,9 +174,7 @@ export class ReportDBService extends ReportBaseService {
     );
 
     const scopes$: Observable<ScopeDBModel[]> =
-      this.dbService.bulkGet<ScopeDBModel>('protocols', scopeIds) as Observable<
-        ScopeDBModel[]
-      >;
+      this.dbService.bulkGet<ScopeDBModel>('protocols', scopeIds);
 
     return scopes$.pipe(
       mergeMap((scopes: ScopeDBModel[]) => {
@@ -202,10 +200,7 @@ export class ReportDBService extends ReportBaseService {
     );
 
     const findings$: Observable<FindingDBModel[]> =
-      this.dbService.bulkGet<FindingDBModel>(
-        'findings',
-        findingIds
-      ) as Observable<FindingDBModel[]>;
+      this.dbService.bulkGet<FindingDBModel>('findings', findingIds);
 
     return findings$.pipe(
       mergeMap((findings: FindingDBModel[]) => {
