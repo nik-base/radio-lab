@@ -1,1 +1,4 @@
-/* editor styles */
+.editor-invalid {
+  border: 1px solid var(--red-400);
+  border-radius: 0.5rem;
+}

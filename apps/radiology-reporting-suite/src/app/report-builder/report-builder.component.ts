@@ -5,6 +5,7 @@ import { PushPipe } from '@ngrx/component';
 import { Store } from '@ngrx/store';
 import { Observable, tap } from 'rxjs';
 
+import { EditorValidators } from '@app/editor/validators/editor-validator';
 import { EditorContent, Template } from '@app/models/domain';
 import { selectOrderedTemplates } from '@app/store/report-builder/domain/report-builder.feature';
 import { ReportBuilderUIActions } from '@app/store/report-builder/ui/report-builder-ui.actions';
@@ -27,17 +28,21 @@ export class ReportBuilderComponent implements OnInit {
   );
 
   readonly editorControl: FormControl<EditorContent | null> =
-    new FormControl<EditorContent | null>(null);
+    new FormControl<EditorContent | null>(null, [EditorValidators.required()]);
 
   ngOnInit(): void {
     this.store$.dispatch(ReportBuilderUIActions.fetchTemplates());
 
     this.editorControl.setValue({
       html: '<b>Nikhil</b>',
-      text: '',
+      text: 'Nikhil',
       json: null,
     });
 
-    this.editorControl.valueChanges.pipe(tap(console.log)).subscribe();
+    console.log(this.editorControl);
+
+    this.editorControl.valueChanges
+      .pipe(tap(() => console.log(this.editorControl)))
+      .subscribe();
   }
 }

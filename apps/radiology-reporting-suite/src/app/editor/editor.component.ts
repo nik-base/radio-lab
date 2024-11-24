@@ -71,6 +71,11 @@ export class EditorComponent implements OnInit {
     },
     onUpdate: (ctx: EditorEvents['update']): void => {
       this.setHostControl(ctx.editor);
+
+      this.markEditorDirty();
+    },
+    onFocus: (): void => {
+      this.markEditorTouched();
     },
     editorProps: {
       attributes: {
@@ -81,7 +86,7 @@ export class EditorComponent implements OnInit {
     },
   });
 
-  private readonly hostControlDirective: HostControlDirective<EditorContent> =
+  readonly hostControlDirective: HostControlDirective<EditorContent> =
     inject<HostControlDirective<EditorContent>>(HostControlDirective);
 
   ngOnInit(): void {
@@ -101,6 +106,14 @@ export class EditorComponent implements OnInit {
 
   private setEditorContent(editor: Editor, html: string | null) {
     editor?.chain().setContent(html).run();
+  }
+
+  private markEditorDirty(): void {
+    this.hostControlDirective.control?.markAsDirty();
+  }
+
+  private markEditorTouched(): void {
+    this.hostControlDirective.control?.markAsTouched();
   }
 
   private setHostControl(editor: Editor): void {

@@ -1,3 +1,11 @@
-<radio-editor-toolbar [editor]="editor"></radio-editor-toolbar>
+<div
+  class="flex flex-column flex-grow-1"
+  [ngClass]="{
+    'editor-invalid':
+      !!hostControlDirective.control.invalid &&
+      !!hostControlDirective.control.dirty,
+  }">
+  <radio-editor-toolbar [editor]="editor"></radio-editor-toolbar>
 
-<tiptap-editor [editor]="editor"></tiptap-editor>
+  <tiptap-editor class="flex-grow-1" [editor]="editor"></tiptap-editor>
+</div>
