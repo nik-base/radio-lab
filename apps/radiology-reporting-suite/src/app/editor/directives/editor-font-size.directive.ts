@@ -1,9 +1,9 @@
 import {
   Directive,
-  EventEmitter,
   InputSignal,
-  Output,
+  OutputEmitterRef,
   input,
+  output,
 } from '@angular/core';
 import { isNil } from 'lodash';
 
@@ -26,8 +26,8 @@ export class EditorFontSizeDirective {
     EditorToolbarItemContext<EditorFontSizeOptions> | undefined
   >();
 
-  @Output() clicked: EventEmitter<EditorToolbarItemContext | undefined> =
-    new EventEmitter<EditorToolbarItemContext | undefined>();
+  readonly clicked: OutputEmitterRef<EditorToolbarItemContext | undefined> =
+    output<EditorToolbarItemContext | undefined>();
 
   get fontSize(): number {
     const context: EditorToolbarItemContext<EditorFontSizeOptions> | undefined =

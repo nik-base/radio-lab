@@ -1,11 +1,11 @@
 import {
   Directive,
-  EventEmitter,
   HostBinding,
   HostListener,
   InputSignal,
-  Output,
+  OutputEmitterRef,
   input,
+  output,
 } from '@angular/core';
 
 import { EditorToolbarItemContext } from '../models/editor-toolbar-item-context.interface';
@@ -18,8 +18,8 @@ export class EditorItalicDirective {
   readonly context: InputSignal<EditorToolbarItemContext | undefined> =
     input.required<EditorToolbarItemContext | undefined>();
 
-  @Output() clicked: EventEmitter<EditorToolbarItemContext | undefined> =
-    new EventEmitter<EditorToolbarItemContext | undefined>();
+  readonly clicked: OutputEmitterRef<EditorToolbarItemContext | undefined> =
+    output<EditorToolbarItemContext | undefined>();
 
   @HostBinding('attr.disabled')
   get disabled(): boolean {

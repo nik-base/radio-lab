@@ -2,11 +2,11 @@ import { CommonModule } from '@angular/common';
 import {
   booleanAttribute,
   Component,
-  EventEmitter,
   input,
   InputSignal,
   InputSignalWithTransform,
-  Output,
+  output,
+  OutputEmitterRef,
 } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
@@ -37,7 +37,7 @@ export class EditorButtonBaseComponent {
     transform: booleanAttribute,
   });
 
-  @Output() clicked: EventEmitter<void> = new EventEmitter<void>();
+  readonly clicked: OutputEmitterRef<void> = output<void>();
 
   onClick(): void {
     this.clicked.emit();

@@ -1,9 +1,9 @@
 import {
   Directive,
-  EventEmitter,
   InputSignal,
-  Output,
+  OutputEmitterRef,
   input,
+  output,
 } from '@angular/core';
 
 import { EDITOR_DEFAULT_FONT_FAMILY } from '../constants';
@@ -21,8 +21,8 @@ export class EditorFontFamilyDirective {
     EditorToolbarItemContext<EditorFontFamilyOptions> | undefined
   >();
 
-  @Output() clicked: EventEmitter<EditorToolbarItemContext | undefined> =
-    new EventEmitter<EditorToolbarItemContext | undefined>();
+  readonly clicked: OutputEmitterRef<EditorToolbarItemContext | undefined> =
+    output<EditorToolbarItemContext | undefined>();
 
   get fontFamily(): string {
     const context:
