@@ -4,51 +4,53 @@
       @for (item of toolbarConfig.items; track $index) {
         @switch (item) {
           @case (ToolbarItemType.Bold) {
-            <radio-editor-button-bold [context]="{ editor: editor! }">
+            <radio-editor-button-bold [context]="{ editor: editor()! }">
             </radio-editor-button-bold>
           }
           @case (ToolbarItemType.Italic) {
-            <radio-editor-button-italic [context]="{ editor: editor! }">
+            <radio-editor-button-italic [context]="{ editor: editor()! }">
             </radio-editor-button-italic>
           }
           @case (ToolbarItemType.Underline) {
-            <radio-editor-button-underline [context]="{ editor: editor! }">
+            <radio-editor-button-underline [context]="{ editor: editor()! }">
             </radio-editor-button-underline>
           }
           @case (ToolbarItemType.AlignLeft) {
-            <radio-editor-button-align-left [context]="{ editor: editor! }">
+            <radio-editor-button-align-left [context]="{ editor: editor()! }">
             </radio-editor-button-align-left>
           }
           @case (ToolbarItemType.AlignCenter) {
-            <radio-editor-button-align-center [context]="{ editor: editor! }">
+            <radio-editor-button-align-center [context]="{ editor: editor()! }">
             </radio-editor-button-align-center>
           }
           @case (ToolbarItemType.AlignRight) {
-            <radio-editor-button-align-right [context]="{ editor: editor! }">
+            <radio-editor-button-align-right [context]="{ editor: editor()! }">
             </radio-editor-button-align-right>
           }
           @case (ToolbarItemType.BulletedList) {
-            <radio-editor-button-bulleted-list [context]="{ editor: editor! }">
+            <radio-editor-button-bulleted-list
+              [context]="{ editor: editor()! }">
             </radio-editor-button-bulleted-list>
           }
           @case (ToolbarItemType.OrderedList) {
-            <radio-editor-button-ordered-list [context]="{ editor: editor! }">
+            <radio-editor-button-ordered-list [context]="{ editor: editor()! }">
             </radio-editor-button-ordered-list>
           }
           @case (ToolbarItemType.FontFamily) {
-            <radio-editor-selector-font-family [context]="{ editor: editor! }">
+            <radio-editor-selector-font-family
+              [context]="{ editor: editor()! }">
             </radio-editor-selector-font-family>
           }
           @case (ToolbarItemType.FontSize) {
-            <radio-editor-input-font-size [context]="{ editor: editor! }">
+            <radio-editor-input-font-size [context]="{ editor: editor()! }">
             </radio-editor-input-font-size>
           }
           @case (ToolbarItemType.Undo) {
-            <radio-editor-button-undo [context]="{ editor: editor! }">
+            <radio-editor-button-undo [context]="{ editor: editor()! }">
             </radio-editor-button-undo>
           }
           @case (ToolbarItemType.Redo) {
-            <radio-editor-button-redo [context]="{ editor: editor! }">
+            <radio-editor-button-redo [context]="{ editor: editor()! }">
             </radio-editor-button-redo>
           }
           @case (ToolbarItemType.Separator) {

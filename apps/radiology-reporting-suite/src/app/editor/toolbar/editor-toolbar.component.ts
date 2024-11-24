@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, Input, input, InputSignal } from '@angular/core';
 import { Editor } from '@tiptap/core';
 import { DividerModule } from 'primeng/divider';
 import { ToolbarModule } from 'primeng/toolbar';
@@ -44,7 +44,9 @@ import { EditorSelectorFontFamilyComponent } from './selector-font-family/editor
   styleUrls: ['./editor-toolbar.component.scss'],
 })
 export class EditorToolbarComponent {
-  @Input({ required: true }) editor: Editor | undefined;
+  readonly editor: InputSignal<Editor | undefined> = input.required<
+    Editor | undefined
+  >();
 
   @Input() set toolbarConfig(value: EditorToolbarConfig | undefined) {
     if (!value) {

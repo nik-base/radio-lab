@@ -3,8 +3,9 @@ import {
   EventEmitter,
   HostBinding,
   HostListener,
-  Input,
+  InputSignal,
   Output,
+  input,
 } from '@angular/core';
 
 import { EditorToolbarItemContext } from '../models/editor-toolbar-item-context.interface';
@@ -14,33 +15,38 @@ import { EditorToolbarItemContext } from '../models/editor-toolbar-item-context.
   standalone: true,
 })
 export class EditorAlignLeftDirective {
-  @Input({ required: true }) context: EditorToolbarItemContext | undefined;
+  readonly context: InputSignal<EditorToolbarItemContext | undefined> =
+    input.required<EditorToolbarItemContext | undefined>();
 
   @Output() clicked: EventEmitter<EditorToolbarItemContext | undefined> =
     new EventEmitter<EditorToolbarItemContext | undefined>();
 
   @HostBinding('attr.disabled')
   get disabled(): boolean {
-    if (!this.context) {
+    const context: EditorToolbarItemContext | undefined = this.context();
+
+    if (!context) {
       return false;
     }
 
     const disabled: boolean =
-      !this.context.editor.can().chain().focus().setTextAlign('left').run() &&
-      !this.context.editor.can().chain().focus().setNodeAlign('left').run();
+      !context.editor.can().chain().focus().setTextAlign('left').run() &&
+      !context.editor.can().chain().focus().setNodeAlign('left').run();
 
     return disabled;
   }
 
   @HostBinding('attr.isactive')
   get isActive(): boolean {
-    if (!this.context) {
+    const context: EditorToolbarItemContext | undefined = this.context();
+
+    if (!context) {
       return false;
     }
 
     const isActive: boolean =
-      this.context.editor.isActive({ textAlign: 'left' }) ||
-      this.context.editor.isActive({ nodeAlign: 'flex-start' });
+      context.editor.isActive({ textAlign: 'left' }) ||
+      context.editor.isActive({ nodeAlign: 'flex-start' });
 
     return isActive;
   }
@@ -48,22 +54,22 @@ export class EditorAlignLeftDirective {
   @HostListener('click') onClick(): void {
     this.run();
 
-    this.clicked.emit(this.context);
+    this.clicked.emit(this.context());
   }
 
   run(): void {
-    if (!this.context) {
+    const context: EditorToolbarItemContext | undefined = this.context();
+
+    if (!context) {
       return;
     }
 
-    if (this.context.editor.can().chain().focus().setTextAlign('left').run()) {
-      this.context.editor.chain().focus().setTextAlign('left').run();
+    if (context.editor.can().chain().focus().setTextAlign('left').run()) {
+      context.editor.chain().focus().setTextAlign('left').run();
     }
 
-    if (
-      this.context.editor.can().chain().focus().setNodeAlign('flex-start').run()
-    ) {
-      this.context.editor.chain().focus().setNodeAlign('flex-start').run();
+    if (context.editor.can().chain().focus().setNodeAlign('flex-start').run()) {
+      context.editor.chain().focus().setNodeAlign('flex-start').run();
     }
   }
 }

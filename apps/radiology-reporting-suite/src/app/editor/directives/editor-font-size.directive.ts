@@ -1,4 +1,10 @@
-import { Directive, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Directive,
+  EventEmitter,
+  InputSignal,
+  Output,
+  input,
+} from '@angular/core';
 import { isNil } from 'lodash';
 
 import {
@@ -14,24 +20,29 @@ import { EditorToolbarItemContext } from '../models/editor-toolbar-item-context.
   standalone: true,
 })
 export class EditorFontSizeDirective {
-  @Input({ required: true }) context:
-    | EditorToolbarItemContext<EditorFontSizeOptions>
-    | undefined;
+  readonly context: InputSignal<
+    EditorToolbarItemContext<EditorFontSizeOptions> | undefined
+  > = input.required<
+    EditorToolbarItemContext<EditorFontSizeOptions> | undefined
+  >();
 
   @Output() clicked: EventEmitter<EditorToolbarItemContext | undefined> =
     new EventEmitter<EditorToolbarItemContext | undefined>();
 
   get fontSize(): number {
-    if (!this.context) {
+    const context: EditorToolbarItemContext<EditorFontSizeOptions> | undefined =
+      this.context();
+
+    if (!context) {
       return EDITOR_DEFAULT_FONT_SIZE;
     }
 
     const textStyle: Record<string, unknown> =
-      this.context.editor.getAttributes('textStyle');
+      context.editor.getAttributes('textStyle');
 
     const fontSize: number =
       this.parseFontSizePx(textStyle['fontSize']?.toString()) ||
-      this.context.options?.defaultSize ||
+      context.options?.defaultSize ||
       EDITOR_DEFAULT_FONT_SIZE;
 
     return fontSize;
@@ -42,13 +53,16 @@ export class EditorFontSizeDirective {
   }
 
   run(fontSize: number | string | null): void {
-    if (!this.context) {
+    const context: EditorToolbarItemContext<EditorFontSizeOptions> | undefined =
+      this.context();
+
+    if (!context) {
       return;
     }
 
     const size: number = this.getSize(fontSize);
 
-    this.context.editor.chain().focus().setFontSizeInPx(size).run();
+    context.editor.chain().focus().setFontSizeInPx(size).run();
   }
 
   private parseFontSizePx(
@@ -77,9 +91,12 @@ export class EditorFontSizeDirective {
 
     if (this.isLessThanMinSize(fontSize)) {
       return this.getMinSize();
-    } else if (this.isGreaterThanMaxSize(fontSize)) {
+    }
+
+    if (this.isGreaterThanMaxSize(fontSize)) {
       return this.getMaxSize();
     }
+
     return fontSize;
   }
 
@@ -88,7 +105,7 @@ export class EditorFontSizeDirective {
   }
 
   private getMinSize(): number {
-    return this.context?.options?.minSize ?? EDITOR_DEFAULT_MIN_FONT_SIZE;
+    return this.context()?.options?.minSize ?? EDITOR_DEFAULT_MIN_FONT_SIZE;
   }
 
   private isGreaterThanMaxSize(fontSize: number): boolean {
@@ -96,6 +113,6 @@ export class EditorFontSizeDirective {
   }
 
   private getMaxSize(): number {
-    return this.context?.options?.maxSize ?? EDITOR_DEFAULT_MAX_FONT_SIZE;
+    return this.context()?.options?.maxSize ?? EDITOR_DEFAULT_MAX_FONT_SIZE;
   }
 }

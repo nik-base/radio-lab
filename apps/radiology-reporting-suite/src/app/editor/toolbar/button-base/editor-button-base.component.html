@@ -1,11 +1,11 @@
 <button
   pButton
-  [pTooltip]="name"
+  [pTooltip]="name()"
   tooltipPosition="bottom"
   size="small"
   class="p-button-icon-only editor-button"
-  [disabled]="disabled"
-  [ngClass]="isActive ? 'editor-button-active' : 'editor-button-inactive'"
+  [disabled]="disabled()"
+  [ngClass]="isActive() ? 'editor-button-active' : 'editor-button-inactive'"
   (click)="onClick()">
-  <span class="text-2xl material-icons">{{ icon }}</span>
+  <span class="text-2xl material-icons">{{ icon() }}</span>
 </button>

@@ -3,8 +3,9 @@ import {
   EventEmitter,
   HostBinding,
   HostListener,
-  Input,
+  InputSignal,
   Output,
+  input,
 } from '@angular/core';
 
 import { EditorToolbarItemContext } from '../models/editor-toolbar-item-context.interface';
@@ -14,18 +15,21 @@ import { EditorToolbarItemContext } from '../models/editor-toolbar-item-context.
   standalone: true,
 })
 export class EditorRedoDirective {
-  @Input({ required: true }) context: EditorToolbarItemContext | undefined;
+  readonly context: InputSignal<EditorToolbarItemContext | undefined> =
+    input.required<EditorToolbarItemContext | undefined>();
 
   @Output() clicked: EventEmitter<EditorToolbarItemContext | undefined> =
     new EventEmitter<EditorToolbarItemContext | undefined>();
 
   @HostBinding('attr.disabled')
   get disabled(): boolean {
-    if (!this.context) {
+    const context: EditorToolbarItemContext | undefined = this.context();
+
+    if (!context) {
       return false;
     }
 
-    const disabled: boolean = !this.context.editor
+    const disabled: boolean = !context.editor
       .can()
       .chain()
       .focus()
@@ -38,14 +42,16 @@ export class EditorRedoDirective {
   @HostListener('click') onClick(): void {
     this.run();
 
-    this.clicked.emit(this.context);
+    this.clicked.emit(this.context());
   }
 
   run(): void {
-    if (!this.context) {
+    const context: EditorToolbarItemContext | undefined = this.context();
+
+    if (!context) {
       return;
     }
 
-    this.context.editor.chain().focus().redo().run();
+    context.editor.chain().focus().redo().run();
   }
 }

@@ -3,7 +3,9 @@ import {
   booleanAttribute,
   Component,
   EventEmitter,
-  Input,
+  input,
+  InputSignal,
+  InputSignalWithTransform,
   Output,
 } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
@@ -17,13 +19,23 @@ import { TooltipModule } from 'primeng/tooltip';
   styleUrls: ['./editor-button-base.component.scss'],
 })
 export class EditorButtonBaseComponent {
-  @Input({ required: true }) name: string = '';
+  readonly name: InputSignal<string> = input.required<string>();
 
-  @Input({ required: true }) icon: string = '';
+  readonly icon: InputSignal<string> = input.required<string>();
 
-  @Input({ transform: booleanAttribute }) disabled: boolean = false;
+  readonly disabled: InputSignalWithTransform<boolean, unknown> = input<
+    boolean,
+    unknown
+  >(false, {
+    transform: booleanAttribute,
+  });
 
-  @Input({ transform: booleanAttribute }) isActive: boolean = false;
+  readonly isActive: InputSignalWithTransform<boolean, unknown> = input<
+    boolean,
+    unknown
+  >(false, {
+    transform: booleanAttribute,
+  });
 
   @Output() clicked: EventEmitter<void> = new EventEmitter<void>();
 

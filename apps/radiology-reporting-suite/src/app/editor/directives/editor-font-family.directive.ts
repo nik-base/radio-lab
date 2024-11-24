@@ -1,4 +1,10 @@
-import { Directive, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Directive,
+  EventEmitter,
+  InputSignal,
+  Output,
+  input,
+} from '@angular/core';
 
 import { EDITOR_DEFAULT_FONT_FAMILY } from '../constants';
 import { EditorFontFamilyOptions } from '../models/editor-font-family-options.interface';
@@ -9,24 +15,30 @@ import { EditorToolbarItemContext } from '../models/editor-toolbar-item-context.
   standalone: true,
 })
 export class EditorFontFamilyDirective {
-  @Input({ required: true }) context:
-    | EditorToolbarItemContext<EditorFontFamilyOptions>
-    | undefined;
+  readonly context: InputSignal<
+    EditorToolbarItemContext<EditorFontFamilyOptions> | undefined
+  > = input.required<
+    EditorToolbarItemContext<EditorFontFamilyOptions> | undefined
+  >();
 
   @Output() clicked: EventEmitter<EditorToolbarItemContext | undefined> =
     new EventEmitter<EditorToolbarItemContext | undefined>();
 
   get fontFamily(): string {
-    if (!this.context) {
+    const context:
+      | EditorToolbarItemContext<EditorFontFamilyOptions>
+      | undefined = this.context();
+
+    if (!context) {
       return EDITOR_DEFAULT_FONT_FAMILY;
     }
 
     const textStyle: Record<string, unknown> =
-      this.context.editor.getAttributes('textStyle');
+      context.editor.getAttributes('textStyle');
 
     const fontFamily: string =
       textStyle['fontFamily']?.toString() ||
-      this.context.options?.defaultFont ||
+      context.options?.defaultFont ||
       EDITOR_DEFAULT_FONT_FAMILY;
 
     return fontFamily;
@@ -37,20 +49,24 @@ export class EditorFontFamilyDirective {
   }
 
   run(fontFamily: string): void {
-    if (!this.context) {
+    const context:
+      | EditorToolbarItemContext<EditorFontFamilyOptions>
+      | undefined = this.context();
+
+    if (!context) {
       return;
     }
 
     if (this.isDefaultFont(fontFamily)) {
-      this.context.editor.chain().focus().unsetFontFamily().run();
+      context.editor.chain().focus().unsetFontFamily().run();
     }
 
-    this.context.editor.chain().focus().setFontFamily(fontFamily).run();
+    context.editor.chain().focus().setFontFamily(fontFamily).run();
   }
 
   private isDefaultFont(fontFamily: string): boolean {
     return (
-      fontFamily === this.context?.options?.defaultFont ||
+      fontFamily === this.context()?.options?.defaultFont ||
       fontFamily === EDITOR_DEFAULT_FONT_FAMILY
     );
   }
