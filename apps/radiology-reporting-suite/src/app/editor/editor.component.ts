@@ -1,11 +1,18 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { Editor } from '@tiptap/core';
+import { Component, inject, OnInit } from '@angular/core';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { Editor, EditorEvents } from '@tiptap/core';
 import { FontFamily } from '@tiptap/extension-font-family';
 import TextStyle from '@tiptap/extension-text-style';
 import { Underline } from '@tiptap/extension-underline';
+import { EditorState } from '@tiptap/pm/state';
 import { StarterKit } from '@tiptap/starter-kit';
+import { isEmpty } from 'lodash-es';
 import { NgxTiptapModule } from 'ngx-tiptap';
+import { tap } from 'rxjs';
+
+import { HostControlDirective } from '@app/directives/host-control.directive';
+import { EditorContent } from '@app/models/domain';
 
 import { EditorBold } from './extensions/editor-bold.extension';
 import { EditorBulletedList } from './extensions/editor-bulleted-list.extension';
@@ -15,21 +22,22 @@ import { EditorOrderedList } from './extensions/editor-ordered-list.extension';
 import { EditorTextAlign } from './extensions/editor-text-align.extensin';
 import { EditorToolbarComponent } from './toolbar/editor-toolbar.component';
 
+@UntilDestroy()
 @Component({
   selector: 'radio-editor',
   standalone: true,
   imports: [CommonModule, NgxTiptapModule, EditorToolbarComponent],
+  hostDirectives: [HostControlDirective],
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.scss'],
 })
-export class EditorComponent {
+export class EditorComponent implements OnInit {
   readonly editor: Editor = new Editor({
     extensions: [
       StarterKit.configure({
         bold: false,
         bulletList: false,
         orderedList: false,
-        listItem: undefined,
       }),
       EditorBold,
       Underline,
@@ -44,6 +52,26 @@ export class EditorComponent {
       EditorFontSize,
     ],
     content: null,
+    onCreate: (ctx: EditorEvents['create']) => {
+      const html: string | undefined =
+        this.hostControlDirective.control?.getRawValue()?.html;
+      if (isEmpty(html)) {
+        return;
+      }
+
+      this.setEditorContent(ctx.editor, html);
+
+      const newEditorState: EditorState = EditorState.create({
+        doc: ctx.editor.state.doc,
+        plugins: ctx.editor.state.plugins,
+        schema: ctx.editor.state.schema,
+      });
+
+      ctx.editor.view.updateState(newEditorState);
+    },
+    onUpdate: (ctx: EditorEvents['update']): void => {
+      this.setHostControl(ctx.editor);
+    },
     editorProps: {
       attributes: {
         class:
@@ -52,4 +80,34 @@ export class EditorComponent {
       },
     },
   });
+
+  private readonly hostControlDirective: HostControlDirective<EditorContent> =
+    inject<HostControlDirective<EditorContent>>(HostControlDirective);
+
+  ngOnInit(): void {
+    this.handleHostControlChanges();
+  }
+
+  private handleHostControlChanges(): void {
+    this.hostControlDirective.control?.valueChanges
+      .pipe(
+        tap((value: EditorContent | null): void => {
+          this.setEditorContent(this.editor, value?.html ?? null);
+        }),
+        untilDestroyed(this)
+      )
+      .subscribe();
+  }
+
+  private setEditorContent(editor: Editor, html: string | null) {
+    editor?.chain().setContent(html).run();
+  }
+
+  private setHostControl(editor: Editor): void {
+    this.hostControlDirective.control?.setValue({
+      text: editor.getText(),
+      html: editor.getHTML(),
+      json: editor.getJSON(),
+    });
+  }
 }

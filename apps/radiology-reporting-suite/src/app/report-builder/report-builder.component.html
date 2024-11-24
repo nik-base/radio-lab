@@ -1,3 +1,5 @@
 <p>Report Builder works!</p>
-<radio-editor style="height: 50vh; display: block"></radio-editor>
+<radio-editor
+  style="height: 50vh; display: block"
+  [formControl]="editorControl"></radio-editor>
 <div>{{ templates$ | ngrxPush | json }}</div>
