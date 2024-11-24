@@ -49,5 +49,7 @@ export const TemplateActions = createActionGroup({
     'Import Failure': props<{
       readonly error: ApplicationError<TemplateImport>;
     }>(),
+
+    Reset: emptyProps(),
   },
 });

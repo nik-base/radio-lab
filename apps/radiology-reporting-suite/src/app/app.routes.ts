@@ -16,6 +16,7 @@ import { ScopeEffects } from './store/report-manager/domain/effects/scope.effect
 import { TemplateEffects } from './store/report-manager/domain/effects/template.effects';
 import { reportManagerFeature } from './store/report-manager/domain/report-manager.feature';
 import { FindingUIEffects } from './store/report-manager/ui/effects/finding-ui.effects';
+import { ReportManagerUIEffects } from './store/report-manager/ui/effects/report-manager-ui.effects';
 import { ScopeUIEffects } from './store/report-manager/ui/effects/scope-ui.effects';
 import { TemplateUIEffects } from './store/report-manager/ui/effects/template-ui.effects';
 
@@ -38,6 +39,7 @@ export const appRoutes: Route[] = [
     providers: [
       provideState(reportManagerFeature),
       provideEffects(
+        ReportManagerUIEffects,
         TemplateUIEffects,
         TemplateEffects,
         TemplateDataEffects,

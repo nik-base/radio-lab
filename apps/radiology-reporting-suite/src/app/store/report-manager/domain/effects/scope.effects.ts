@@ -15,6 +15,7 @@ import { Scope } from '@app/models/domain';
 import { ApplicationActions } from '@app/store/actions/application.actions';
 
 import { ScopeDataActions } from '../../data/actions/scope-data.actions';
+import { FindingActions } from '../actions/finding.actions';
 import { ScopeActions } from '../actions/scope.actions';
 
 @Injectable()
@@ -277,6 +278,14 @@ export class ScopeEffects {
             templateId,
           })
       )
+    );
+  });
+
+  // eslint-disable-next-line @typescript-eslint/typedef
+  readonly reset$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(ScopeActions.reset),
+      map(() => FindingActions.reset())
     );
   });
 

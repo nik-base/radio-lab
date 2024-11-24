@@ -14,6 +14,7 @@ import { Template } from '@app/models/domain';
 import { ApplicationActions } from '@app/store/actions/application.actions';
 
 import { TemplateDataActions } from '../../data/actions/template-data.actions';
+import { ScopeActions } from '../actions/scope.actions';
 import { TemplateActions } from '../actions/template.actions';
 
 @Injectable()
@@ -273,6 +274,14 @@ export class TemplateEffects {
           ),
         });
       })
+    );
+  });
+
+  // eslint-disable-next-line @typescript-eslint/typedef
+  readonly reset$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TemplateActions.reset),
+      map(() => ScopeActions.reset())
     );
   });
 
