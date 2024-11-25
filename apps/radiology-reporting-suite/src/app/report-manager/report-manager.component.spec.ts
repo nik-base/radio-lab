@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideMockStore } from '@ngrx/store/testing';
 
 import { ReportManagerComponent } from './report-manager.component';
 
@@ -9,6 +10,7 @@ describe('ReportManagerComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ReportManagerComponent],
+      providers: [provideMockStore({})],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ReportManagerComponent);
