@@ -4,6 +4,7 @@ import { map } from 'rxjs';
 
 import { APP_NOTIFICATION_TYPE } from '@app/constants';
 import { ApplicationUIActions } from '@app/store/actions/application-ui.actions';
+import { FileService } from '@app/utils/services/file.service';
 
 import { TemplateActions } from '../../domain/actions/template.actions';
 import { TemplateUIActions } from '../actions/template-ui.actions';
@@ -12,6 +13,8 @@ import { TemplateUIActions } from '../actions/template-ui.actions';
 export class TemplateUIEffects {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   private readonly actions$: Actions = inject(Actions);
+
+  private readonly fileService: FileService = inject(FileService);
 
   // eslint-disable-next-line @typescript-eslint/typedef
   readonly fetch$ = createEffect(() => {
@@ -70,6 +73,31 @@ export class TemplateUIEffects {
   });
 
   // eslint-disable-next-line @typescript-eslint/typedef
+  readonly download$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(TemplateUIActions.download),
+        map(({ template }: ReturnType<typeof TemplateUIActions.download>) => {
+          try {
+            this.fileService.downloadJSONObject(template, template.name);
+
+            return TemplateUIActions.downloadSuccess({ template });
+          } catch (error: unknown) {
+            return TemplateUIActions.downloadFailure({
+              error: {
+                error: error,
+                message: `Failed to download template: '${template.name}'`,
+                data: template,
+              },
+            });
+          }
+        })
+      );
+    },
+    { dispatch: false }
+  );
+
+  // eslint-disable-next-line @typescript-eslint/typedef
   readonly import$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(TemplateUIActions.import),
@@ -121,7 +149,8 @@ export class TemplateUIEffects {
         TemplateActions.updateSuccess,
         TemplateActions.deleteSuccess,
         TemplateActions.exportSuccess,
-        TemplateActions.importSuccess
+        TemplateActions.importSuccess,
+        TemplateUIActions.downloadSuccess
       ),
       map(
         (
@@ -131,6 +160,7 @@ export class TemplateUIEffects {
             | ReturnType<typeof TemplateActions.deleteSuccess>
             | ReturnType<typeof TemplateActions.exportSuccess>
             | ReturnType<typeof TemplateActions.importSuccess>
+            | ReturnType<typeof TemplateUIActions.downloadSuccess>
         ) =>
           ApplicationUIActions.notify({
             notification: {
@@ -150,6 +180,7 @@ export class TemplateUIEffects {
       | ReturnType<typeof TemplateActions.deleteSuccess>
       | ReturnType<typeof TemplateActions.exportSuccess>
       | ReturnType<typeof TemplateActions.importSuccess>
+      | ReturnType<typeof TemplateUIActions.downloadSuccess>
   ): string {
     switch (action.type) {
       case TemplateActions.createSuccess.type:
@@ -162,6 +193,8 @@ export class TemplateUIEffects {
         return 'exported';
       case TemplateActions.importSuccess.type:
         return 'imported';
+      case TemplateUIActions.downloadSuccess.type:
+        return 'downloaded';
     }
   }
 }

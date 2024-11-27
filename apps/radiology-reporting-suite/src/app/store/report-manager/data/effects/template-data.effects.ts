@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, exhaustMap, map, of, switchMap } from 'rxjs';
 
-import { TemplateDto } from '@app/models/data';
+import { TemplateDataDto, TemplateDto } from '@app/models/data';
 import { ReportManagerService } from '@app/services/report-manager/report-manager.service';
 
 import { TemplateDataActions } from '../actions/template-data.actions';
@@ -113,9 +113,9 @@ export class TemplateDataEffects {
       ofType(TemplateDataActions.export),
       switchMap(({ template }: ReturnType<typeof TemplateDataActions.export>) =>
         this.reportManagerService.fetchTemplate$(template.id).pipe(
-          map(() =>
+          map((templateData: TemplateDataDto) =>
             TemplateDataActions.exportSuccess({
-              template,
+              template: templateData,
             })
           ),
           catchError((error: unknown) =>

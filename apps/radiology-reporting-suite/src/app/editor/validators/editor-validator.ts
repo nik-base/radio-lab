@@ -1,7 +1,7 @@
 import { AbstractControl, ValidatorFn } from '@angular/forms';
-import { isEmpty } from 'lodash';
 
 import { EditorContent } from '@app/models/domain';
+import { isNilOrEmpty } from '@app/utils/functions/common.functions';
 
 export class EditorValidators {
   static required(): ValidatorFn {
@@ -11,7 +11,7 @@ export class EditorValidators {
 
       const text: string | null | undefined = content?.text;
 
-      return isEmpty(text) ? { required: 'Field is required' } : null;
+      return isNilOrEmpty(text) ? { required: 'Field is required' } : null;
     };
   }
 }

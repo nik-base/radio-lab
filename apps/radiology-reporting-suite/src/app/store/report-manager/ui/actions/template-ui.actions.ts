@@ -1,8 +1,10 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
 import {
+  ApplicationError,
   Template,
   TemplateCreate,
+  TemplateData,
   TemplateImport,
   TemplateUpdate,
 } from '@app/models/domain';
@@ -20,6 +22,12 @@ export const TemplateUIActions = createActionGroup({
     Delete: props<{ readonly template: Template }>(),
 
     Export: props<{ readonly template: Template }>(),
+
+    Download: props<{ readonly template: TemplateData }>(),
+    'Download Success': props<{ readonly template: TemplateData }>(),
+    'Download Failure': props<{
+      readonly error: ApplicationError<TemplateData>;
+    }>(),
 
     Import: props<{ readonly template: TemplateImport }>(),
   },

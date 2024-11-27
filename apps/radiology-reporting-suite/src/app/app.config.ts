@@ -1,3 +1,4 @@
+import { provideHttpClient } from '@angular/common/http';
 import {
   ApplicationConfig,
   importProvidersFrom,
@@ -26,6 +27,7 @@ export const appConfig: ApplicationConfig = {
     provideStore(),
     provideStoreDevtools({ logOnly: !isDevMode() }),
     provideEffects(ApplicationUIEffects, ApplicationEffects),
+    provideHttpClient(),
     importProvidersFrom(ReportDBModule),
     {
       provide: ReportBaseService,

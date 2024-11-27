@@ -7,12 +7,12 @@ import TextStyle from '@tiptap/extension-text-style';
 import { Underline } from '@tiptap/extension-underline';
 import { EditorState } from '@tiptap/pm/state';
 import { StarterKit } from '@tiptap/starter-kit';
-import { isEmpty } from 'lodash-es';
 import { NgxTiptapModule } from 'ngx-tiptap';
-import { tap } from 'rxjs';
+import { Subscription, tap } from 'rxjs';
 
 import { HostControlDirective } from '@app/directives/host-control.directive';
 import { EditorContent } from '@app/models/domain';
+import { isNilOrEmpty } from '@app/utils/functions/common.functions';
 
 import { EditorBold } from './extensions/editor-bold.extension';
 import { EditorBulletedList } from './extensions/editor-bulleted-list.extension';
@@ -53,9 +53,10 @@ export class EditorComponent implements OnInit {
     ],
     content: null,
     onCreate: (ctx: EditorEvents['create']) => {
-      const html: string | undefined =
-        this.hostControlDirective.control?.getRawValue()?.html;
-      if (isEmpty(html)) {
+      const html: string | null | undefined =
+        this.hostControlDirective?.control?.getRawValue()?.html;
+
+      if (isNilOrEmpty(html)) {
         return;
       }
 
@@ -86,22 +87,27 @@ export class EditorComponent implements OnInit {
     },
   });
 
-  readonly hostControlDirective: HostControlDirective<EditorContent> =
-    inject<HostControlDirective<EditorContent>>(HostControlDirective);
+  readonly hostControlDirective: HostControlDirective<EditorContent> | null =
+    inject<HostControlDirective<EditorContent>>(HostControlDirective, {
+      optional: true,
+    });
+
+  private hostControlChangesSubscription: Subscription | undefined;
 
   ngOnInit(): void {
     this.handleHostControlChanges();
   }
 
   private handleHostControlChanges(): void {
-    this.hostControlDirective.control?.valueChanges
-      .pipe(
-        tap((value: EditorContent | null): void => {
-          this.setEditorContent(this.editor, value?.html ?? null);
-        }),
-        untilDestroyed(this)
-      )
-      .subscribe();
+    this.hostControlChangesSubscription =
+      this.hostControlDirective?.control?.valueChanges
+        .pipe(
+          tap((value: EditorContent | null): void => {
+            this.setEditorContent(this.editor, value?.html ?? null);
+          }),
+          untilDestroyed(this)
+        )
+        .subscribe();
   }
 
   private setEditorContent(editor: Editor, html: string | null) {
@@ -109,18 +115,24 @@ export class EditorComponent implements OnInit {
   }
 
   private markEditorDirty(): void {
-    this.hostControlDirective.control?.markAsDirty();
+    this.hostControlDirective?.control?.markAsDirty();
   }
 
   private markEditorTouched(): void {
-    this.hostControlDirective.control?.markAsTouched();
+    this.hostControlDirective?.control?.markAsTouched();
   }
 
   private setHostControl(editor: Editor): void {
-    this.hostControlDirective.control?.setValue({
+    // Unsubscribe to avoid setting editor again on value changes in handleHostControlChanges
+    this.hostControlChangesSubscription?.unsubscribe();
+
+    this.hostControlDirective?.control?.setValue({
       text: editor.getText(),
       html: editor.getHTML(),
       json: editor.getJSON(),
     });
+
+    // Subscribe again
+    this.handleHostControlChanges();
   }
 }

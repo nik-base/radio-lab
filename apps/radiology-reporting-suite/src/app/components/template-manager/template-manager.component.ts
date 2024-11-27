@@ -2,13 +2,26 @@ import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { PushPipe } from '@ngrx/component';
 import { Store } from '@ngrx/store';
+import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
+import { ConfirmPopupModule } from 'primeng/confirmpopup';
+import {
+  DialogService,
+  DynamicDialogModule,
+  DynamicDialogRef,
+} from 'primeng/dynamicdialog';
+import { FileSelectEvent, FileUploadModule } from 'primeng/fileupload';
 import { TooltipModule } from 'primeng/tooltip';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 
-import { Template } from '@app/models/domain';
+import { CHANGE_MODE } from '@app/constants';
+import { Template, TemplateImport } from '@app/models/domain';
+import { EventData, TemplateDialogData } from '@app/models/ui';
 import { selectOrderedTemplates } from '@app/store/report-manager/domain/report-manager.feature';
+import { TemplateUIActions } from '@app/store/report-manager/ui/actions/template-ui.actions';
+import { JsonService } from '@app/utils/services/json.service';
 
+import { TemplateManagerDialogComponent } from '../template-manager-dialog/template-manager-dialog.component';
 import { TemplateManagerListComponent } from '../template-manager-list/template-manager-list.component';
 
 @Component({
@@ -19,15 +32,136 @@ import { TemplateManagerListComponent } from '../template-manager-list/template-
     PushPipe,
     TooltipModule,
     ButtonModule,
+    DynamicDialogModule,
+    ConfirmPopupModule,
+    FileUploadModule,
     TemplateManagerListComponent,
   ],
+  providers: [DialogService, ConfirmationService],
   templateUrl: './template-manager.component.html',
 })
 export class TemplateManagerComponent {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   private readonly store$: Store = inject(Store);
 
+  private readonly jsonService: JsonService = inject(JsonService);
+
+  private readonly dialogService: DialogService = inject(DialogService);
+
+  private readonly confirmationService: ConfirmationService =
+    inject(ConfirmationService);
+
   readonly templates$: Observable<Template[]> = this.store$.select(
     selectOrderedTemplates
   );
+
+  onCreate(): void {
+    const dialogRef: DynamicDialogRef = this.openDialog('Create New Template', {
+      mode: CHANGE_MODE.Create,
+    });
+
+    dialogRef.onClose
+      .pipe(
+        tap((template: Template | null | undefined): void => {
+          if (!template) {
+            return;
+          }
+
+          this.store$.dispatch(TemplateUIActions.create({ template }));
+        })
+      )
+      .subscribe();
+  }
+
+  onEdit(template: Template): void {
+    const dialogRef: DynamicDialogRef = this.openDialog('Edit Template', {
+      mode: CHANGE_MODE.Update,
+      template,
+    });
+
+    dialogRef.onClose
+      .pipe(
+        tap((updatedTemplate: Template | null | undefined): void => {
+          if (!updatedTemplate) {
+            return;
+          }
+
+          this.store$.dispatch(
+            TemplateUIActions.update({ template: updatedTemplate })
+          );
+        })
+      )
+      .subscribe();
+  }
+
+  onDelete(eventData: EventData<Template>): void {
+    this.confirmationService.confirm({
+      target: eventData.event.target as EventTarget,
+      message:
+        'Do you want to delete this template and all its scopes and findings?',
+      icon: 'pi pi-info-circle',
+      acceptButtonStyleClass: 'p-button-danger p-button-sm',
+      accept: () => {
+        this.store$.dispatch(
+          TemplateUIActions.delete({ template: eventData.data })
+        );
+      },
+    });
+  }
+
+  onExport(template: Template): void {
+    this.store$.dispatch(TemplateUIActions.export({ template }));
+  }
+
+  onImport(event: FileSelectEvent): void {
+    const uploadedFile: File = event.currentFiles[0];
+
+    if (!uploadedFile) {
+      return;
+    }
+
+    const reader: FileReader = new FileReader();
+
+    reader.onload = (progressEvent: ProgressEvent<FileReader>): void => {
+      this.import(progressEvent.target);
+
+      event.files = [];
+    };
+
+    reader.readAsText(uploadedFile);
+  }
+
+  // TODO: Refactor into effect
+  private import(eventTarget: FileReader | null): void {
+    const fileContent: string | ArrayBufferLike | null | undefined =
+      eventTarget?.result;
+
+    if (!fileContent) {
+      return;
+    }
+
+    const template: TemplateImport = this.jsonService.parseSafe<TemplateImport>(
+      fileContent as string
+    );
+
+    if (!template) {
+      return;
+    }
+
+    this.store$.dispatch(TemplateUIActions.import({ template }));
+  }
+
+  private openDialog(
+    header: string,
+    data: TemplateDialogData
+  ): DynamicDialogRef {
+    return this.dialogService.open(TemplateManagerDialogComponent, {
+      header,
+      width: '70rem',
+      contentStyle: { overflow: 'auto' },
+      baseZIndex: 3000,
+      position: 'top',
+      data,
+    });
+  }
 }

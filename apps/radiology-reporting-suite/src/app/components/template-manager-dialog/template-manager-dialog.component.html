@@ -1,0 +1,63 @@
+<div class="flex flex-column gap-2">
+  <div class="flex flex-column gap-2" [formGroup]="formGroup">
+    <div class="flex flex-column gap-2">
+      <label for="templateName" class="font-semibold"> Name </label>
+
+      <input
+        pInputText
+        id="templateName"
+        formControlName="name"
+        class="flex-auto"
+        autocomplete="off" />
+
+      <small
+        *ngIf="!formGroup.get('name')?.valid && formGroup.get('name')?.dirty"
+        class="p-error">
+        Name is required
+      </small>
+    </div>
+
+    <div>
+      <label for="templateProtocol">Protocol</label>
+
+      <radio-editor
+        id="templateProtocol"
+        formControlName="protocol"
+        class="max-h-6rem">
+      </radio-editor>
+
+      <small
+        *ngIf="
+          !formGroup.get('protocol')?.valid && formGroup.get('protocol')?.dirty
+        "
+        class="p-error">
+        Description is required
+      </small>
+    </div>
+
+    <div>
+      <label for="patientInfo">Patient Info</label>
+
+      <radio-editor
+        id="patientInfo"
+        formControlName="patientInfo"
+        class="max-h-6rem">
+      </radio-editor>
+    </div>
+  </div>
+
+  <div class="flex justify-content-end">
+    <p-button
+      label="Cancel"
+      [text]="true"
+      severity="secondary"
+      (onClick)="close()" />
+
+    <p-button
+      label="Save"
+      [outlined]="true"
+      [disabled]="!formGroup.valid"
+      severity="primary"
+      (onClick)="save()" />
+  </div>
+</div>

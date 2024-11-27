@@ -4,6 +4,7 @@ import {
   ApplicationError,
   Template,
   TemplateCreate,
+  TemplateData,
   TemplateImport,
   TemplateUpdate,
 } from '@app/models/domain';
@@ -37,7 +38,7 @@ export const TemplateActions = createActionGroup({
     }>(),
 
     Export: props<{ readonly template: Template }>(),
-    'Export Success': props<{ readonly template: Template }>(),
+    'Export Success': props<{ readonly template: TemplateData }>(),
     'Export Failure': props<{
       readonly error: ApplicationError<Template>;
     }>(),

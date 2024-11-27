@@ -3,6 +3,7 @@ import { createActionGroup, emptyProps, props } from '@ngrx/store';
 import {
   ApplicationErrorDto,
   TemplateCreateDto,
+  TemplateDataDto,
   TemplateDto,
   TemplateImportDto,
   TemplateUpdateDto,
@@ -37,7 +38,7 @@ export const TemplateDataActions = createActionGroup({
     }>(),
 
     Export: props<{ readonly template: TemplateDto }>(),
-    'Export Success': props<{ readonly template: TemplateDto }>(),
+    'Export Success': props<{ readonly template: TemplateDataDto }>(),
     'Export Failure': props<{
       readonly error: ApplicationErrorDto<TemplateDto>;
     }>(),

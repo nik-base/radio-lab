@@ -2,8 +2,8 @@
   class="flex flex-column flex-grow-1"
   [ngClass]="{
     'editor-invalid':
-      !!hostControlDirective.control.invalid &&
-      !!hostControlDirective.control.dirty,
+      !!hostControlDirective?.control?.invalid &&
+      !!hostControlDirective?.control?.dirty,
   }">
   <radio-editor-toolbar [editor]="editor"></radio-editor-toolbar>
 

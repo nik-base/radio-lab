@@ -14,6 +14,7 @@ import { Template } from '@app/models/domain';
 import { ApplicationActions } from '@app/store/actions/application.actions';
 
 import { TemplateDataActions } from '../../data/actions/template-data.actions';
+import { TemplateUIActions } from '../../ui/actions/template-ui.actions';
 import { ScopeActions } from '../actions/scope.actions';
 import { TemplateActions } from '../actions/template.actions';
 
@@ -240,8 +241,20 @@ export class TemplateEffects {
       map(
         ({ template }: ReturnType<typeof TemplateDataActions.exportSuccess>) =>
           TemplateActions.exportSuccess({
-            template: this.templateMapper.mapFromDto(template),
+            template: this.templateMapper.mapFromDataDto(template),
           })
+      )
+    );
+  });
+
+  // eslint-disable-next-line @typescript-eslint/typedef
+  readonly download$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TemplateActions.exportSuccess),
+      map(({ template }: ReturnType<typeof TemplateActions.exportSuccess>) =>
+        TemplateUIActions.download({
+          template: template,
+        })
       )
     );
   });
