@@ -30,5 +30,12 @@ export const TemplateUIActions = createActionGroup({
     }>(),
 
     Import: props<{ readonly template: TemplateImport }>(),
+    'Import Failure': props<{
+      readonly message: string;
+    }>(),
+
+    Change: props<{ readonly template: Template }>(),
+
+    Reset: emptyProps(),
   },
 });

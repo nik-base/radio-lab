@@ -1,12 +1,14 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { map } from 'rxjs';
+import { map, mergeMap } from 'rxjs';
 
 import { APP_NOTIFICATION_TYPE } from '@app/constants';
 import { ApplicationUIActions } from '@app/store/actions/application-ui.actions';
 import { FileService } from '@app/utils/services/file.service';
 
 import { TemplateActions } from '../../domain/actions/template.actions';
+import { FindingUIActions } from '../actions/finding-ui.actions';
+import { ScopeUIActions } from '../actions/scope-ui.actions';
 import { TemplateUIActions } from '../actions/template-ui.actions';
 
 @Injectable()
@@ -106,6 +108,42 @@ export class TemplateUIEffects {
           template,
         })
       )
+    );
+  });
+
+  // eslint-disable-next-line @typescript-eslint/typedef
+  readonly importFailure$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TemplateUIActions.importFailure),
+      map(({ message }: ReturnType<typeof TemplateUIActions.importFailure>) =>
+        ApplicationUIActions.notify({
+          notification: {
+            type: APP_NOTIFICATION_TYPE.Error,
+            title: 'Failed to import template',
+            message,
+          },
+        })
+      )
+    );
+  });
+
+  // eslint-disable-next-line @typescript-eslint/typedef
+  readonly change$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TemplateUIActions.change),
+      // eslint-disable-next-line @ngrx/no-multiple-actions-in-effects
+      mergeMap(({ template }: ReturnType<typeof TemplateUIActions.change>) => [
+        ScopeUIActions.fetch({ templateId: template.id }),
+        FindingUIActions.reset(),
+      ])
+    );
+  });
+
+  // eslint-disable-next-line @typescript-eslint/typedef
+  readonly reset$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TemplateUIActions.reset),
+      map(() => TemplateActions.reset())
     );
   });
 

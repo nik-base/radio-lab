@@ -6,6 +6,7 @@ import { APP_NOTIFICATION_TYPE } from '@app/constants';
 import { ApplicationUIActions } from '@app/store/actions/application-ui.actions';
 
 import { ScopeActions } from '../../domain/actions/scope.actions';
+import { FindingUIActions } from '../actions/finding-ui.actions';
 import { ScopeUIActions } from '../actions/scope-ui.actions';
 
 @Injectable()
@@ -80,6 +81,16 @@ export class ScopeUIEffects {
           scope,
           templateId,
         })
+      )
+    );
+  });
+
+  // eslint-disable-next-line @typescript-eslint/typedef
+  readonly change$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(ScopeUIActions.change),
+      map(({ scope }: ReturnType<typeof ScopeUIActions.change>) =>
+        FindingUIActions.fetch({ scopeId: scope.id })
       )
     );
   });

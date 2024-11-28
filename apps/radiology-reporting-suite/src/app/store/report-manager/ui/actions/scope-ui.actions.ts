@@ -26,6 +26,8 @@ export const ScopeUIActions = createActionGroup({
       readonly templateId: string;
     }>(),
 
+    Change: props<{ readonly scope: Scope }>(),
+
     Reset: emptyProps(),
   },
 });

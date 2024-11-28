@@ -2,8 +2,8 @@ import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { mergeMap } from 'rxjs';
 
-import { TemplateActions } from '../../domain/actions/template.actions';
 import { ReportManagerUIActions } from '../actions/report-manager-ui.actions';
+import { ScopeUIActions } from '../actions/scope-ui.actions';
 import { TemplateUIActions } from '../actions/template-ui.actions';
 
 @Injectable()
@@ -16,7 +16,7 @@ export class ReportManagerUIEffects {
     return this.actions$.pipe(
       ofType(ReportManagerUIActions.load),
       // eslint-disable-next-line @ngrx/no-multiple-actions-in-effects
-      mergeMap(() => [TemplateUIActions.fetch(), TemplateActions.reset()])
+      mergeMap(() => [TemplateUIActions.fetch(), ScopeUIActions.reset()])
     );
   });
 }

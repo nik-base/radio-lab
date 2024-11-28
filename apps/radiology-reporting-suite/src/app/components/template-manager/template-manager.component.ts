@@ -55,6 +55,10 @@ export class TemplateManagerComponent {
     selectOrderedTemplates
   );
 
+  onChange(template: Template): void {
+    this.store$.dispatch(TemplateUIActions.change({ template }));
+  }
+
   onCreate(): void {
     const dialogRef: DynamicDialogRef = this.openDialog('Create New Template', {
       mode: CHANGE_MODE.Create,
@@ -131,12 +135,17 @@ export class TemplateManagerComponent {
     reader.readAsText(uploadedFile);
   }
 
-  // TODO: Refactor into effect
   private import(eventTarget: FileReader | null): void {
     const fileContent: string | ArrayBufferLike | null | undefined =
       eventTarget?.result;
 
     if (!fileContent) {
+      this.store$.dispatch(
+        TemplateUIActions.importFailure({
+          message: 'Cannot import empty template data',
+        })
+      );
+
       return;
     }
 
@@ -145,6 +154,12 @@ export class TemplateManagerComponent {
     );
 
     if (!template) {
+      this.store$.dispatch(
+        TemplateUIActions.importFailure({
+          message: 'Cannot parse invalid template data',
+        })
+      );
+
       return;
     }
 
