@@ -5,8 +5,9 @@ globalThis.ngJest = {
     errorOnUnknownProperties: true,
   },
 };
-import 'jest-preset-angular/setup-jest';
+import { setupZoneTestEnv } from 'jest-preset-angular/setup-env/zone';
 
+setupZoneTestEnv();
 /*
   Referred from https://github.com/jsdom/jsdom/issues/2177#issuecomment-1724971596
   Ignore CSS parsing error due to known issue with jest and jsDOM
