@@ -23,7 +23,7 @@
 
   <div>
     <radio-template-manager-list
-      [templates]="(templates$ | ngrxPush) ?? []"
+      [templates]="templates()"
       (edit)="onEdit($event)"
       (delete)="onDelete($event)"
       (export)="onExport($event)"

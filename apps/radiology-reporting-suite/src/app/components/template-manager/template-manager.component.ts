@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import { PushPipe } from '@ngrx/component';
+import { Component, inject, input, InputSignal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -12,12 +11,11 @@ import {
 } from 'primeng/dynamicdialog';
 import { FileSelectEvent, FileUploadModule } from 'primeng/fileupload';
 import { TooltipModule } from 'primeng/tooltip';
-import { Observable, tap } from 'rxjs';
+import { tap } from 'rxjs';
 
 import { CHANGE_MODE } from '@app/constants';
 import { Template, TemplateImport } from '@app/models/domain';
 import { EventData, TemplateDialogData } from '@app/models/ui';
-import { selectOrderedTemplates } from '@app/store/report-manager/domain/report-manager.feature';
 import { TemplateUIActions } from '@app/store/report-manager/ui/actions/template-ui.actions';
 import { JsonService } from '@app/utils/services/json.service';
 
@@ -29,7 +27,6 @@ import { TemplateManagerListComponent } from '../template-manager-list/template-
   standalone: true,
   imports: [
     CommonModule,
-    PushPipe,
     TooltipModule,
     ButtonModule,
     DynamicDialogModule,
@@ -51,9 +48,7 @@ export class TemplateManagerComponent {
   private readonly confirmationService: ConfirmationService =
     inject(ConfirmationService);
 
-  readonly templates$: Observable<Template[]> = this.store$.select(
-    selectOrderedTemplates
-  );
+  readonly templates: InputSignal<Template[]> = input.required<Template[]>();
 
   onChange(template: Template): void {
     this.store$.dispatch(TemplateUIActions.change({ template }));

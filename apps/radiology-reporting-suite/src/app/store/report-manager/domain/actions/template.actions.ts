@@ -51,6 +51,8 @@ export const TemplateActions = createActionGroup({
       readonly error: ApplicationError<TemplateImport>;
     }>(),
 
+    'Set Selected': props<{ readonly template: Template }>(),
+
     Reset: emptyProps(),
   },
 });

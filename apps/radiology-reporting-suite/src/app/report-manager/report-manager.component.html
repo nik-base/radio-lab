@@ -1,1 +1,17 @@
-<radio-template-manager class="flex w-2 max-h-6rem"></radio-template-manager>
+<div class="flex">
+  <radio-template-manager
+    [templates]="(templates$ | ngrxPush) ?? []"
+    class="flex w-2 max-h-6rem">
+  </radio-template-manager>
+
+  @let scopes = scopes$ | ngrxPush;
+  @let selectedTemplate = selectedTemplate$ | ngrxPush;
+
+  @if (scopes && selectedTemplate) {
+    <radio-scope-manager
+      [scopes]="scopes"
+      [template]="selectedTemplate"
+      class="flex w-2 max-h-6rem">
+    </radio-scope-manager>
+  }
+</div>

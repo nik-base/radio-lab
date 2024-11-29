@@ -7,7 +7,6 @@ import { ApplicationUIActions } from '@app/store/actions/application-ui.actions'
 import { FileService } from '@app/utils/services/file.service';
 
 import { TemplateActions } from '../../domain/actions/template.actions';
-import { FindingUIActions } from '../actions/finding-ui.actions';
 import { ScopeUIActions } from '../actions/scope-ui.actions';
 import { TemplateUIActions } from '../actions/template-ui.actions';
 
@@ -133,8 +132,9 @@ export class TemplateUIEffects {
       ofType(TemplateUIActions.change),
       // eslint-disable-next-line @ngrx/no-multiple-actions-in-effects
       mergeMap(({ template }: ReturnType<typeof TemplateUIActions.change>) => [
+        TemplateActions.setSelected({ template }),
+        ScopeUIActions.reset(),
         ScopeUIActions.fetch({ templateId: template.id }),
-        FindingUIActions.reset(),
       ])
     );
   });

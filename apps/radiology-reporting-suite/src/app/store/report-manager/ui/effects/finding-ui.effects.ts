@@ -84,6 +84,16 @@ export class FindingUIEffects {
   });
 
   // eslint-disable-next-line @typescript-eslint/typedef
+  readonly change$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(FindingUIActions.change),
+      map(({ finding }: ReturnType<typeof FindingUIActions.change>) =>
+        FindingActions.setSelected({ finding })
+      )
+    );
+  });
+
+  // eslint-disable-next-line @typescript-eslint/typedef
   readonly reset$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(FindingUIActions.reset),

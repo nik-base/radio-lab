@@ -1,5 +1,5 @@
-<div class="flex flex-column gap-2">
-  <div class="flex flex-column gap-2" [formGroup]="formGroup">
+<radio-dialog-layout>
+  <div class="flex flex-column gap-2" [formGroup]="formGroup" dialog-content>
     <div class="flex flex-column gap-2">
       <label for="templateName" class="font-semibold"> Name </label>
 
@@ -46,7 +46,7 @@
     </div>
   </div>
 
-  <div class="flex justify-content-end">
+  <ng-container dialog-actions>
     <p-button
       label="Cancel"
       [text]="true"
@@ -59,5 +59,5 @@
       [disabled]="!formGroup.valid"
       severity="primary"
       (onClick)="save()" />
-  </div>
-</div>
+  </ng-container>
+</radio-dialog-layout>

@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { map } from 'rxjs';
+import { map, mergeMap } from 'rxjs';
 
 import { APP_NOTIFICATION_TYPE } from '@app/constants';
 import { ApplicationUIActions } from '@app/store/actions/application-ui.actions';
@@ -89,9 +89,12 @@ export class ScopeUIEffects {
   readonly change$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(ScopeUIActions.change),
-      map(({ scope }: ReturnType<typeof ScopeUIActions.change>) =>
-        FindingUIActions.fetch({ scopeId: scope.id })
-      )
+      // eslint-disable-next-line @ngrx/no-multiple-actions-in-effects
+      mergeMap(({ scope }: ReturnType<typeof ScopeUIActions.change>) => [
+        ScopeActions.setSelected({ scope }),
+        FindingUIActions.reset(),
+        FindingUIActions.fetch({ scopeId: scope.id }),
+      ])
     );
   });
 

@@ -1,0 +1,50 @@
+<p-orderList
+  [value]="scopes()"
+  [metaKeySelection]="true"
+  [responsive]="true"
+  listStyleClass="max-h-full"
+  styleClass="w-full"
+  header="Scopes"
+  [dragdrop]="true"
+  (onReorder)="onReorder()">
+  <ng-template let-scope pTemplate="item">
+    <div class="flex flex-row p-1 justify-content-between">
+      <div
+        class="flex align-items-center flex-grow-1"
+        pTooltip="{{ scope.name }}"
+        tooltipPosition="bottom">
+        {{ scope.name }}
+      </div>
+
+      <div class="flex flex-row gap-2">
+        <p-button
+          icon="pi pi-cog"
+          pTooltip="Configure Findings"
+          tooltipPosition="bottom"
+          (onClick)="onConfigure(scope)"
+          [outlined]="true" />
+
+        <p-button
+          icon="pi pi-clone"
+          pTooltip="Clone Scope"
+          tooltipPosition="bottom"
+          (onClick)="onClone(scope)"
+          [outlined]="true" />
+
+        <p-button
+          icon="pi pi-pencil"
+          pTooltip="Edit Scope"
+          tooltipPosition="bottom"
+          (onClick)="onEdit(scope)"
+          [outlined]="true" />
+
+        <p-button
+          pTooltip="Delete Scope"
+          tooltipPosition="bottom"
+          icon="pi pi-trash"
+          [outlined]="true"
+          (onClick)="onDelete($event, scope)" />
+      </div>
+    </div>
+  </ng-template>
+</p-orderList>

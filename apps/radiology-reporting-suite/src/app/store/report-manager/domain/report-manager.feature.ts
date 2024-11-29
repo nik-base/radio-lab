@@ -18,8 +18,11 @@ import { ReportManagerState } from './report-manager-state.interface';
 
 export const reportManagerInitialState: ReportManagerState = {
   templates: [],
+  selectedTemplate: null,
   scopes: null,
+  selectedScope: null,
   findings: null,
+  selectedFinding: null,
 };
 
 // eslint-disable-next-line @typescript-eslint/typedef
@@ -87,6 +90,23 @@ export const reportManagerFeature = createFeature({
           }
 
           draft.templates.splice(index, 1);
+        })
+    ),
+    on(
+      TemplateActions.setSelected,
+      (
+        state: ReportManagerState,
+        { template }: ReturnType<typeof TemplateActions.setSelected>
+      ): ReportManagerState =>
+        produce(state, (draft: Writable<ReportManagerState>) => {
+          draft.selectedTemplate = template;
+        })
+    ),
+    on(
+      TemplateActions.reset,
+      (state: ReportManagerState): ReportManagerState =>
+        produce(state, (draft: Writable<ReportManagerState>) => {
+          draft.selectedTemplate = null;
         })
     ),
     // Scope Actions
@@ -205,10 +225,21 @@ export const reportManagerFeature = createFeature({
         })
     ),
     on(
+      ScopeActions.setSelected,
+      (
+        state: ReportManagerState,
+        { scope }: ReturnType<typeof ScopeActions.setSelected>
+      ): ReportManagerState =>
+        produce(state, (draft: Writable<ReportManagerState>) => {
+          draft.selectedScope = scope;
+        })
+    ),
+    on(
       ScopeActions.reset,
       (state: ReportManagerState): ReportManagerState =>
         produce(state, (draft: Writable<ReportManagerState>) => {
           draft.scopes = null;
+          draft.selectedScope = null;
         })
     ),
     // Finding Actions
@@ -314,10 +345,21 @@ export const reportManagerFeature = createFeature({
         })
     ),
     on(
+      FindingActions.setSelected,
+      (
+        state: ReportManagerState,
+        { finding }: ReturnType<typeof FindingActions.setSelected>
+      ): ReportManagerState =>
+        produce(state, (draft: Writable<ReportManagerState>) => {
+          draft.selectedFinding = finding;
+        })
+    ),
+    on(
       FindingActions.reset,
       (state: ReportManagerState): ReportManagerState =>
         produce(state, (draft: Writable<ReportManagerState>) => {
           draft.findings = null;
+          draft.selectedFinding = null;
         })
     )
   ),
@@ -368,4 +410,7 @@ export const {
   selectOrderedScopes,
   selectOrderedFindings,
   selectGroups,
+  selectSelectedTemplate,
+  selectSelectedScope,
+  selectSelectedFinding,
 } = reportManagerFeature;

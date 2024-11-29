@@ -12,16 +12,14 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TooltipModule } from 'primeng/tooltip';
 
 import { CHANGE_MODE } from '@app/constants';
-import { EditorComponent } from '@app/editor/editor.component';
-import { EditorValidators } from '@app/editor/validators/editor-validator';
-import { EditorContent, Template } from '@app/models/domain';
-import { TemplateDialogData } from '@app/models/ui';
+import { Scope } from '@app/models/domain';
+import { ScopeManagerDialogData } from '@app/models/ui/scope-manger-dialog-data.interface';
 import { ChangeModes, FormGroupModel } from '@app/types';
 
 import { DialogLayoutComponent } from '../dialog-layout/dialog-layout.component';
 
 @Component({
-  selector: 'radio-template-manager-dialog',
+  selector: 'radio-scope-manager-dialog',
   standalone: true,
   imports: [
     CommonModule,
@@ -29,27 +27,28 @@ import { DialogLayoutComponent } from '../dialog-layout/dialog-layout.component'
     InputTextModule,
     TooltipModule,
     ButtonModule,
-    EditorComponent,
     DialogLayoutComponent,
   ],
-  templateUrl: './template-manager-dialog.component.html',
+  templateUrl: './scope-manager-dialog.component.html',
 })
-export class TemplateManagerDialogComponent {
+export class ScopeManagerDialogComponent {
   private readonly dynamicDialogRef: DynamicDialogRef =
     inject(DynamicDialogRef);
 
   private readonly dynamicDialogConfig: DynamicDialogConfig =
     inject(DynamicDialogConfig);
 
-  formGroup: FormGroupModel<Template> = this.createFormGroup();
+  formGroup!: FormGroupModel<Scope>;
 
   constructor() {
-    const data: TemplateDialogData = this.dynamicDialogConfig
-      .data as TemplateDialogData;
+    const data: ScopeManagerDialogData = this.dynamicDialogConfig
+      .data as ScopeManagerDialogData;
 
-    if (data.mode === CHANGE_MODE.Update) {
-      this.formGroup = this.createFormGroup(CHANGE_MODE.Update, data.template);
-    }
+    this.formGroup = this.createFormGroup(
+      data.mode,
+      data.templateId,
+      data.scope
+    );
   }
 
   close(): void {
@@ -62,34 +61,31 @@ export class TemplateManagerDialogComponent {
 
   private createFormGroup(
     mode: ChangeModes = CHANGE_MODE.Create,
-    template?: Template
-  ): FormGroupModel<Template> {
+    templateId: string,
+    scope?: Scope
+  ): FormGroupModel<Scope> {
     const formGroup: FormGroup = new FormGroup({
-      name: new FormControl<string | null>(template?.name ?? null, {
+      name: new FormControl<string | null>(scope?.name ?? null, {
         nonNullable: true,
         validators: [Validators.required.bind(this)],
       }),
-      protocol: new FormControl<EditorContent | null>(
-        template?.protocol ?? null,
+      templateId: new FormControl<string | null>(
+        scope?.templateId ?? templateId,
         {
           nonNullable: true,
-          validators: [EditorValidators.required()],
         }
-      ),
-      patientInfo: new FormControl<EditorContent | null>(
-        template?.patientInfo ?? null
       ),
     });
 
     if (mode === CHANGE_MODE.Update) {
       formGroup.addControl(
         'id',
-        new FormControl<string | null>(template?.id ?? null, {
+        new FormControl<string | null>(scope?.id ?? null, {
           nonNullable: true,
         })
       );
     }
 
-    return formGroup as FormGroupModel<Template>;
+    return formGroup as FormGroupModel<Scope>;
   }
 }

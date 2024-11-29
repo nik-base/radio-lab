@@ -54,6 +54,8 @@ export const ScopeActions = createActionGroup({
       readonly error: ApplicationError<Scope>;
     }>(),
 
+    'Set Selected': props<{ readonly scope: Scope }>(),
+
     Reset: emptyProps(),
   },
 });
