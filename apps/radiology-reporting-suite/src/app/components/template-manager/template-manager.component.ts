@@ -15,7 +15,7 @@ import { tap } from 'rxjs';
 
 import { CHANGE_MODE } from '@app/constants';
 import { Template, TemplateImport } from '@app/models/domain';
-import { EventData, TemplateDialogData } from '@app/models/ui';
+import { EventData, TemplateManagerDialogData } from '@app/models/ui';
 import { TemplateUIActions } from '@app/store/report-manager/ui/actions/template-ui.actions';
 import { JsonService } from '@app/utils/services/json.service';
 
@@ -163,7 +163,7 @@ export class TemplateManagerComponent {
 
   private openDialog(
     header: string,
-    data: TemplateDialogData
+    data: TemplateManagerDialogData
   ): DynamicDialogRef {
     return this.dialogService.open(TemplateManagerDialogComponent, {
       header,

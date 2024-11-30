@@ -1,0 +1,10 @@
+<p-autoComplete
+  [formControl]="hostControlDirective?.control ?? innerFormControl"
+  [forceSelection]="true"
+  [dropdown]="true"
+  appendTo="body"
+  [suggestions]="filteredTemplates"
+  (completeMethod)="filterTemplate($event)"
+  (onSelect)="onSelect($event)"
+  field="name"
+  id="template-selector" />

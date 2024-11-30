@@ -210,14 +210,18 @@ export const reportManagerFeature = createFeature({
       ScopeActions.cloneSuccess,
       (
         state: ReportManagerState,
-        { scope, templateId }: ReturnType<typeof ScopeActions.cloneSuccess>
+        {
+          originalScope,
+          scope,
+          templateId,
+        }: ReturnType<typeof ScopeActions.cloneSuccess>
       ): ReportManagerState =>
         produce(state, (draft: Writable<ReportManagerState>) => {
           if (isNil(draft.scopes)) {
             return;
           }
 
-          if (scope.templateId !== templateId) {
+          if (originalScope.templateId !== templateId) {
             return;
           }
 

@@ -20,10 +20,15 @@ import {
   SortOrderUpdate,
   Template,
 } from '@app/models/domain';
-import { EventData } from '@app/models/ui';
-import { ScopeManagerDialogData } from '@app/models/ui/scope-manger-dialog-data.interface';
+import {
+  EventData,
+  ScopeCloneDialogData,
+  ScopeCloneDialogOutput,
+  ScopeManagerDialogData,
+} from '@app/models/ui';
 import { ScopeUIActions } from '@app/store/report-manager/ui/actions/scope-ui.actions';
 
+import { ScopeCloneDialogComponent } from '../scope-clone-dialog/scope-clone-dialog.component';
 import { ScopeManagerDialogComponent } from '../scope-manager-dialog/scope-manager-dialog.component';
 import { ScopeManagerListComponent } from '../scope-manager-list/scope-manager-list.component';
 
@@ -102,20 +107,24 @@ export class ScopeManagerComponent {
   }
 
   onClone(scope: Scope): void {
-    const dialogRef: DynamicDialogRef = this.openManagerDialog('Clone Scope', {
-      mode: CHANGE_MODE.Update,
-      templateId: this.template().id,
-      scope,
+    const dialogRef: DynamicDialogRef = this.openCloneDialog('Clone Scope', {
+      scope: scope,
+      template: this.template(),
     });
 
     dialogRef.onClose
       .pipe(
-        tap((updatedScope: Scope | null | undefined): void => {
-          if (!updatedScope) {
+        tap((cloneOutput: ScopeCloneDialogOutput | null | undefined): void => {
+          if (!cloneOutput) {
             return;
           }
 
-          this.store$.dispatch(ScopeUIActions.update({ scope: updatedScope }));
+          this.store$.dispatch(
+            ScopeUIActions.clone({
+              scope: cloneOutput.scope,
+              templateId: cloneOutput.template.id,
+            })
+          );
         })
       )
       .subscribe();
@@ -136,9 +145,9 @@ export class ScopeManagerComponent {
   onReorder(scopes: ReadonlyArray<Scope>): void {
     const sortOrders: SortOrderUpdate = {
       sortOrdersMap: scopes.map(
-        (scope: Scope): SortOrderItem => ({
+        (scope: Scope, index: number): SortOrderItem => ({
           id: scope.id,
-          sortOrder: scope.sortOrder,
+          sortOrder: index,
         })
       ),
     };
@@ -153,6 +162,20 @@ export class ScopeManagerComponent {
     return this.dialogService.open(ScopeManagerDialogComponent, {
       header,
       width: '25rem',
+      contentStyle: { overflow: 'auto' },
+      baseZIndex: 3000,
+      position: 'top',
+      data,
+    });
+  }
+
+  private openCloneDialog(
+    header: string,
+    data: ScopeCloneDialogData
+  ): DynamicDialogRef {
+    return this.dialogService.open(ScopeCloneDialogComponent, {
+      header,
+      width: '40rem',
       contentStyle: { overflow: 'auto' },
       baseZIndex: 3000,
       position: 'top',

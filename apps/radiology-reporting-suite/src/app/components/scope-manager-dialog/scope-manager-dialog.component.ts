@@ -13,7 +13,7 @@ import { TooltipModule } from 'primeng/tooltip';
 
 import { CHANGE_MODE } from '@app/constants';
 import { Scope } from '@app/models/domain';
-import { ScopeManagerDialogData } from '@app/models/ui/scope-manger-dialog-data.interface';
+import { ScopeManagerDialogData } from '@app/models/ui/scope-manager-dialog-data.interface';
 import { ChangeModes, FormGroupModel } from '@app/types';
 
 import { DialogLayoutComponent } from '../dialog-layout/dialog-layout.component';

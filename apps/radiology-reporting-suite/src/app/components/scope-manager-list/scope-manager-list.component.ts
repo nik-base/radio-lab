@@ -54,6 +54,6 @@ export class ScopeManagerListComponent {
   }
 
   onReorder(): void {
-    this.reorder.emit([]);
+    this.reorder.emit(this.scopes());
   }
 }

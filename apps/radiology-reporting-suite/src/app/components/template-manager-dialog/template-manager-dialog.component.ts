@@ -15,7 +15,7 @@ import { CHANGE_MODE } from '@app/constants';
 import { EditorComponent } from '@app/editor/editor.component';
 import { EditorValidators } from '@app/editor/validators/editor-validator';
 import { EditorContent, Template } from '@app/models/domain';
-import { TemplateDialogData } from '@app/models/ui';
+import { TemplateManagerDialogData } from '@app/models/ui';
 import { ChangeModes, FormGroupModel } from '@app/types';
 
 import { DialogLayoutComponent } from '../dialog-layout/dialog-layout.component';
@@ -44,8 +44,8 @@ export class TemplateManagerDialogComponent {
   formGroup: FormGroupModel<Template> = this.createFormGroup();
 
   constructor() {
-    const data: TemplateDialogData = this.dynamicDialogConfig
-      .data as TemplateDialogData;
+    const data: TemplateManagerDialogData = this.dynamicDialogConfig
+      .data as TemplateManagerDialogData;
 
     if (data.mode === CHANGE_MODE.Update) {
       this.formGroup = this.createFormGroup(CHANGE_MODE.Update, data.template);
