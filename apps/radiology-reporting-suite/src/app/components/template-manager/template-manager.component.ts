@@ -6,7 +6,7 @@ import { ButtonModule } from 'primeng/button';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import {
   DialogService,
-  DynamicDialogModule,
+  DynamicDialog,
   DynamicDialogRef,
 } from 'primeng/dynamicdialog';
 import { FileSelectEvent, FileUploadModule } from 'primeng/fileupload';
@@ -29,8 +29,8 @@ import { TemplateManagerListComponent } from '../template-manager-list/template-
     CommonModule,
     TooltipModule,
     ButtonModule,
-    DynamicDialogModule,
     ConfirmPopupModule,
+    DynamicDialog,
     FileUploadModule,
     TemplateManagerListComponent,
   ],

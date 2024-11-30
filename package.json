@@ -21,6 +21,7 @@
     "@ngrx/entity": "^18.1.1",
     "@ngrx/router-store": "^18.1.1",
     "@ngrx/store": "^18.1.1",
+    "@primeng/themes": "^18.0.0-rc.2",
     "@tiptap/core": "^2.10.2",
     "@tiptap/extension-bold": "^2.10.2",
     "@tiptap/extension-font-family": "^2.10.2",
@@ -41,7 +42,7 @@
     "ngx-tiptap": "^11.1.0",
     "primeflex": "^3.3.1",
     "primeicons": "^7.0.0",
-    "primeng": "^17.18.12",
+    "primeng": "^18.0.0-rc.2",
     "rxjs": "~7.8.1",
     "zone.js": "~0.15.0"
   },

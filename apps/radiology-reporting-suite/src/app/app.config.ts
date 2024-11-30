@@ -5,12 +5,13 @@ import {
   isDevMode,
   provideZoneChangeDetection,
 } from '@angular/core';
-import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
 import { provideEffects } from '@ngrx/effects';
 import { provideStore } from '@ngrx/store';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { MessageService } from 'primeng/api';
+import { providePrimeNG } from 'primeng/config';
 
 import { appRoutes } from './app.routes';
 import { ReportDBModule } from './db/report-db.module';
@@ -23,7 +24,12 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(appRoutes),
-    provideAnimations(),
+    provideAnimationsAsync(),
+    providePrimeNG({
+      theme: {
+        preset: 'aura-light-blue',
+      },
+    }),
     provideStore(),
     provideStoreDevtools({ logOnly: !isDevMode() }),
     provideEffects(ApplicationUIEffects, ApplicationEffects),

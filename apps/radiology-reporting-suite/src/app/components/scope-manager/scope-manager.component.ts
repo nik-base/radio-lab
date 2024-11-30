@@ -6,7 +6,7 @@ import { ButtonModule } from 'primeng/button';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import {
   DialogService,
-  DynamicDialogModule,
+  DynamicDialog,
   DynamicDialogRef,
 } from 'primeng/dynamicdialog';
 import { FileUploadModule } from 'primeng/fileupload';
@@ -34,8 +34,8 @@ import { ScopeManagerListComponent } from '../scope-manager-list/scope-manager-l
     CommonModule,
     TooltipModule,
     ButtonModule,
-    DynamicDialogModule,
     ConfirmPopupModule,
+    DynamicDialog,
     FileUploadModule,
     ScopeManagerListComponent,
   ],
