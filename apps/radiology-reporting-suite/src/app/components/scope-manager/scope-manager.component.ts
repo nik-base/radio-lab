@@ -11,7 +11,7 @@ import {
 } from 'primeng/dynamicdialog';
 import { FileUploadModule } from 'primeng/fileupload';
 import { TooltipModule } from 'primeng/tooltip';
-import { tap } from 'rxjs';
+import { take, tap } from 'rxjs';
 
 import { CHANGE_MODE } from '@app/constants';
 import {
@@ -69,7 +69,6 @@ export class ScopeManagerComponent {
       'Create New Scope',
       {
         mode: CHANGE_MODE.Create,
-        templateId: this.template().id,
       }
     );
 
@@ -80,8 +79,13 @@ export class ScopeManagerComponent {
             return;
           }
 
-          this.store$.dispatch(ScopeUIActions.create({ scope }));
-        })
+          this.store$.dispatch(
+            ScopeUIActions.create({
+              scope: { ...scope, templateId: this.template().id },
+            })
+          );
+        }),
+        take(1)
       )
       .subscribe();
   }
@@ -90,7 +94,6 @@ export class ScopeManagerComponent {
     const dialogRef: DynamicDialogRef = this.openManagerDialog('Edit Scope', {
       mode: CHANGE_MODE.Update,
       scope,
-      templateId: scope.templateId,
     });
 
     dialogRef.onClose
@@ -100,8 +103,17 @@ export class ScopeManagerComponent {
             return;
           }
 
-          this.store$.dispatch(ScopeUIActions.update({ scope: updatedScope }));
-        })
+          this.store$.dispatch(
+            ScopeUIActions.update({
+              scope: {
+                ...updatedScope,
+                id: scope.id,
+                templateId: scope.templateId,
+              },
+            })
+          );
+        }),
+        take(1)
       )
       .subscribe();
   }
@@ -125,7 +137,8 @@ export class ScopeManagerComponent {
               templateId: cloneOutput.template.id,
             })
           );
-        })
+        }),
+        take(1)
       )
       .subscribe();
   }

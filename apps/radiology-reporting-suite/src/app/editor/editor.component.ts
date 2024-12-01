@@ -1,5 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import {
+  Component,
+  effect,
+  HostBinding,
+  inject,
+  input,
+  InputSignal,
+  OnInit,
+} from '@angular/core';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Editor, EditorEvents } from '@tiptap/core';
 import { FontFamily } from '@tiptap/extension-font-family';
@@ -32,6 +40,11 @@ import { EditorToolbarComponent } from './toolbar/editor-toolbar.component';
   styleUrls: ['./editor.component.scss'],
 })
 export class EditorComponent implements OnInit {
+  readonly maxHeight: InputSignal<string | undefined> = input<string>();
+
+  @HostBinding('style.--editor-max-height')
+  private _maxHeight: string | undefined;
+
   readonly editor: Editor = new Editor({
     extensions: [
       StarterKit.configure({
@@ -81,7 +94,7 @@ export class EditorComponent implements OnInit {
     editorProps: {
       attributes: {
         class:
-          'tiptap-container tiptap ProseMirror p-2 bg-white outline-none border-1 surface-border border-solid border-round-bottom-lg h-full overflow-auto',
+          'tiptap-container tiptap ProseMirror p-2 bg-white outline-none border-1 surface-border border-solid border-round-bottom-lg h-full overflow-auto editor-input-container',
         spellCheck: 'false',
       },
     },
@@ -93,6 +106,12 @@ export class EditorComponent implements OnInit {
     });
 
   private hostControlChangesSubscription: Subscription | undefined;
+
+  constructor() {
+    effect((): void => {
+      this._maxHeight = this.maxHeight();
+    });
+  }
 
   ngOnInit(): void {
     this.handleHostControlChanges();

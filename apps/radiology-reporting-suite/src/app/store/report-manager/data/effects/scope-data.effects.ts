@@ -128,7 +128,7 @@ export class ScopeDataEffects {
   readonly clone$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(ScopeDataActions.clone),
-      exhaustMap(
+      switchMap(
         ({ scope, templateId }: ReturnType<typeof ScopeDataActions.clone>) =>
           this.reportManagerService.cloneScope$(scope.id, templateId).pipe(
             map((clonedScope: ScopeDto) =>

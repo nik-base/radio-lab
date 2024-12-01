@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, input, InputSignal } from '@angular/core';
+import { Component, computed, input, InputSignal, Signal } from '@angular/core';
 import { Editor } from '@tiptap/core';
 import { DividerModule } from 'primeng/divider';
 import { ToolbarModule } from 'primeng/toolbar';
@@ -48,17 +48,14 @@ export class EditorToolbarComponent {
     Editor | undefined
   >();
 
-  @Input() set toolbarConfig(value: EditorToolbarConfig | undefined) {
-    if (!value) {
-      return;
-    }
+  readonly toolbar: InputSignal<EditorToolbarConfig | undefined> =
+    input<EditorToolbarConfig>();
 
-    this._toolbarConfig = value;
-  }
+  readonly toolbarConfig: Signal<EditorToolbarConfig> = computed(() => {
+    const toolbarConfig: EditorToolbarConfig | undefined = this.toolbar();
 
-  get toolbarConfig(): EditorToolbarConfig {
-    return this._toolbarConfig;
-  }
+    return !toolbarConfig ? this.defaultToolbarConfig : toolbarConfig;
+  });
 
   readonly ToolbarItemType: typeof EDITOR_TOOLBAR_ITEM_TYPE =
     EDITOR_TOOLBAR_ITEM_TYPE;
@@ -83,6 +80,4 @@ export class EditorToolbarComponent {
       'redo',
     ],
   };
-
-  private _toolbarConfig: EditorToolbarConfig = this.defaultToolbarConfig;
 }

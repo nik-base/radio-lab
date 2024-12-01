@@ -11,7 +11,7 @@ import {
 } from 'primeng/dynamicdialog';
 import { FileSelectEvent, FileUploadModule } from 'primeng/fileupload';
 import { TooltipModule } from 'primeng/tooltip';
-import { tap } from 'rxjs';
+import { take, tap } from 'rxjs';
 
 import { CHANGE_MODE } from '@app/constants';
 import { Template, TemplateImport } from '@app/models/domain';
@@ -67,7 +67,8 @@ export class TemplateManagerComponent {
           }
 
           this.store$.dispatch(TemplateUIActions.create({ template }));
-        })
+        }),
+        take(1)
       )
       .subscribe();
   }
@@ -86,9 +87,12 @@ export class TemplateManagerComponent {
           }
 
           this.store$.dispatch(
-            TemplateUIActions.update({ template: updatedTemplate })
+            TemplateUIActions.update({
+              template: { ...updatedTemplate, id: template.id },
+            })
           );
-        })
+        }),
+        take(1)
       )
       .subscribe();
   }

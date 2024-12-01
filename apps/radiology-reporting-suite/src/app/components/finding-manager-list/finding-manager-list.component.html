@@ -1,49 +1,44 @@
 <p-orderList
-  [value]="scopes()"
+  [value]="findings()"
   [metaKeySelection]="true"
   [responsive]="true"
   [listStyle]="{ maxHeight: '100%' }"
   styleClass="w-full h-full"
-  header="Scopes"
+  header="Findings"
+  filterBy="name"
+  filterPlaceholder="Filter by name"
   [dragdrop]="true"
   (onReorder)="onReorder()">
-  <ng-template let-scope pTemplate="item">
+  <ng-template let-finding pTemplate="item">
     <div class="flex flex-row p-1 justify-content-between">
       <div
         class="flex align-items-center flex-grow-1"
-        pTooltip="{{ scope.name }}"
+        pTooltip="{{ finding.name }}"
         tooltipPosition="bottom">
-        {{ scope.name }}
+        {{ finding.name }}
       </div>
 
       <div class="flex flex-row gap-2">
         <p-button
-          icon="pi pi-cog"
-          pTooltip="Configure Findings"
-          tooltipPosition="bottom"
-          (onClick)="onConfigure(scope)"
-          [outlined]="true" />
-
-        <p-button
           icon="pi pi-clone"
-          pTooltip="Clone Scope"
+          pTooltip="Clone Finding"
           tooltipPosition="bottom"
-          (onClick)="onClone(scope)"
+          (onClick)="onClone(finding)"
           [outlined]="true" />
 
         <p-button
           icon="pi pi-pencil"
-          pTooltip="Edit Scope"
+          pTooltip="Edit Finding"
           tooltipPosition="bottom"
-          (onClick)="onEdit(scope)"
+          (onClick)="onEdit(finding)"
           [outlined]="true" />
 
         <p-button
-          pTooltip="Delete Scope"
+          pTooltip="Delete Finding"
           tooltipPosition="bottom"
           icon="pi pi-trash"
           [outlined]="true"
-          (onClick)="onDelete($event, scope)" />
+          (onClick)="onDelete($event, finding)" />
       </div>
     </div>
   </ng-template>

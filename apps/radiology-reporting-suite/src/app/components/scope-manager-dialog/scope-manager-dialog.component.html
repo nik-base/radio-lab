@@ -9,11 +9,11 @@
       class="flex-auto"
       autocomplete="off" />
 
-    <small
-      *ngIf="!formGroup.get('name')?.valid && formGroup.get('name')?.dirty"
-      class="p-error">
-      Name is required
-    </small>
+    @let nameControl = formGroup.get('name');
+
+    @if (nameControl?.hasError('required') && nameControl?.dirty) {
+      <small class="p-error"> Name is required </small>
+    }
   </div>
 
   <ng-container class="flex justify-content-end" dialog-actions>

@@ -10,11 +10,11 @@
         class="flex-auto"
         autocomplete="off" />
 
-      <small
-        *ngIf="!formGroup.get('name')?.valid && formGroup.get('name')?.dirty"
-        class="p-error">
-        Name is required
-      </small>
+      @let nameControl = formGroup.get('name');
+
+      @if (nameControl?.hasError('required') && nameControl?.dirty) {
+        <small class="p-error"> Name is required </small>
+      }
     </div>
 
     <div>
@@ -23,16 +23,14 @@
       <radio-editor
         id="templateProtocol"
         formControlName="protocol"
-        class="max-h-6rem">
+        maxHeight="15rem">
       </radio-editor>
 
-      <small
-        *ngIf="
-          !formGroup.get('protocol')?.valid && formGroup.get('protocol')?.dirty
-        "
-        class="p-error">
-        Description is required
-      </small>
+      @let protocolControl = formGroup.get('protocol');
+
+      @if (protocolControl?.hasError('required') && protocolControl?.dirty) {
+        <small class="p-error"> Description is required </small>
+      }
     </div>
 
     <div>
@@ -41,7 +39,7 @@
       <radio-editor
         id="patientInfo"
         formControlName="patientInfo"
-        class="max-h-6rem">
+        maxHeight="10rem">
       </radio-editor>
     </div>
   </div>

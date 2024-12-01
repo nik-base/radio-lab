@@ -14,9 +14,9 @@ import { TooltipModule } from 'primeng/tooltip';
 import { CHANGE_MODE } from '@app/constants';
 import { EditorComponent } from '@app/editor/editor.component';
 import { EditorValidators } from '@app/editor/validators/editor-validator';
-import { EditorContent, Template } from '@app/models/domain';
+import { EditorContent, TemplateBase } from '@app/models/domain';
 import { TemplateManagerDialogData } from '@app/models/ui';
-import { ChangeModes, FormGroupModel } from '@app/types';
+import { FormGroupModel } from '@app/types';
 
 import { DialogLayoutComponent } from '../dialog-layout/dialog-layout.component';
 
@@ -41,14 +41,14 @@ export class TemplateManagerDialogComponent {
   private readonly dynamicDialogConfig: DynamicDialogConfig =
     inject(DynamicDialogConfig);
 
-  formGroup: FormGroupModel<Template> = this.createFormGroup();
+  formGroup: FormGroupModel<TemplateBase> = this.createFormGroup();
 
   constructor() {
     const data: TemplateManagerDialogData = this.dynamicDialogConfig
       .data as TemplateManagerDialogData;
 
     if (data.mode === CHANGE_MODE.Update) {
-      this.formGroup = this.createFormGroup(CHANGE_MODE.Update, data.template);
+      this.formGroup = this.createFormGroup(data.template);
     }
   }
 
@@ -57,13 +57,16 @@ export class TemplateManagerDialogComponent {
   }
 
   save(): void {
+    if (!this.formGroup.valid) {
+      return;
+    }
+
     this.dynamicDialogRef.close(this.formGroup.getRawValue());
   }
 
   private createFormGroup(
-    mode: ChangeModes = CHANGE_MODE.Create,
-    template?: Template
-  ): FormGroupModel<Template> {
+    template?: TemplateBase
+  ): FormGroupModel<TemplateBase> {
     const formGroup: FormGroup = new FormGroup({
       name: new FormControl<string | null>(template?.name ?? null, {
         nonNullable: true,
@@ -81,15 +84,6 @@ export class TemplateManagerDialogComponent {
       ),
     });
 
-    if (mode === CHANGE_MODE.Update) {
-      formGroup.addControl(
-        'id',
-        new FormControl<string | null>(template?.id ?? null, {
-          nonNullable: true,
-        })
-      );
-    }
-
-    return formGroup as FormGroupModel<Template>;
+    return formGroup as FormGroupModel<TemplateBase>;
   }
 }

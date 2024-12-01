@@ -1,9 +1,8 @@
 import { ChangeModes } from '@app/types';
 
-import { Scope } from '../domain';
+import { ScopeBase } from '../domain';
 
 export interface ScopeManagerDialogData {
-  readonly scope?: Scope;
-  readonly templateId: string;
+  readonly scope?: ScopeBase;
   readonly mode: ChangeModes;
 }

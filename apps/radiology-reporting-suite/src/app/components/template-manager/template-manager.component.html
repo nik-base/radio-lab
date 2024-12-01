@@ -1,34 +1,36 @@
-<div class="flex flex-column align-items-end gap-2">
-  <div class="flex gap-2">
-    <p-fileUpload
-      #import
-      mode="basic"
-      pTooltip="Import Template"
-      tooltipPosition="bottom"
-      chooseIcon="pi pi-upload"
-      url=""
-      (onSelect)="onImport($event)"
-      [auto]="true"
-      [multiple]="false"
-      accept="application/json"
-      [maxFileSize]="10000000"></p-fileUpload>
+<div class="flex gap-2">
+  <div class="flex flex-column gap-2">
+    <div class="flex align-self-end gap-2">
+      <p-fileUpload
+        #import
+        mode="basic"
+        pTooltip="Import Template"
+        tooltipPosition="bottom"
+        chooseIcon="pi pi-upload"
+        url=""
+        (onSelect)="onImport($event)"
+        [auto]="true"
+        [multiple]="false"
+        accept="application/json"
+        [maxFileSize]="10000000"></p-fileUpload>
 
-    <p-button
-      icon="pi pi-plus"
-      pTooltip="Create Template"
-      tooltipPosition="bottom"
-      [outlined]="true"
-      (onClick)="onCreate()" />
-  </div>
+      <p-button
+        icon="pi pi-plus"
+        pTooltip="Create Template"
+        tooltipPosition="bottom"
+        [outlined]="true"
+        (onClick)="onCreate()" />
+    </div>
 
-  <div>
-    <radio-template-manager-list
-      [templates]="templates()"
-      (edit)="onEdit($event)"
-      (delete)="onDelete($event)"
-      (export)="onExport($event)"
-      (changed)="onChange($event)">
-    </radio-template-manager-list>
+    <div class="flex">
+      <radio-template-manager-list
+        [templates]="templates()"
+        (edit)="onEdit($event)"
+        (delete)="onDelete($event)"
+        (export)="onExport($event)"
+        (changed)="onChange($event)">
+      </radio-template-manager-list>
+    </div>
   </div>
 </div>
 

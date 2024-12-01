@@ -5,7 +5,8 @@
 @import 'primeicons/primeicons.css';
 @import 'material-icons/iconfont/material-icons.css';
 
-html {
+html,
+body {
   font-family: var(--font-family);
   font-weight: normal;
   font-size: var(--font-size, 12px);
@@ -13,4 +14,13 @@ html {
   color: var(--text-color);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+}
+
+body {
+  padding: var(--radio-default-padding, 0.5rem);
+}
+
+.flex-basis-auto {
+  flex-basis: auto;
 }

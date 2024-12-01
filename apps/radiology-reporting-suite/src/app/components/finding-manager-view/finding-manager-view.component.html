@@ -1,0 +1,94 @@
+<div class="flex flex-column gap-2">
+  <p-button
+    class="flex align-self-end"
+    [label]="
+      mode() === ChangeModes.Update ? 'Update Finding' : ' Create Finding'
+    "
+    [disabled]="formGroup().invalid"
+    [pTooltip]="
+      mode() === ChangeModes.Update ? 'Update Finding' : ' Create Finding'
+    "
+    tooltipPosition="bottom"
+    (onClick)="onSave()" />
+
+  <p-scrollPanel>
+    <div [formGroup]="formGroup()" class="flex flex-column gap-2">
+      <div class="flex flex-row gap-5">
+        <div>
+          <p-floatLabel>
+            <input
+              pInputText
+              id="findingName"
+              type="text"
+              formControlName="name" />
+            <label for="findingName">Name</label>
+          </p-floatLabel>
+
+          @let nameControl = formGroup().get('name');
+
+          @if (nameControl?.hasError('required') && nameControl?.dirty) {
+            <small id="findingName-error" class="p-error"
+              >Name is required</small
+            >
+          }
+        </div>
+
+        <div>
+          <p-floatLabel>
+            <p-autoComplete
+              id="findingGroup"
+              formControlName="group"
+              [suggestions]="filteredGroups"
+              (completeMethod)="filterGroups($event)" />
+
+            <label for="findingGroup">Group</label>
+          </p-floatLabel>
+        </div>
+
+        <div class="flex gap-2">
+          <label for="findingIsNormal">Is Normal</label>
+
+          <p-inputSwitch id="findingIsNormal" formControlName="isNormal" />
+        </div>
+      </div>
+
+      <div>
+        <label for="findingDescription">Description</label>
+
+        <radio-editor
+          id="findingDescription"
+          maxHeight="15rem"
+          formControlName="description">
+        </radio-editor>
+
+        @let descriptionControl = formGroup().get('description');
+
+        @if (
+          descriptionControl?.hasError('required') && descriptionControl?.dirty
+        ) {
+          <small class="p-error"> Description is required </small>
+        }
+      </div>
+
+      <div>
+        <label for="findingImpression">Impression</label>
+
+        <radio-editor
+          id="findingImpression"
+          maxHeight="10rem"
+          formControlName="impression">
+        </radio-editor>
+      </div>
+
+      <div>
+        <label for="findingRecommendation">Recommendation</label>
+
+        <radio-editor
+          id="findingRecommendation"
+          maxHeight="10rem"
+          formControlName="recommendation">
+        </radio-editor>
+      </div>
+    </div>
+  </p-scrollPanel>
+</div>
