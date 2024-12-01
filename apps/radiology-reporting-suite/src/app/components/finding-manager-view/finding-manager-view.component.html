@@ -4,7 +4,7 @@
     [label]="
       mode() === ChangeModes.Update ? 'Update Finding' : ' Create Finding'
     "
-    [disabled]="formGroup().invalid"
+    [disabled]="formGroup.invalid"
     [pTooltip]="
       mode() === ChangeModes.Update ? 'Update Finding' : ' Create Finding'
     "
@@ -12,7 +12,7 @@
     (onClick)="onSave()" />
 
   <p-scrollPanel>
-    <div [formGroup]="formGroup()" class="flex flex-column gap-2">
+    <div [formGroup]="formGroup" class="flex flex-column gap-2">
       <div class="flex flex-row gap-5">
         <div>
           <p-floatLabel>
@@ -24,7 +24,7 @@
             <label for="findingName">Name</label>
           </p-floatLabel>
 
-          @let nameControl = formGroup().get('name');
+          @let nameControl = formGroup.get('name');
 
           @if (nameControl?.hasError('required') && nameControl?.dirty) {
             <small id="findingName-error" class="p-error"
@@ -61,7 +61,7 @@
           formControlName="description">
         </radio-editor>
 
-        @let descriptionControl = formGroup().get('description');
+        @let descriptionControl = formGroup.get('description');
 
         @if (
           descriptionControl?.hasError('required') && descriptionControl?.dirty

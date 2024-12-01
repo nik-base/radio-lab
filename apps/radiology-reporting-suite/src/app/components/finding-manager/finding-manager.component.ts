@@ -7,12 +7,14 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
+import { PushPipe } from '@ngrx/component';
 import { Store } from '@ngrx/store';
 import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { FileUploadModule } from 'primeng/fileupload';
 import { TooltipModule } from 'primeng/tooltip';
+import { Observable } from 'rxjs';
 
 import { CHANGE_MODE } from '@app/constants';
 import {
@@ -22,6 +24,7 @@ import {
   SortOrderUpdate,
 } from '@app/models/domain';
 import { EventData } from '@app/models/ui';
+import { selectGroups } from '@app/store/report-manager/domain/report-manager.feature';
 import { FindingUIActions } from '@app/store/report-manager/ui/actions/finding-ui.actions';
 import { ChangeModes } from '@app/types';
 
@@ -33,6 +36,7 @@ import { ScopeManagerComponent } from '../finding-manager-view/finding-manager-v
   standalone: true,
   imports: [
     CommonModule,
+    PushPipe,
     TooltipModule,
     ButtonModule,
     ConfirmPopupModule,
@@ -58,16 +62,28 @@ export class FindingManagerComponent {
 
   readonly selectedFinding: WritableSignal<Finding | null> = signal(null);
 
+  readonly groups$: Observable<string[]> = this.store$.select(selectGroups);
+
   readonly ChangeModes: typeof CHANGE_MODE = CHANGE_MODE;
 
   onSave(finding: Finding, mode: ChangeModes): void {
-    if (mode === CHANGE_MODE.Update) {
-      this.store$.dispatch(FindingUIActions.update({ finding }));
+    const selectedFinding: Finding | null = this.selectedFinding();
+
+    const scope: Scope = this.scope();
+
+    if (mode === CHANGE_MODE.Update && selectedFinding) {
+      this.store$.dispatch(
+        FindingUIActions.update({
+          finding: { ...finding, id: selectedFinding.id, scopeId: scope.id },
+        })
+      );
 
       return;
     }
 
-    this.store$.dispatch(FindingUIActions.create({ finding }));
+    this.store$.dispatch(
+      FindingUIActions.create({ finding: { ...finding, scopeId: scope.id } })
+    );
 
     this.mode.set(null);
 

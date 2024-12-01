@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
 import {
   Component,
-  computed,
   input,
   InputSignal,
+  OnChanges,
   output,
   OutputEmitterRef,
-  Signal,
+  SimpleChanges,
 } from '@angular/core';
 import {
   FormControl,
@@ -48,7 +48,7 @@ import { ChangeModes, FormGroupModel } from '@app/types';
   ],
   templateUrl: './finding-manager-view.component.html',
 })
-export class ScopeManagerComponent {
+export class ScopeManagerComponent implements OnChanges {
   readonly finding: InputSignal<Finding | null> = input<Finding | null>(null);
 
   readonly mode: InputSignal<ChangeModes> = input<ChangeModes>(
@@ -59,22 +59,22 @@ export class ScopeManagerComponent {
 
   readonly save: OutputEmitterRef<Finding> = output<Finding>();
 
-  readonly formGroup: Signal<FormGroupModel<FindingBase>> = computed(() => {
-    const finding: Finding | null = this.finding();
-
-    if (this.mode() === CHANGE_MODE.Create || !finding) {
-      return this.createFormGroup();
-    }
-
-    return this.createFormGroup(finding);
-  });
+  readonly formGroup: FormGroupModel<FindingBase> = this.createFormGroup();
 
   readonly ChangeModes: typeof CHANGE_MODE = CHANGE_MODE;
 
   filteredGroups: string[] = [];
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (!('finding' in changes)) {
+      return;
+    }
+
+    this.setFormValues();
+  }
+
   onSave(): void {
-    if (!this.formGroup().valid) {
+    if (!this.formGroup.valid) {
       return;
     }
 
@@ -87,38 +87,51 @@ export class ScopeManagerComponent {
     );
   }
 
+  private setFormValues(): void {
+    const finding: Finding | null = this.finding();
+
+    if (this.mode() === CHANGE_MODE.Create || !finding) {
+      return;
+    }
+
+    this.formGroup.get('name')?.setValue(finding.name);
+
+    this.formGroup.get('group')?.setValue(finding.group);
+
+    this.formGroup.get('isNormal')?.setValue(finding.isNormal);
+
+    this.formGroup.get('description')?.setValue(finding.description);
+
+    this.formGroup.get('impression')?.setValue(finding.impression);
+
+    this.formGroup.get('recommendation')?.setValue(finding.recommendation);
+  }
+
   private getFinding(): Finding {
     if (this.mode() === CHANGE_MODE.Create) {
-      return this.formGroup().getRawValue() as Finding;
+      return this.formGroup.getRawValue() as Finding;
     }
 
     return {
-      ...this.formGroup().getRawValue(),
+      ...this.formGroup.getRawValue(),
       id: this.finding()?.id,
     } as Finding;
   }
 
-  private createFormGroup(finding?: FindingBase): FormGroupModel<FindingBase> {
+  private createFormGroup(): FormGroupModel<FindingBase> {
     const formGroup: FormGroup = new FormGroup({
-      name: new FormControl<string | null>(finding?.name ?? null, {
+      name: new FormControl<string | null>(null, {
         nonNullable: true,
         validators: [Validators.required.bind(this)],
       }),
-      group: new FormControl<string | null>(finding?.group ?? null),
-      isNormal: new FormControl<boolean>(finding?.isNormal ?? false),
-      description: new FormControl<EditorContent | null>(
-        finding?.description ?? null,
-        {
-          nonNullable: true,
-          validators: [EditorValidators.required()],
-        }
-      ),
-      impression: new FormControl<EditorContent | null>(
-        finding?.impression ?? null
-      ),
-      recommendation: new FormControl<EditorContent | null>(
-        finding?.recommendation ?? null
-      ),
+      group: new FormControl<string | null>(null),
+      isNormal: new FormControl<boolean>(false),
+      description: new FormControl<EditorContent | null>(null, {
+        nonNullable: true,
+        validators: [EditorValidators.required()],
+      }),
+      impression: new FormControl<EditorContent | null>(null),
+      recommendation: new FormControl<EditorContent | null>(null),
     });
 
     return formGroup as FormGroupModel<FindingBase>;

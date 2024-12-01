@@ -22,14 +22,19 @@
 
   <div class="flex">
     @if (mode()) {
+      @let groups = (groups$ | ngrxPush) ?? [];
+
       @if (mode() === ChangeModes.Update && selectedFinding()) {
         <radio-finding-manager-view
           [finding]="selectedFinding()"
+          [groups]="groups"
           [mode]="ChangeModes.Update"
           (save)="onSave($event, ChangeModes.Update)">
         </radio-finding-manager-view>
       } @else {
-        <radio-finding-manager-view (save)="onSave($event, ChangeModes.Create)">
+        <radio-finding-manager-view
+          [groups]="groups"
+          (save)="onSave($event, ChangeModes.Create)">
         </radio-finding-manager-view>
       }
     }

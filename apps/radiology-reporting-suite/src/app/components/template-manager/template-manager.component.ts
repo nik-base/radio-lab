@@ -1,5 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, input, InputSignal } from '@angular/core';
+import {
+  Component,
+  inject,
+  input,
+  InputSignal,
+  ViewChild,
+} from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -9,7 +15,11 @@ import {
   DynamicDialogModule,
   DynamicDialogRef,
 } from 'primeng/dynamicdialog';
-import { FileSelectEvent, FileUploadModule } from 'primeng/fileupload';
+import {
+  FileSelectEvent,
+  FileUpload,
+  FileUploadModule,
+} from 'primeng/fileupload';
 import { TooltipModule } from 'primeng/tooltip';
 import { take, tap } from 'rxjs';
 
@@ -49,6 +59,8 @@ export class TemplateManagerComponent {
     inject(ConfirmationService);
 
   readonly templates: InputSignal<Template[]> = input.required<Template[]>();
+
+  @ViewChild('import') importRef: FileUpload | undefined;
 
   onChange(template: Template): void {
     this.store$.dispatch(TemplateUIActions.change({ template }));
@@ -128,7 +140,7 @@ export class TemplateManagerComponent {
     reader.onload = (progressEvent: ProgressEvent<FileReader>): void => {
       this.import(progressEvent.target);
 
-      event.files = [];
+      this.importRef?.clear();
     };
 
     reader.readAsText(uploadedFile);
