@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { PushPipe } from '@ngrx/component';
 import { Store } from '@ngrx/store';
+import { maxBy } from 'lodash';
 import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
@@ -24,7 +25,10 @@ import {
   SortOrderUpdate,
 } from '@app/models/domain';
 import { EventData } from '@app/models/ui';
-import { selectGroups } from '@app/store/report-manager/domain/report-manager.feature';
+import {
+  selectGroups,
+  selectSelectedFinding,
+} from '@app/store/report-manager/domain/report-manager.feature';
 import { FindingUIActions } from '@app/store/report-manager/ui/actions/finding-ui.actions';
 import { ChangeModes } from '@app/types';
 
@@ -62,11 +66,19 @@ export class FindingManagerComponent {
 
   readonly selectedFinding: WritableSignal<Finding | null> = signal(null);
 
+  readonly selectedFinding$: Observable<Finding | null> = this.store$.select(
+    selectSelectedFinding
+  );
+
   readonly groups$: Observable<string[]> = this.store$.select(selectGroups);
 
   readonly ChangeModes: typeof CHANGE_MODE = CHANGE_MODE;
 
-  onSave(finding: Finding, mode: ChangeModes): void {
+  onSave(
+    finding: Finding,
+    mode: ChangeModes,
+    storeSelectedFinding: Finding | null = null
+  ): void {
     const selectedFinding: Finding | null = this.selectedFinding();
 
     const scope: Scope = this.scope();
@@ -74,15 +86,25 @@ export class FindingManagerComponent {
     if (mode === CHANGE_MODE.Update && selectedFinding) {
       this.store$.dispatch(
         FindingUIActions.update({
-          finding: { ...finding, id: selectedFinding.id, scopeId: scope.id },
+          finding: {
+            ...finding,
+            id: selectedFinding.id,
+            scopeId: scope.id,
+            sortOrder:
+              storeSelectedFinding?.sortOrder ?? selectedFinding.sortOrder,
+          },
         })
       );
 
       return;
     }
 
+    const nextSortOrder: number = this.findNextFindingSortOrder();
+
     this.store$.dispatch(
-      FindingUIActions.create({ finding: { ...finding, scopeId: scope.id } })
+      FindingUIActions.create({
+        finding: { ...finding, scopeId: scope.id, sortOrder: nextSortOrder },
+      })
     );
 
     this.mode.set(null);
@@ -139,5 +161,13 @@ export class FindingManagerComponent {
     };
 
     this.store$.dispatch(FindingUIActions.reorder({ sortOrders }));
+  }
+
+  private findNextFindingSortOrder(): number {
+    const lastFinding: Finding | null =
+      maxBy(this.findings(), (finding: Finding): number => finding.sortOrder) ??
+      null;
+
+    return lastFinding === null ? 0 : lastFinding.sortOrder + 1;
   }
 }

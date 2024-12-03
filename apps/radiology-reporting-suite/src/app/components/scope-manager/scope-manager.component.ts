@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, input, InputSignal } from '@angular/core';
+import { PushPipe } from '@ngrx/component';
 import { Store } from '@ngrx/store';
 import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -11,7 +12,7 @@ import {
 } from 'primeng/dynamicdialog';
 import { FileUploadModule } from 'primeng/fileupload';
 import { TooltipModule } from 'primeng/tooltip';
-import { take, tap } from 'rxjs';
+import { Observable, take, tap } from 'rxjs';
 
 import { CHANGE_MODE } from '@app/constants';
 import {
@@ -26,6 +27,7 @@ import {
   ScopeCloneDialogOutput,
   ScopeManagerDialogData,
 } from '@app/models/ui';
+import { selectSelectedScope } from '@app/store/report-manager/domain/report-manager.feature';
 import { ScopeUIActions } from '@app/store/report-manager/ui/actions/scope-ui.actions';
 
 import { ScopeCloneDialogComponent } from '../scope-clone-dialog/scope-clone-dialog.component';
@@ -37,6 +39,7 @@ import { ScopeManagerListComponent } from '../scope-manager-list/scope-manager-l
   standalone: true,
   imports: [
     CommonModule,
+    PushPipe,
     TooltipModule,
     ButtonModule,
     DynamicDialogModule,
@@ -59,6 +62,9 @@ export class ScopeManagerComponent {
   readonly scopes: InputSignal<Scope[]> = input.required<Scope[]>();
 
   readonly template: InputSignal<Template> = input.required<Template>();
+
+  readonly selectedScope: Observable<Scope | null> =
+    this.store$.select(selectSelectedScope);
 
   onChange(scope: Scope): void {
     this.store$.dispatch(ScopeUIActions.change({ scope }));

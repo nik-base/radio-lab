@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
 import {
   Component,
+  effect,
   input,
   InputSignal,
-  OnChanges,
   output,
   OutputEmitterRef,
-  SimpleChanges,
+  untracked,
 } from '@angular/core';
 import {
   FormControl,
@@ -48,7 +48,7 @@ import { ChangeModes, FormGroupModel } from '@app/types';
   ],
   templateUrl: './finding-manager-view.component.html',
 })
-export class ScopeManagerComponent implements OnChanges {
+export class ScopeManagerComponent {
   readonly finding: InputSignal<Finding | null> = input<Finding | null>(null);
 
   readonly mode: InputSignal<ChangeModes> = input<ChangeModes>(
@@ -65,12 +65,8 @@ export class ScopeManagerComponent implements OnChanges {
 
   filteredGroups: string[] = [];
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (!('finding' in changes)) {
-      return;
-    }
-
-    this.setFormValues();
+  constructor() {
+    this.createSetFormValuesEffect();
   }
 
   onSave(): void {
@@ -87,10 +83,16 @@ export class ScopeManagerComponent implements OnChanges {
     );
   }
 
-  private setFormValues(): void {
-    const finding: Finding | null = this.finding();
+  private createSetFormValuesEffect(): void {
+    effect(() => {
+      const finding: Finding | null = this.finding();
 
-    if (this.mode() === CHANGE_MODE.Create || !finding) {
+      untracked(() => this.setFormValues(this.mode(), finding));
+    });
+  }
+
+  private setFormValues(mode: ChangeModes, finding: Finding | null): void {
+    if (mode === CHANGE_MODE.Create || !finding) {
       return;
     }
 

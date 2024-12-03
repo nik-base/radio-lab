@@ -10,7 +10,9 @@
   [dragdrop]="true"
   (onReorder)="onReorder()">
   <ng-template let-finding pTemplate="item">
-    <div class="flex flex-row p-1 justify-content-between">
+    <div
+      class="flex flex-row p-1 justify-content-between"
+      [ngClass]="selectedFinding()?.id === finding.id ? 'finding-active' : ''">
       <div
         class="flex align-items-center flex-grow-1"
         pTooltip="{{ finding.name }}"

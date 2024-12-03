@@ -12,6 +12,7 @@
     <div class="flex h-full min-h-0">
       <radio-scope-manager-list
         [scopes]="scopes()"
+        [selectedScope]="(selectedScope | ngrxPush) ?? null"
         (edit)="onEdit($event)"
         (delete)="onDelete($event)"
         (clone)="onClone($event)"

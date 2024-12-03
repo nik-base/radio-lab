@@ -24,8 +24,13 @@ import { TooltipModule } from 'primeng/tooltip';
 import { take, tap } from 'rxjs';
 
 import { CHANGE_MODE } from '@app/constants';
+import { LegacyTemplateImportMapperService } from '@app/mapper/legacy-template-import-mapper.service';
 import { Template, TemplateImport } from '@app/models/domain';
-import { EventData, TemplateManagerDialogData } from '@app/models/ui';
+import {
+  EventData,
+  LegacyTemplateImport,
+  TemplateManagerDialogData,
+} from '@app/models/ui';
 import { TemplateUIActions } from '@app/store/report-manager/ui/actions/template-ui.actions';
 import { JsonService } from '@app/utils/services/json.service';
 
@@ -57,6 +62,9 @@ export class TemplateManagerComponent {
 
   private readonly confirmationService: ConfirmationService =
     inject(ConfirmationService);
+
+  private readonly legacyTemplateImportMapper: LegacyTemplateImportMapperService =
+    inject(LegacyTemplateImportMapperService);
 
   readonly templates: InputSignal<Template[]> = input.required<Template[]>();
 
@@ -160,7 +168,7 @@ export class TemplateManagerComponent {
       return;
     }
 
-    const template: TemplateImport = this.jsonService.parseSafe<TemplateImport>(
+    const template: TemplateImport = this.parseImportedTemplate(
       fileContent as string
     );
 
@@ -175,6 +183,17 @@ export class TemplateManagerComponent {
     }
 
     this.store$.dispatch(TemplateUIActions.import({ template }));
+  }
+
+  private parseImportedTemplate(content: string): TemplateImport {
+    const importObject: LegacyTemplateImport =
+      this.jsonService.parseSafe<LegacyTemplateImport>(content);
+
+    if ('template' in importObject) {
+      return this.legacyTemplateImportMapper.mapFromLegacy(importObject);
+    }
+
+    return this.jsonService.parseSafe<TemplateImport>(content);
   }
 
   private openDialog(

@@ -23,6 +23,8 @@ import { EventData } from '@app/models/ui';
 export class ScopeManagerListComponent {
   readonly scopes: InputSignal<Scope[]> = input.required<Scope[]>();
 
+  readonly selectedScope: InputSignal<Scope | null> = input<Scope | null>(null);
+
   readonly changed: OutputEmitterRef<Scope> = output<Scope>();
 
   readonly edit: OutputEmitterRef<Scope> = output<Scope>();

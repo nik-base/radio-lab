@@ -23,6 +23,10 @@ import { EventData } from '@app/models/ui';
 export class FindingManagerListComponent {
   readonly findings: InputSignal<Finding[]> = input.required<Finding[]>();
 
+  readonly selectedFinding: InputSignal<Finding | null> = input<Finding | null>(
+    null
+  );
+
   readonly edit: OutputEmitterRef<Finding> = output<Finding>();
 
   readonly delete: OutputEmitterRef<EventData<Finding>> =

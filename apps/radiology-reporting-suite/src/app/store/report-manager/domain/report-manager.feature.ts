@@ -189,21 +189,20 @@ export const reportManagerFeature = createFeature({
             return;
           }
 
-          draft.scopes.map((scope: Scope): Scope => {
+          for (const scope of draft.scopes) {
             const newSortOrderItem: SortOrderItem | undefined =
               sortOrders.sortOrdersMap.find(
                 (item: SortOrderItem): boolean => item.id === scope.id
               );
 
-            if (isNil(newSortOrderItem)) {
-              return scope;
-            }
+            if (!isNil(newSortOrderItem)) {
+              scope.sortOrder = newSortOrderItem.sortOrder;
 
-            return {
-              ...scope,
-              sortOrder: newSortOrderItem.sortOrder,
-            };
-          });
+              if (draft.selectedScope && draft.selectedScope.id === scope.id) {
+                draft.selectedScope.sortOrder = newSortOrderItem.sortOrder;
+              }
+            }
+          }
         })
     ),
     on(
@@ -331,21 +330,23 @@ export const reportManagerFeature = createFeature({
             return;
           }
 
-          draft.findings.map((finding: Finding): Finding => {
+          for (const finding of draft.findings) {
             const newSortOrderItem: SortOrderItem | undefined =
               sortOrders.sortOrdersMap.find(
                 (item: SortOrderItem): boolean => item.id === finding.id
               );
 
-            if (isNil(newSortOrderItem)) {
-              return finding;
-            }
+            if (!isNil(newSortOrderItem)) {
+              finding.sortOrder = newSortOrderItem.sortOrder;
 
-            return {
-              ...finding,
-              sortOrder: newSortOrderItem.sortOrder,
-            };
-          });
+              if (
+                draft.selectedFinding &&
+                draft.selectedFinding.id === finding.id
+              ) {
+                draft.selectedFinding.sortOrder = newSortOrderItem.sortOrder;
+              }
+            }
+          }
         })
     ),
     on(

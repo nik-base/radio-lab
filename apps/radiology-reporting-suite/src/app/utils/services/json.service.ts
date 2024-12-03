@@ -6,23 +6,28 @@ import { LoggerService } from './logger.service';
 export class JsonService {
   private readonly logger: LoggerService = inject(LoggerService);
 
-  stringify(value: unknown): string {
-    return JSON.stringify(value);
+  stringify(value: unknown, space?: string | number): string {
+    return JSON.stringify(value, null, space);
   }
 
-  stringifySafe(value: unknown): string;
-  stringifySafe(value: null | undefined): null | undefined;
+  stringifySafe(value: unknown, space?: string | number): string;
   stringifySafe(
-    value: NonNullable<unknown> | null | undefined
+    value: null | undefined,
+    space?: string | number
+  ): null | undefined;
+  stringifySafe(
+    value: NonNullable<unknown> | null | undefined,
+    space?: string | number
   ): string | null | undefined;
   stringifySafe(
-    value: NonNullable<unknown> | null | undefined
+    value: NonNullable<unknown> | null | undefined,
+    space?: string | number
   ): string | null | undefined {
     if (value === null || value === undefined) {
       return value;
     }
 
-    return this.stringify(value);
+    return this.stringify(value, space);
   }
 
   parse<T>(json: string): T | never;
