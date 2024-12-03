@@ -2,9 +2,8 @@
   emptyMessage="No templates available"
   [options]="templates()"
   optionLabel="name"
-  [listStyle]="{ maxHeight: '100%' }"
-  listStyleClass="h-full  max-h-full"
-  styleClass="w-full h-full"
+  listStyleClass="max-h-full"
+  styleClass="w-full flex max-h-full"
   (onChange)="onChange($event)">
   <ng-template let-template pTemplate="item">
     <div class="flex flex-row p-1 justify-content-between w-full">

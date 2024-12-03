@@ -17,6 +17,7 @@ import { EventData } from '@app/models/ui';
   selector: 'radio-scope-manager-list',
   standalone: true,
   imports: [CommonModule, OrderListModule, TooltipModule, ButtonModule],
+  styleUrls: ['./scope-manager-list.component.scss'],
   templateUrl: './scope-manager-list.component.html',
 })
 export class ScopeManagerListComponent {

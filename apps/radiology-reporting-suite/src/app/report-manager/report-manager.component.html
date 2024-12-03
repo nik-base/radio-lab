@@ -1,30 +1,28 @@
-<div class="flex flex-column">
-  <div class="flex">
-    <radio-template-manager
-      [templates]="(templates$ | ngrxPush) ?? []"
+<div class="flex h-full">
+  <radio-template-manager
+    [templates]="(templates$ | ngrxPush) ?? []"
+    class="flex flex-grow-0 flex-shrink-1 flex-basis-auto">
+  </radio-template-manager>
+
+  @let scopes = scopes$ | ngrxPush;
+  @let selectedTemplate = selectedTemplate$ | ngrxPush;
+
+  @if (scopes && selectedTemplate) {
+    <radio-scope-manager
+      [scopes]="scopes"
+      [template]="selectedTemplate"
       class="flex flex-grow-0 flex-shrink-1 flex-basis-auto">
-    </radio-template-manager>
+    </radio-scope-manager>
+  }
 
-    @let scopes = scopes$ | ngrxPush;
-    @let selectedTemplate = selectedTemplate$ | ngrxPush;
+  @let findings = findings$ | ngrxPush;
+  @let selectedScope = selectedScope$ | ngrxPush;
 
-    @if (scopes && selectedTemplate) {
-      <radio-scope-manager
-        [scopes]="scopes"
-        [template]="selectedTemplate"
-        class="flex flex-grow-0 flex-shrink-1 flex-basis-auto">
-      </radio-scope-manager>
-    }
-
-    @let findings = findings$ | ngrxPush;
-    @let selectedScope = selectedScope$ | ngrxPush;
-
-    @if (findings && selectedScope) {
-      <radio-finding-manager
-        [findings]="findings"
-        [scope]="selectedScope"
-        class="flex flex-grow-1 flex-shrink-0 flex-basis-auto">
-      </radio-finding-manager>
-    }
-  </div>
+  @if (findings && selectedScope) {
+    <radio-finding-manager
+      [findings]="findings"
+      [scope]="selectedScope"
+      class="flex flex-grow-1 flex-shrink-0 flex-basis-auto">
+    </radio-finding-manager>
+  }
 </div>

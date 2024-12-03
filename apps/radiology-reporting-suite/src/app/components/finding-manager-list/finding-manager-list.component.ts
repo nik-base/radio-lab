@@ -17,6 +17,7 @@ import { EventData } from '@app/models/ui';
   selector: 'radio-finding-manager-list',
   standalone: true,
   imports: [CommonModule, OrderListModule, TooltipModule, ButtonModule],
+  styleUrls: ['./finding-manager-list.component.scss'],
   templateUrl: './finding-manager-list.component.html',
 })
 export class FindingManagerListComponent {

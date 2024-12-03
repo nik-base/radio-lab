@@ -9,7 +9,7 @@
         (onClick)="onCreate()" />
     </div>
 
-    <div class="flex">
+    <div class="flex h-full min-h-0">
       <radio-finding-manager-list
         [findings]="findings()"
         (edit)="onEdit($event)"
@@ -20,7 +20,7 @@
     </div>
   </div>
 
-  <div class="flex">
+  <div class="flex h-full min-h-0">
     @if (mode()) {
       @let groups = (groups$ | ngrxPush) ?? [];
 
