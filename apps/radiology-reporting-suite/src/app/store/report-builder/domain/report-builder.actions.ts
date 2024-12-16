@@ -1,6 +1,11 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
-import { ApplicationError, Template, TemplateData } from '@app/models/domain';
+import {
+  ApplicationError,
+  Scope,
+  Template,
+  TemplateData,
+} from '@app/models/domain';
 
 // eslint-disable-next-line @typescript-eslint/typedef
 export const ReportBuilderActions = createActionGroup({
@@ -21,5 +26,8 @@ export const ReportBuilderActions = createActionGroup({
     }>(),
 
     'Reset Template Data': emptyProps(),
+
+    'Set Scope': props<{ readonly scope: Scope }>(),
+    'Reset Scope': emptyProps(),
   },
 });

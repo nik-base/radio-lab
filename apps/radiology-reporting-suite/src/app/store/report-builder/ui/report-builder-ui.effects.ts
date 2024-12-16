@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { map } from 'rxjs';
+import { map, mergeMap } from 'rxjs';
 
 import { APP_NOTIFICATION_TYPE } from '@app/constants';
 import { ApplicationUIActions } from '@app/store/actions/application-ui.actions';
@@ -13,6 +13,18 @@ import { ReportBuilderUIActions } from './report-builder-ui.actions';
 export class ReportBuilderUIEffects {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   private readonly actions$: Actions = inject(Actions);
+
+  // eslint-disable-next-line @typescript-eslint/typedef
+  readonly load$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(ReportBuilderUIActions.load),
+      // eslint-disable-next-line @ngrx/no-multiple-actions-in-effects
+      mergeMap(() => [
+        ReportBuilderUIActions.resetTemplateData(),
+        ReportBuilderUIActions.fetchTemplates(),
+      ])
+    );
+  });
 
   // eslint-disable-next-line @typescript-eslint/typedef
   readonly fetchTemplates$ = createEffect(() => {
@@ -32,6 +44,32 @@ export class ReportBuilderUIEffects {
         }: ReturnType<typeof ReportBuilderUIActions.fetchTemplateData>) =>
           ReportBuilderActions.fetchTemplateData({ templateId })
       )
+    );
+  });
+
+  // eslint-disable-next-line @typescript-eslint/typedef
+  readonly fetchScopeOnFetchTemplateData$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(ReportBuilderUIActions.fetchTemplateData),
+      map(() => ReportBuilderActions.resetScope())
+    );
+  });
+
+  // eslint-disable-next-line @typescript-eslint/typedef
+  readonly setScope$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(ReportBuilderUIActions.setScope),
+      map(({ scope }: ReturnType<typeof ReportBuilderUIActions.setScope>) =>
+        ReportBuilderActions.setScope({ scope })
+      )
+    );
+  });
+
+  // eslint-disable-next-line @typescript-eslint/typedef
+  readonly resetScope$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(ReportBuilderUIActions.resetScope),
+      map(() => ReportBuilderActions.resetScope())
     );
   });
 

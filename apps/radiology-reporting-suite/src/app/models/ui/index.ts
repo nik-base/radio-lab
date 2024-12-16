@@ -10,3 +10,4 @@ export { ScopeManagerDialogData } from './scope-manager-dialog-data.interface';
 
 export { LegacyTemplateImport } from './legacy-template-import.interface';
 
+export { FindingGrouped } from './finding-grouped.interface';

@@ -1,0 +1,22 @@
+<div class="flex flex-column gap-1 w-full">
+  <p-accordion
+    class="flex flex-row"
+    styleClass="w-full"
+    [multiple]="true"
+    [activeIndex]="[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]">
+    @for (groupedFinding of groupedFindings(); track groupedFinding.group) {
+      <p-accordionTab [header]="groupedFinding.group">
+        <div class="flex flex-row flex-wrap gap-2">
+          @for (finding of groupedFinding.findings; track finding.id) {
+            <span>
+              <p-chip
+                (click)="onClick(finding)"
+                class="cursor-pointer"
+                [label]="finding.name" />
+            </span>
+          }
+        </div>
+      </p-accordionTab>
+    }
+  </p-accordion>
+</div>

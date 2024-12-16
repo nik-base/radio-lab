@@ -1,0 +1,27 @@
+<p-listbox
+  emptyMessage="No scopes available"
+  [options]="scopes()"
+  optionLabel="name"
+  listStyleClass="max-h-full w-full"
+  styleClass="w-full flex max-h-full"
+  (onChange)="onChange($event)">
+  <ng-template let-scope pTemplate="item">
+    <div class="flex flex-row p-1 justify-content-between w-full">
+      <div
+        class="flex align-items-center flex-grow-1"
+        pTooltip="{{ scope.name }}"
+        tooltipPosition="bottom">
+        {{ scope.name }}
+      </div>
+
+      <div class="flex flex-row gap-2">
+        <p-button
+          icon="pi pi-check-circle"
+          pTooltip="Normal"
+          tooltipPosition="bottom"
+          [outlined]="true"
+          (onClick)="onNormal(scope)" />
+      </div>
+    </div>
+  </ng-template>
+</p-listbox>

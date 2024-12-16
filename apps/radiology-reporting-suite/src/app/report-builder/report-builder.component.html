@@ -1,6 +1,54 @@
-<p>Report Builder works!</p>
-<radio-editor
-  class="flex flex-column"
-  style="height: 50vh"
-  [formControl]="editorControl"></radio-editor>
-<div>{{ templates$ | ngrxPush | json }}</div>
+<div class="flex flex-column gap-2 h-full">
+  <div>
+    <radio-template-selector
+      id="template-selector"
+      class="h-full"
+      [templates]="(templates$ | ngrxPush) ?? []"
+      (select)="onSelectTemplate($event)">
+    </radio-template-selector>
+  </div>
+
+  <div class="flex flex-column h-full">
+    @let templateData = templateData$ | ngrxPush;
+
+    @if (templateData) {
+      <p-splitter
+        [panelSizes]="[50, 50]"
+        [minSizes]="[30, 30]"
+        styleClass="h-full"
+        class="h-full">
+        <ng-template pTemplate>
+          <p-splitter
+            [panelSizes]="[20, 80]"
+            [minSizes]="[20, 60]"
+            styleClass="">
+            <ng-template pTemplate>
+              <radio-scope-list
+                class="w-full p-2"
+                [scopes]="templateData.scopes"
+                (changed)="onScopeChange($event)">
+              </radio-scope-list>
+            </ng-template>
+
+            <ng-template pTemplate>
+              <p-panel
+                header="Findings"
+                class="flex w-full h-full p-2"
+                styleClass="w-full  h-full overflow-auto">
+                <radio-finding-grouped-list
+                  class="w-full"
+                  [groupedFindings]="(groupedFindings$ | ngrxPush) ?? []">
+                </radio-finding-grouped-list>
+              </p-panel>
+            </ng-template>
+          </p-splitter>
+        </ng-template>
+
+        <ng-template pTemplate>
+          <radio-editor class="flex flex-column w-full p-2" maxHeight="90vh">
+          </radio-editor>
+        </ng-template>
+      </p-splitter>
+    }
+  </div>
+</div>
