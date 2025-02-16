@@ -6,11 +6,9 @@
 @import 'material-icons/iconfont/material-icons.css';
 
 html {
-  font-family: var(--font-family);
+  font-family: "'Inter var'", sans-serif;
   font-weight: normal;
-  font-size: var(--font-size, 12px);
-  background: var(--surface-ground);
-  color: var(--text-color);
+  font-size: 12px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

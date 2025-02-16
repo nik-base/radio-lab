@@ -4,11 +4,7 @@ import { Store } from '@ngrx/store';
 import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
-import {
-  DialogService,
-  DynamicDialog,
-  DynamicDialogRef,
-} from 'primeng/dynamicdialog';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FileSelectEvent, FileUploadModule } from 'primeng/fileupload';
 import { TooltipModule } from 'primeng/tooltip';
 import { tap } from 'rxjs';
@@ -30,7 +26,6 @@ import { TemplateManagerListComponent } from '../template-manager-list/template-
     TooltipModule,
     ButtonModule,
     ConfirmPopupModule,
-    DynamicDialog,
     FileUploadModule,
     TemplateManagerListComponent,
   ],
