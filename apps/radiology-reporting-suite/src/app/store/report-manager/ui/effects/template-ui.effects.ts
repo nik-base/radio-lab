@@ -80,7 +80,7 @@ export class TemplateUIEffects {
         ofType(TemplateUIActions.download),
         map(({ template }: ReturnType<typeof TemplateUIActions.download>) => {
           try {
-            this.fileService.downloadJSONObject(template, template.name);
+            this.fileService.downloadJSONObject(template, template.name, 2);
 
             return TemplateUIActions.downloadSuccess({ template });
           } catch (error: unknown) {

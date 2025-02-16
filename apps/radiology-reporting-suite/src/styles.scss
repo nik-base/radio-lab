@@ -2,7 +2,7 @@
 // @import 'primeng/resources/themes/aura-light-blue/theme.css';
 // @import 'primeng/resources/primeng.css';
 @import 'primeflex/primeflex.css';
-@import 'primeicons/primeicons.css';
+@import 'primeicons/primeicons.css';      
 @import 'material-icons/iconfont/material-icons.css';
 
 html {
@@ -11,4 +11,18 @@ html {
   font-size: 12px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+}
+
+html > body {
+  padding: var(--radio-default-padding, 0.5rem);
+  flex: auto;
+  flex-direction: column;
+}
+
+.flex-basis-auto {
+  flex-basis: auto;
 }

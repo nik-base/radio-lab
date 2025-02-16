@@ -270,10 +270,12 @@ export class ScopeEffects {
       ofType(ScopeDataActions.cloneSuccess),
       map(
         ({
+          originalScope,
           scope,
           templateId,
         }: ReturnType<typeof ScopeDataActions.cloneSuccess>) =>
           ScopeActions.cloneSuccess({
+            originalScope: this.scopeMapper.mapFromDto(originalScope),
             scope: this.scopeMapper.mapFromDto(scope),
             templateId,
           })

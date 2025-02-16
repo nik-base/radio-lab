@@ -1,8 +1,8 @@
 import { ChangeModes } from '@app/types';
 
-import { Template } from '../domain';
+import { TemplateBase } from '../domain';
 
 export interface TemplateManagerDialogData {
-  readonly template?: Template;
+  readonly template?: TemplateBase;
   readonly mode: ChangeModes;
 }

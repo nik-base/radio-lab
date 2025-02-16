@@ -129,7 +129,7 @@ export class FindingDataEffects {
   readonly clone$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(FindingDataActions.clone),
-      exhaustMap(({ finding }: ReturnType<typeof FindingDataActions.clone>) =>
+      switchMap(({ finding }: ReturnType<typeof FindingDataActions.clone>) =>
         this.reportManagerService.cloneFinding$(finding.id).pipe(
           map((importedFinding: FindingDto) =>
             FindingDataActions.cloneSuccess({

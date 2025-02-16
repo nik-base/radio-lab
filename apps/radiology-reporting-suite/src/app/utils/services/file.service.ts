@@ -11,10 +11,11 @@ export class FileService {
   downloadJSONObject(
     data: unknown,
     fileName: string,
+    space?: string | number,
     extension: string = 'json'
   ): void {
     const jsonString: string | null | undefined =
-      this.jsonService.stringifySafe(data);
+      this.jsonService.stringifySafe(data, space);
 
     this.downloadJSONString(jsonString, fileName, extension);
   }

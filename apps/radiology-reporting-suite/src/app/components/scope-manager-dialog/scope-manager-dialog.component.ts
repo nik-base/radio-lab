@@ -12,9 +12,9 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TooltipModule } from 'primeng/tooltip';
 
 import { CHANGE_MODE } from '@app/constants';
-import { Scope } from '@app/models/domain';
-import { ScopeManagerDialogData } from '@app/models/ui/scope-manger-dialog-data.interface';
-import { ChangeModes, FormGroupModel } from '@app/types';
+import { ScopeBase } from '@app/models/domain';
+import { ScopeManagerDialogData } from '@app/models/ui/scope-manager-dialog-data.interface';
+import { FormGroupModel } from '@app/types';
 
 import { DialogLayoutComponent } from '../dialog-layout/dialog-layout.component';
 
@@ -38,17 +38,15 @@ export class ScopeManagerDialogComponent {
   private readonly dynamicDialogConfig: DynamicDialogConfig =
     inject(DynamicDialogConfig);
 
-  formGroup!: FormGroupModel<Scope>;
+  formGroup: FormGroupModel<ScopeBase> = this.createFormGroup();
 
   constructor() {
     const data: ScopeManagerDialogData = this.dynamicDialogConfig
       .data as ScopeManagerDialogData;
 
-    this.formGroup = this.createFormGroup(
-      data.mode,
-      data.templateId,
-      data.scope
-    );
+    if (data.mode === CHANGE_MODE.Update) {
+      this.formGroup = this.createFormGroup(data.scope);
+    }
   }
 
   close(): void {
@@ -56,36 +54,21 @@ export class ScopeManagerDialogComponent {
   }
 
   save(): void {
+    if (!this.formGroup.valid) {
+      return;
+    }
+
     this.dynamicDialogRef.close(this.formGroup.getRawValue());
   }
 
-  private createFormGroup(
-    mode: ChangeModes = CHANGE_MODE.Create,
-    templateId: string,
-    scope?: Scope
-  ): FormGroupModel<Scope> {
+  private createFormGroup(scope?: ScopeBase): FormGroupModel<ScopeBase> {
     const formGroup: FormGroup = new FormGroup({
       name: new FormControl<string | null>(scope?.name ?? null, {
         nonNullable: true,
         validators: [Validators.required.bind(this)],
       }),
-      templateId: new FormControl<string | null>(
-        scope?.templateId ?? templateId,
-        {
-          nonNullable: true,
-        }
-      ),
     });
 
-    if (mode === CHANGE_MODE.Update) {
-      formGroup.addControl(
-        'id',
-        new FormControl<string | null>(scope?.id ?? null, {
-          nonNullable: true,
-        })
-      );
-    }
-
-    return formGroup as FormGroupModel<Scope>;
+    return formGroup as FormGroupModel<ScopeBase>;
   }
 }

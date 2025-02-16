@@ -52,7 +52,7 @@ export const FindingActions = createActionGroup({
       readonly error: ApplicationError<Finding>;
     }>(),
 
-    'Set Selected': props<{ readonly finding: Finding }>(),
+    'Set Selected': props<{ readonly finding: Finding | null }>(),
 
     Reset: emptyProps(),
   },

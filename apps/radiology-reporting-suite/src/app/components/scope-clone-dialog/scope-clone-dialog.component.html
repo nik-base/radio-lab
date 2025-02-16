@@ -1,0 +1,27 @@
+<radio-dialog-layout>
+  <div class="flex flex-column gap-2" [formGroup]="formGroup" dialog-content>
+    <label for="template"
+      >Select the Template in which the Scope will be cloned</label
+    >
+
+    <radio-template-selector
+      id="template"
+      formControlName="template"
+      [templates]="(templates$ | ngrxPush) ?? []"></radio-template-selector>
+  </div>
+
+  <ng-container class="flex justify-content-end" dialog-actions>
+    <p-button
+      label="Cancel"
+      [text]="true"
+      severity="secondary"
+      (onClick)="close()" />
+
+    <p-button
+      label="Clone"
+      [outlined]="true"
+      [disabled]="!formGroup.valid"
+      severity="primary"
+      (onClick)="clone()" />
+  </ng-container>
+</radio-dialog-layout>

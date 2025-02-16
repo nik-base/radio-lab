@@ -2,13 +2,15 @@
   [value]="scopes()"
   [metaKeySelection]="true"
   [responsive]="true"
-  listStyleClass="max-h-full"
-  styleClass="w-full"
+  [listStyle]="{ maxHeight: '100%' }"
+  styleClass="w-full max-h-full overflow-auto"
   header="Scopes"
   [dragdrop]="true"
   (onReorder)="onReorder()">
   <ng-template let-scope pTemplate="item">
-    <div class="flex flex-row p-1 justify-content-between">
+    <div
+      class="flex flex-row p-1 justify-content-between"
+      [ngClass]="selectedScope()?.id === scope.id ? 'scope-active' : ''">
       <div
         class="flex align-items-center flex-grow-1"
         pTooltip="{{ scope.name }}"

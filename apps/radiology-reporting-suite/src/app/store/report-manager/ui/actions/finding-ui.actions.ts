@@ -25,7 +25,7 @@ export const FindingUIActions = createActionGroup({
       readonly finding: Finding;
     }>(),
 
-    Change: props<{ readonly finding: Finding }>(),
+    Change: props<{ readonly finding: Finding | null }>(),
 
     Reset: emptyProps(),
   },

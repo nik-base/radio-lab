@@ -1,5 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, input, InputSignal } from '@angular/core';
+import {
+  Component,
+  inject,
+  input,
+  InputSignal,
+  ViewChild,
+} from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -7,11 +13,16 @@ import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FileSelectEvent, FileUploadModule } from 'primeng/fileupload';
 import { TooltipModule } from 'primeng/tooltip';
-import { tap } from 'rxjs';
+import { take, tap } from 'rxjs';
 
 import { CHANGE_MODE } from '@app/constants';
+import { LegacyTemplateImportMapperService } from '@app/mapper/legacy-template-import-mapper.service';
 import { Template, TemplateImport } from '@app/models/domain';
-import { EventData, TemplateDialogData } from '@app/models/ui';
+import {
+  EventData,
+  LegacyTemplateImport,
+  TemplateManagerDialogData,
+} from '@app/models/ui';
 import { TemplateUIActions } from '@app/store/report-manager/ui/actions/template-ui.actions';
 import { JsonService } from '@app/utils/services/json.service';
 
@@ -43,7 +54,12 @@ export class TemplateManagerComponent {
   private readonly confirmationService: ConfirmationService =
     inject(ConfirmationService);
 
+  private readonly legacyTemplateImportMapper: LegacyTemplateImportMapperService =
+    inject(LegacyTemplateImportMapperService);
+
   readonly templates: InputSignal<Template[]> = input.required<Template[]>();
+
+  @ViewChild('import') importRef: FileUpload | undefined;
 
   onChange(template: Template): void {
     this.store$.dispatch(TemplateUIActions.change({ template }));
@@ -62,7 +78,8 @@ export class TemplateManagerComponent {
           }
 
           this.store$.dispatch(TemplateUIActions.create({ template }));
-        })
+        }),
+        take(1)
       )
       .subscribe();
   }
@@ -81,9 +98,12 @@ export class TemplateManagerComponent {
           }
 
           this.store$.dispatch(
-            TemplateUIActions.update({ template: updatedTemplate })
+            TemplateUIActions.update({
+              template: { ...updatedTemplate, id: template.id },
+            })
           );
-        })
+        }),
+        take(1)
       )
       .subscribe();
   }
@@ -119,7 +139,7 @@ export class TemplateManagerComponent {
     reader.onload = (progressEvent: ProgressEvent<FileReader>): void => {
       this.import(progressEvent.target);
 
-      event.files = [];
+      this.importRef?.clear();
     };
 
     reader.readAsText(uploadedFile);
@@ -139,7 +159,7 @@ export class TemplateManagerComponent {
       return;
     }
 
-    const template: TemplateImport = this.jsonService.parseSafe<TemplateImport>(
+    const template: TemplateImport = this.parseImportedTemplate(
       fileContent as string
     );
 
@@ -156,9 +176,20 @@ export class TemplateManagerComponent {
     this.store$.dispatch(TemplateUIActions.import({ template }));
   }
 
+  private parseImportedTemplate(content: string): TemplateImport {
+    const importObject: LegacyTemplateImport =
+      this.jsonService.parseSafe<LegacyTemplateImport>(content);
+
+    if ('template' in importObject) {
+      return this.legacyTemplateImportMapper.mapFromLegacy(importObject);
+    }
+
+    return this.jsonService.parseSafe<TemplateImport>(content);
+  }
+
   private openDialog(
     header: string,
-    data: TemplateDialogData
+    data: TemplateManagerDialogData
   ): DynamicDialogRef {
     return this.dialogService.open(TemplateManagerDialogComponent, {
       header,

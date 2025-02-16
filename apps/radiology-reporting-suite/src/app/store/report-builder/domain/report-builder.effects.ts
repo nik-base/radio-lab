@@ -128,6 +128,14 @@ export class ReportBuilderEffects {
   });
 
   // eslint-disable-next-line @typescript-eslint/typedef
+  readonly resetScope$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(ReportBuilderActions.resetTemplateData),
+      map(() => ReportBuilderActions.resetScope())
+    );
+  });
+
+  // eslint-disable-next-line @typescript-eslint/typedef
   readonly failure$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(

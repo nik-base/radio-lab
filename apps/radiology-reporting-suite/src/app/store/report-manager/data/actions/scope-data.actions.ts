@@ -47,6 +47,7 @@ export const ScopeDataActions = createActionGroup({
       readonly templateId: string;
     }>(),
     'Clone Success': props<{
+      readonly originalScope: ScopeDto;
       readonly scope: ScopeDto;
       readonly templateId: string;
     }>(),

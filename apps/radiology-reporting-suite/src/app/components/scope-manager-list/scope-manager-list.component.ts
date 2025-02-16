@@ -17,10 +17,13 @@ import { EventData } from '@app/models/ui';
   selector: 'radio-scope-manager-list',
   standalone: true,
   imports: [CommonModule, OrderListModule, TooltipModule, ButtonModule],
+  styleUrls: ['./scope-manager-list.component.scss'],
   templateUrl: './scope-manager-list.component.html',
 })
 export class ScopeManagerListComponent {
   readonly scopes: InputSignal<Scope[]> = input.required<Scope[]>();
+
+  readonly selectedScope: InputSignal<Scope | null> = input<Scope | null>(null);
 
   readonly changed: OutputEmitterRef<Scope> = output<Scope>();
 
@@ -54,6 +57,6 @@ export class ScopeManagerListComponent {
   }
 
   onReorder(): void {
-    this.reorder.emit([]);
+    this.reorder.emit(this.scopes());
   }
 }
