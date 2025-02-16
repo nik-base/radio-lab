@@ -38,8 +38,10 @@ export class TemplateManagerDialogComponent {
   private readonly dynamicDialogRef: DynamicDialogRef =
     inject(DynamicDialogRef);
 
-  private readonly dynamicDialogConfig: DynamicDialogConfig =
-    inject(DynamicDialogConfig);
+  private readonly dynamicDialogConfig: DynamicDialogConfig<TemplateManagerDialogData> =
+    inject(
+      DynamicDialogConfig
+    ) as DynamicDialogConfig<TemplateManagerDialogData>;
 
   formGroup: FormGroupModel<TemplateBase> = this.createFormGroup();
 

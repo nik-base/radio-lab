@@ -35,8 +35,8 @@ export class ScopeManagerDialogComponent {
   private readonly dynamicDialogRef: DynamicDialogRef =
     inject(DynamicDialogRef);
 
-  private readonly dynamicDialogConfig: DynamicDialogConfig =
-    inject(DynamicDialogConfig);
+  private readonly dynamicDialogConfig: DynamicDialogConfig<ScopeManagerDialogData> =
+    inject(DynamicDialogConfig) as DynamicDialogConfig<ScopeManagerDialogData>;
 
   formGroup: FormGroupModel<ScopeBase> = this.createFormGroup();
 

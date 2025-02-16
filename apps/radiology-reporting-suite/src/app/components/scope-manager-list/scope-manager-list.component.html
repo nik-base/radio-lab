@@ -9,7 +9,7 @@
   (onReorder)="onReorder()">
   <ng-template let-scope pTemplate="item">
     <div
-      class="flex flex-row p-1 justify-content-between"
+      class="flex flex-row w-full"
       [ngClass]="selectedScope()?.id === scope.id ? 'scope-active' : ''">
       <div
         class="flex align-items-center flex-grow-1"

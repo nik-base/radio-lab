@@ -11,7 +11,7 @@
   (onReorder)="onReorder()">
   <ng-template let-finding pTemplate="item">
     <div
-      class="flex flex-row p-1 justify-content-between"
+      class="flex flex-row w-full"
       [ngClass]="selectedFinding()?.id === finding.id ? 'finding-active' : ''">
       <div
         class="flex align-items-center flex-grow-1"

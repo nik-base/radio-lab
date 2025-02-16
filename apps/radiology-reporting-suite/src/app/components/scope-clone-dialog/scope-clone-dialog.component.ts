@@ -43,8 +43,8 @@ export class ScopeCloneDialogComponent {
   private readonly dynamicDialogRef: DynamicDialogRef =
     inject(DynamicDialogRef);
 
-  private readonly dynamicDialogConfig: DynamicDialogConfig =
-    inject(DynamicDialogConfig);
+  private readonly dynamicDialogConfig: DynamicDialogConfig<ScopeCloneDialogData> =
+    inject(DynamicDialogConfig) as DynamicDialogConfig<ScopeCloneDialogData>;
 
   formGroup!: FormGroup;
 

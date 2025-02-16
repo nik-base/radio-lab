@@ -11,7 +11,11 @@ import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { FileSelectEvent, FileUploadModule } from 'primeng/fileupload';
+import {
+  FileSelectEvent,
+  FileUpload,
+  FileUploadModule,
+} from 'primeng/fileupload';
 import { TooltipModule } from 'primeng/tooltip';
 import { take, tap } from 'rxjs';
 
