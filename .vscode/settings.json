@@ -12,5 +12,9 @@
         "postcss",
         "scss"
     ],
-    "prettier.htmlWhitespaceSensitivity": "strict"
+    "prettier.htmlWhitespaceSensitivity": "strict",
+    "files.associations": {
+        "*.css": "tailwindcss",
+        "*.scss": "tailwindcss"
+    }
 }

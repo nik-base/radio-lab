@@ -1,4 +1,4 @@
-<p-toolbar styleClass="border-noround-bottom">
+<p-toolbar styleClass="rounded-b-none">
   <ng-template pTemplate="start">
     <div class="flex flex-row gap-1 flex-wrap">
       @for (item of toolbarConfig().items; track $index) {
@@ -54,7 +54,7 @@
             </radio-editor-button-redo>
           }
           @case (ToolbarItemType.Separator) {
-            <p-divider styleClass="h-1rem" layout="vertical" />
+            <p-divider styleClass="h-4" layout="vertical" />
           }
         }
       }

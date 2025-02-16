@@ -1,6 +1,6 @@
-<div class="flex flex-column gap-2">
+<div class="flex flex-col gap-2">
   <p-button
-    class="flex align-self-end"
+    class="flex self-end"
     [label]="
       mode() === ChangeModes.Update ? 'Update Finding' : ' Create Finding'
     "
@@ -12,8 +12,8 @@
     (onClick)="onSave()" />
 
   <p-scrollPanel>
-    <div [formGroup]="formGroup" class="flex flex-column gap-2">
-      <div class="flex flex-row gap-5">
+    <div [formGroup]="formGroup" class="flex flex-col gap-2">
+      <div class="flex flex-row gap-8">
         <div>
           <p-floatLabel>
             <input

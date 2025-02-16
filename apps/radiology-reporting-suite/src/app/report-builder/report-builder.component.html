@@ -1,4 +1,4 @@
-<div class="flex flex-column gap-2 h-full">
+<div class="flex flex-col gap-2 h-full">
   <div>
     <radio-template-selector
       id="template-selector"
@@ -8,7 +8,7 @@
     </radio-template-selector>
   </div>
 
-  <div class="flex flex-column h-full">
+  <div class="flex flex-col h-full">
     @let templateData = templateData$ | ngrxPush;
 
     @if (templateData) {
@@ -45,7 +45,7 @@
         </ng-template>
 
         <ng-template pTemplate>
-          <radio-editor class="flex flex-column w-full p-2" maxHeight="90vh">
+          <radio-editor class="flex flex-col w-full p-2" maxHeight="90vh">
           </radio-editor>
         </ng-template>
       </p-splitter>

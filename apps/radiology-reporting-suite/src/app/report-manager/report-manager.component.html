@@ -1,7 +1,7 @@
 <div class="flex h-full">
   <radio-template-manager
     [templates]="(templates$ | ngrxPush) ?? []"
-    class="flex flex-grow-0 flex-shrink-1 flex-basis-auto">
+    class="flex grow-0 shrink flex-basis-auto">
   </radio-template-manager>
 
   @let scopes = scopes$ | ngrxPush;
@@ -11,7 +11,7 @@
     <radio-scope-manager
       [scopes]="scopes"
       [template]="selectedTemplate"
-      class="flex flex-grow-0 flex-shrink-1 flex-basis-auto">
+      class="flex grow-0 shrink flex-basis-auto">
     </radio-scope-manager>
   }
 
@@ -22,7 +22,7 @@
     <radio-finding-manager
       [findings]="findings"
       [scope]="selectedScope"
-      class="flex flex-grow-1 flex-shrink-0 flex-basis-auto">
+      class="flex grow shrink-0 flex-basis-auto">
     </radio-finding-manager>
   }
 </div>

@@ -12,7 +12,7 @@
       class="flex flex-row w-full"
       [ngClass]="selectedScope()?.id === scope.id ? 'scope-active' : ''">
       <div
-        class="flex align-items-center flex-grow-1"
+        class="flex items-center grow"
         pTooltip="{{ scope.name }}"
         tooltipPosition="bottom">
         {{ scope.name }}

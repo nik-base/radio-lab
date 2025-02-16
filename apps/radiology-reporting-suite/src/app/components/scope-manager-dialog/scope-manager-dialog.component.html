@@ -1,5 +1,5 @@
 <radio-dialog-layout>
-  <div class="flex flex-column gap-2" [formGroup]="formGroup" dialog-content>
+  <div class="flex flex-col gap-2" [formGroup]="formGroup" dialog-content>
     <label for="scopeName" class="font-semibold"> Name </label>
 
     <input
@@ -16,7 +16,7 @@
     }
   </div>
 
-  <ng-container class="flex justify-content-end" dialog-actions>
+  <ng-container class="flex justify-end" dialog-actions>
     <p-button
       label="Cancel"
       [text]="true"

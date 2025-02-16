@@ -94,7 +94,7 @@ export class EditorComponent implements OnInit {
     editorProps: {
       attributes: {
         class:
-          'tiptap-container tiptap ProseMirror p-2 bg-white outline-none border-1 surface-border border-solid border-round-bottom-lg h-full overflow-auto editor-input-container',
+          'tiptap-container tiptap ProseMirror p-2 bg-white outline-0 border border-surface border-solid rounded-b-lg h-full overflow-auto editor-input-container',
         spellCheck: 'false',
       },
     },
