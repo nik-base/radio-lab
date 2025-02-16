@@ -32,6 +32,10 @@ export const appConfig: ApplicationConfig = {
         options: {
           // eslint-disable-next-line no-constant-binary-expression
           darkModeSelector: false || 'none',
+          cssLayer: {
+            name: 'primeng',
+            order: 'tailwind-base, primeng, tailwind-utilities',
+          },
         },
       },
     }),

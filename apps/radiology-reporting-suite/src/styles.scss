@@ -1,13 +1,20 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 /* You can add global styles to this file, and also import other style files */
 /* @import 'primeng/resources/themes/aura-light-blue/theme.css'; */
 /* @import 'primeng/resources/primeng.css'; */
 @import 'primeflex/primeflex.css';
 @import 'primeicons/primeicons.css';
 @import 'material-icons/iconfont/material-icons.css';
+
+@layer tailwind-base, primeng, tailwind-utilities;
+
+@layer tailwind-base {
+  @tailwind base;
+}
+
+@layer tailwind-utilities {
+  @tailwind components;
+  @tailwind utilities;
+}
 
 html {
   font-family: "'Inter var'", sans-serif;
