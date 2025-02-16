@@ -17,7 +17,7 @@ export const EditorTextAlign: Extension<TextAlignOptions, unknown> =
           attributes: {
             textAlign: {
               default: this.options.defaultAlignment,
-              parseHTML: (element: HTMLElement): string => {
+              parseHTML: (element: HTMLElement): string | null => {
                 if (element.style.textAlignLast) {
                   return 'distributed';
                 }

@@ -15,7 +15,7 @@ import TextStyle from '@tiptap/extension-text-style';
 import { Underline } from '@tiptap/extension-underline';
 import { EditorState } from '@tiptap/pm/state';
 import { StarterKit } from '@tiptap/starter-kit';
-import { NgxTiptapModule } from 'ngx-tiptap';
+import { TiptapEditorDirective } from 'ngx-tiptap';
 import { Subscription, tap } from 'rxjs';
 
 import { HostControlDirective } from '@app/directives/host-control.directive';
@@ -34,7 +34,7 @@ import { EditorToolbarComponent } from './toolbar/editor-toolbar.component';
 @Component({
   selector: 'radio-editor',
   standalone: true,
-  imports: [CommonModule, NgxTiptapModule, EditorToolbarComponent],
+  imports: [CommonModule, TiptapEditorDirective, EditorToolbarComponent],
   hostDirectives: [HostControlDirective],
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.scss'],
