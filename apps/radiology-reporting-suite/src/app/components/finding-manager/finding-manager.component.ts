@@ -9,7 +9,6 @@ import {
 } from '@angular/core';
 import { PushPipe } from '@ngrx/component';
 import { Store } from '@ngrx/store';
-import { maxBy } from 'lodash';
 import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
@@ -31,6 +30,7 @@ import {
 } from '@app/store/report-manager/domain/report-manager.feature';
 import { FindingUIActions } from '@app/store/report-manager/ui/actions/finding-ui.actions';
 import { ChangeModes } from '@app/types';
+import { findNextSortOrder } from '@app/utils/functions/order.functions';
 
 import { FindingManagerListComponent } from '../finding-manager-list/finding-manager-list.component';
 import { ScopeManagerComponent } from '../finding-manager-view/finding-manager-view.component';
@@ -99,7 +99,7 @@ export class FindingManagerComponent {
       return;
     }
 
-    const nextSortOrder: number = this.findNextFindingSortOrder();
+    const nextSortOrder: number = findNextSortOrder(this.findings());
 
     this.store$.dispatch(
       FindingUIActions.create({
@@ -161,13 +161,5 @@ export class FindingManagerComponent {
     };
 
     this.store$.dispatch(FindingUIActions.reorder({ sortOrders }));
-  }
-
-  private findNextFindingSortOrder(): number {
-    const lastFinding: Finding | null =
-      maxBy(this.findings(), (finding: Finding): number => finding.sortOrder) ??
-      null;
-
-    return lastFinding === null ? 0 : lastFinding.sortOrder + 1;
   }
 }

@@ -9,6 +9,10 @@
   filterPlaceholder="Filter by name"
   [dragdrop]="true"
   (onReorder)="onReorder()">
+  <ng-template #header>
+    <div class="font-semibold text-gray-500">Findings</div>
+  </ng-template>
+
   <ng-template let-finding pTemplate="item">
     <div
       class="flex flex-row w-full"

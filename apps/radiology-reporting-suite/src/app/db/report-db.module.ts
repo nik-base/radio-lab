@@ -3,7 +3,7 @@ import { DBConfig, NgxIndexedDBModule } from 'ngx-indexed-db';
 
 const reportDBConfig: DBConfig = {
   name: 'RadioReportDB',
-  version: 2,
+  version: 3,
   objectStoresMeta: [
     {
       store: 'templates',
