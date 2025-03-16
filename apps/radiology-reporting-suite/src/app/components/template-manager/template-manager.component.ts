@@ -7,6 +7,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { isNil } from 'lodash-es';
 import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
@@ -65,7 +66,12 @@ export class TemplateManagerComponent {
 
   @ViewChild('import') importRef: FileUpload | undefined;
 
-  onChange(template: Template): void {
+  onChange(template: Template | null): void {
+    if (isNil(template)) {
+      this.store$.dispatch(TemplateUIActions.reset());
+      return;
+    }
+
     this.store$.dispatch(TemplateUIActions.change({ template }));
   }
 

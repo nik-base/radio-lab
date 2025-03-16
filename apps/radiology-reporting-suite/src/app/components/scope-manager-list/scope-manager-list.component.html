@@ -1,15 +1,18 @@
-<p-orderList
+<p-orderlist
   [value]="scopes()"
   [metaKeySelection]="true"
   [responsive]="true"
   [listStyle]="{ maxHeight: '100%' }"
   styleClass="w-full max-h-full overflow-auto"
-  header="Scopes"
   [dragdrop]="true"
   (onReorder)="onReorder()">
-  <ng-template let-scope pTemplate="item">
+  <ng-template #header>
+    <div class="font-semibold text-gray-500">Scopes</div>
+  </ng-template>
+
+  <ng-template #item let-scope>
     <div
-      class="flex flex-row w-full"
+      class="flex flex-row gap-2 w-full"
       [ngClass]="selectedScope()?.id === scope.id ? 'scope-active' : ''">
       <div
         class="flex items-center grow"
@@ -49,4 +52,6 @@
       </div>
     </div>
   </ng-template>
-</p-orderList>
+
+  <ng-template #empty>No scopes available</ng-template>
+</p-orderlist>

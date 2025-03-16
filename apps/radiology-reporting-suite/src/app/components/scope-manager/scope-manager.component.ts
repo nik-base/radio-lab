@@ -25,6 +25,7 @@ import {
 } from '@app/models/ui';
 import { selectSelectedScope } from '@app/store/report-manager/domain/report-manager.feature';
 import { ScopeUIActions } from '@app/store/report-manager/ui/actions/scope-ui.actions';
+import { findNextSortOrder } from '@app/utils/functions/order.functions';
 
 import { ScopeCloneDialogComponent } from '../scope-clone-dialog/scope-clone-dialog.component';
 import { ScopeManagerDialogComponent } from '../scope-manager-dialog/scope-manager-dialog.component';
@@ -80,9 +81,15 @@ export class ScopeManagerComponent {
             return;
           }
 
+          const nextSortOrder: number = findNextSortOrder(this.scopes());
+
           this.store$.dispatch(
             ScopeUIActions.create({
-              scope: { ...scope, templateId: this.template().id },
+              scope: {
+                ...scope,
+                templateId: this.template().id,
+                sortOrder: nextSortOrder,
+              },
             })
           );
         }),

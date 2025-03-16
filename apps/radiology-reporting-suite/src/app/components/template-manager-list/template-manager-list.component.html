@@ -3,10 +3,15 @@
   [options]="templates()"
   optionLabel="name"
   listStyleClass="max-h-full"
-  styleClass="w-full flex max-h-full"
+  scrollHeight="auto"
+  styleClass="w-full flex flex-col max-h-full"
   (onChange)="onChange($event)">
-  <ng-template let-template pTemplate="item">
-    <div class="flex flex-row w-full">
+  <ng-template #header>
+    <div class="font-semibold text-gray-500">Templates</div>
+  </ng-template>
+
+  <ng-template #item let-template>
+    <div class="flex flex-row gap-2 w-full">
       <div
         class="flex items-center grow"
         pTooltip="{{ template.name }}"

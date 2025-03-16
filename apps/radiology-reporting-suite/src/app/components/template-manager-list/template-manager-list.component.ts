@@ -22,7 +22,8 @@ import { EventData } from '@app/models/ui';
 export class TemplateManagerListComponent {
   readonly templates: InputSignal<Template[]> = input.required<Template[]>();
 
-  readonly changed: OutputEmitterRef<Template> = output<Template>();
+  readonly changed: OutputEmitterRef<Template | null> =
+    output<Template | null>();
 
   readonly edit: OutputEmitterRef<Template> = output<Template>();
 
@@ -32,7 +33,7 @@ export class TemplateManagerListComponent {
   readonly export: OutputEmitterRef<Template> = output<Template>();
 
   onChange($event: ListboxChangeEvent): void {
-    this.changed.emit($event.value as Template);
+    this.changed.emit($event.value as Template | null);
   }
 
   onEdit(template: Template): void {
