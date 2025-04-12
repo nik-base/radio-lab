@@ -5,7 +5,7 @@ import { Finding, Scope, Template } from '@app/models/domain';
 export function orderTemplates(templates: Template[]): Template[] {
   return orderBy(
     templates,
-    (template: Template): string => template.name.toLocaleLowerCase(),
+    (template: Template): number => template.sortOrder,
     'asc'
   );
 }

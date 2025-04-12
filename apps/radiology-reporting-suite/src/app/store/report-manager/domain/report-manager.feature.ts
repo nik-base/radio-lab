@@ -393,7 +393,7 @@ export const reportManagerFeature = createFeature({
 
         const groups: string[] = uniq(
           findings
-            .map((finding: Finding): string | null => finding.group)
+            .map((finding: Finding): string | null => finding.groupId)
             .filter(isNotNil)
         );
 

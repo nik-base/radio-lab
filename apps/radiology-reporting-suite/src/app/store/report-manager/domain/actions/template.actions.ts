@@ -2,6 +2,7 @@ import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
 import {
   ApplicationError,
+  SortOrderUpdate,
   Template,
   TemplateCreate,
   TemplateData,
@@ -49,6 +50,12 @@ export const TemplateActions = createActionGroup({
     }>(),
     'Import Failure': props<{
       readonly error: ApplicationError<TemplateImport>;
+    }>(),
+
+    Reorder: props<{ readonly sortOrders: SortOrderUpdate }>(),
+    'Reorder Success': props<{ readonly sortOrders: SortOrderUpdate }>(),
+    'Reorder Failure': props<{
+      readonly error: ApplicationError;
     }>(),
 
     'Set Selected': props<{ readonly template: Template }>(),

@@ -2,6 +2,7 @@ import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
 import {
   ApplicationError,
+  SortOrderUpdate,
   Template,
   TemplateCreate,
   TemplateData,
@@ -35,6 +36,8 @@ export const TemplateUIActions = createActionGroup({
     }>(),
 
     Change: props<{ readonly template: Template }>(),
+
+    Reorder: props<{ readonly sortOrders: SortOrderUpdate }>(),
 
     Reset: emptyProps(),
   },

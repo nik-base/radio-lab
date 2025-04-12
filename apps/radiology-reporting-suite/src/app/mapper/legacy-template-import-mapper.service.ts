@@ -15,6 +15,7 @@ export class LegacyTemplateImportMapperService {
   mapFromLegacy(legacy: LegacyTemplateImport): TemplateImport {
     return {
       name: legacy.template?.name,
+      sortOrder: 0,
       protocol: {
         html: legacy.template?.decriptionHTML ?? '',
         json: legacy.template?.decriptionJSON
@@ -39,7 +40,6 @@ export class LegacyTemplateImportMapperService {
                 (finding: LegacyFindingImport): FindingBase => ({
                   name: finding.title ?? '',
                   sortOrder: finding.order ?? 0,
-                  group: finding.group ?? null,
                   isNormal: finding.isNormal ?? false,
                   description: {
                     html: finding.decriptionHTML ?? '',

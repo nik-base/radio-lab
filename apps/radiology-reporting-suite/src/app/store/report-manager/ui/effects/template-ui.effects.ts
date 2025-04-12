@@ -148,6 +148,18 @@ export class TemplateUIEffects {
   });
 
   // eslint-disable-next-line @typescript-eslint/typedef
+  readonly reorder$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TemplateUIActions.reorder),
+      map(({ sortOrders }: ReturnType<typeof TemplateUIActions.reorder>) =>
+        TemplateActions.reorder({
+          sortOrders,
+        })
+      )
+    );
+  });
+
+  // eslint-disable-next-line @typescript-eslint/typedef
   readonly failure$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(
@@ -156,7 +168,8 @@ export class TemplateUIEffects {
         TemplateActions.updateFailure,
         TemplateActions.deleteFailure,
         TemplateActions.exportFailure,
-        TemplateActions.importFailure
+        TemplateActions.importFailure,
+        TemplateActions.reorderFailure
       ),
       map(
         ({
@@ -167,7 +180,8 @@ export class TemplateUIEffects {
           | ReturnType<typeof TemplateActions.updateFailure>
           | ReturnType<typeof TemplateActions.deleteFailure>
           | ReturnType<typeof TemplateActions.exportFailure>
-          | ReturnType<typeof TemplateActions.importFailure>) =>
+          | ReturnType<typeof TemplateActions.importFailure>
+          | ReturnType<typeof TemplateActions.reorderFailure>) =>
           ApplicationUIActions.notify({
             notification: {
               title: 'Error',

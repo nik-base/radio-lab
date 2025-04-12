@@ -3,13 +3,14 @@ import { DBConfig, NgxIndexedDBModule } from 'ngx-indexed-db';
 
 const reportDBConfig: DBConfig = {
   name: 'RadioReportDB',
-  version: 3,
+  version: 1,
   objectStoresMeta: [
     {
       store: 'templates',
       storeConfig: { keyPath: 'id', autoIncrement: false },
       storeSchema: [
         { name: 'name', keypath: 'name', options: { unique: false } },
+        { name: 'sortOrder', keypath: 'sortOrder', options: { unique: false } },
         {
           name: 'description',
           keypath: 'description',
@@ -56,12 +57,48 @@ const reportDBConfig: DBConfig = {
       ],
     },
     {
+      store: 'findingGroups',
+      storeConfig: { keyPath: 'id', autoIncrement: false },
+      storeSchema: [
+        { name: 'name', keypath: 'name', options: { unique: false } },
+        { name: 'sortOrder', keypath: 'sortOrder', options: { unique: false } },
+        {
+          name: 'scopeId',
+          keypath: 'scopeId',
+          options: { unique: false },
+        },
+      ],
+    },
+    {
+      store: 'findingClassifiers',
+      storeConfig: { keyPath: 'id', autoIncrement: false },
+      storeSchema: [
+        { name: 'name', keypath: 'name', options: { unique: false } },
+        { name: 'sortOrder', keypath: 'sortOrder', options: { unique: false } },
+        {
+          name: 'scopeId',
+          keypath: 'scopeId',
+          options: { unique: false },
+        },
+        {
+          name: 'groupId',
+          keypath: 'groupId',
+          options: { unique: false },
+        },
+      ],
+    },
+    {
       store: 'findings',
       storeConfig: { keyPath: 'id', autoIncrement: false },
       storeSchema: [
         { name: 'title', keypath: 'title', options: { unique: false } },
-        { name: 'group', keypath: 'group', options: { unique: false } },
         { name: 'order', keypath: 'order', options: { unique: false } },
+        { name: 'groupId', keypath: 'groupId', options: { unique: false } },
+        {
+          name: 'classifierId',
+          keypath: 'classifierId',
+          options: { unique: false },
+        },
         {
           name: 'protocolId',
           keypath: 'protocolId',

@@ -1,37 +1,40 @@
-<div class="flex gap-2">
-  <div class="flex flex-col gap-2">
-    <div class="flex self-end gap-2">
-      <p-fileUpload
-        #import
-        mode="basic"
-        pTooltip="Import Template"
-        tooltipPosition="bottom"
-        chooseIcon="pi pi-upload"
-        url=""
-        (onSelect)="onImport($event)"
-        [auto]="true"
-        [multiple]="false"
-        accept="application/json"
-        [maxFileSize]="10000000"></p-fileUpload>
+<radio-sortable-list-manager-layout>
+  <ng-container actions>
+    <p-fileUpload
+      #import
+      mode="basic"
+      class="radio-icon-only-file-upload"
+      pTooltip="Import Template"
+      tooltipPosition="bottom"
+      chooseIcon="pi pi-upload"
+      [chooseLabel]="''"
+      url=""
+      (onSelect)="onImport($event)"
+      [auto]="true"
+      [multiple]="false"
+      accept="application/json"
+      [maxFileSize]="10000000">
+    </p-fileUpload>
 
-      <p-button
-        icon="pi pi-plus"
-        pTooltip="Create Template"
-        tooltipPosition="bottom"
-        [outlined]="true"
-        (onClick)="onCreate()" />
-    </div>
+    <p-button
+      icon="pi pi-plus"
+      pTooltip="Create Template"
+      tooltipPosition="bottom"
+      [outlined]="true"
+      (onClick)="onCreate()" />
+  </ng-container>
 
-    <div class="flex h-full min-h-0">
-      <radio-template-manager-list
-        [templates]="templates()"
-        (edit)="onEdit($event)"
-        (delete)="onDelete($event)"
-        (export)="onExport($event)"
-        (changed)="onChange($event)">
-      </radio-template-manager-list>
-    </div>
-  </div>
-</div>
+  <radio-template-manager-list
+    list
+    class="w-full"
+    [templates]="templates()"
+    [selectedTemplate]="selectedTemplate()"
+    (edit)="onEdit($event)"
+    (delete)="onDelete($event)"
+    (export)="onExport($event)"
+    (changed)="onChange($event)"
+    (reorder)="onReorder($event)">
+  </radio-template-manager-list>
+</radio-sortable-list-manager-layout>
 
 <p-confirmPopup />

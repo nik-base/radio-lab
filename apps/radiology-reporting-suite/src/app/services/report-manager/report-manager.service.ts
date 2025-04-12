@@ -29,6 +29,10 @@ export class ReportManagerService {
     return this.reportService.fetchScopes$(templateId);
   }
 
+  fetchGroups$(scopeId: string): Observable<FindingDto[]> {
+    return this.reportService.fetchFindings$(scopeId);
+  }
+
   fetchFindings$(scopeId: string): Observable<FindingDto[]> {
     return this.reportService.fetchFindings$(scopeId);
   }
@@ -67,6 +71,12 @@ export class ReportManagerService {
 
   deleteFinding$(findingId: string): Observable<void> {
     return this.reportService.deleteFinding$(findingId);
+  }
+
+  reorderTemplates$(
+    sortOrderUpdateRequest: SortOrderUpdateDto
+  ): Observable<void> {
+    return this.reportService.reorderTemplates$(sortOrderUpdateRequest);
   }
 
   reorderScopes$(sortOrderUpdateRequest: SortOrderUpdateDto): Observable<void> {

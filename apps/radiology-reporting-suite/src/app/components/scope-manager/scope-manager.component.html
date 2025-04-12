@@ -1,26 +1,24 @@
-<div class="flex gap-2">
-  <div class="flex flex-col gap-2">
-    <div class="flex self-end gap-2">
-      <p-button
-        icon="pi pi-plus"
-        pTooltip="Create Scope"
-        tooltipPosition="bottom"
-        [outlined]="true"
-        (onClick)="onCreate()" />
-    </div>
+<radio-sortable-list-manager-layout>
+  <ng-container actions>
+    <p-button
+      icon="pi pi-plus"
+      pTooltip="Create Scope"
+      tooltipPosition="bottom"
+      [outlined]="true"
+      (onClick)="onCreate()" />
+  </ng-container>
 
-    <div class="flex h-full min-h-0">
-      <radio-scope-manager-list
-        [scopes]="scopes()"
-        [selectedScope]="(selectedScope | ngrxPush) ?? null"
-        (edit)="onEdit($event)"
-        (delete)="onDelete($event)"
-        (clone)="onClone($event)"
-        (reorder)="onReorder($event)"
-        (changed)="onChange($event)">
-      </radio-scope-manager-list>
-    </div>
-  </div>
-</div>
+  <radio-scope-manager-list
+    list
+    class="w-full"
+    [scopes]="scopes()"
+    [selectedScope]="(selectedScope | ngrxPush) ?? null"
+    (edit)="onEdit($event)"
+    (delete)="onDelete($event)"
+    (clone)="onClone($event)"
+    (reorder)="onReorder($event)"
+    (changed)="onChange($event)">
+  </radio-scope-manager-list>
+</radio-sortable-list-manager-layout>
 
 <p-confirmPopup />

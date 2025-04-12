@@ -98,7 +98,7 @@ export class ScopeManagerComponent {
 
     this.formGroup.get('name')?.setValue(finding.name);
 
-    this.formGroup.get('group')?.setValue(finding.group);
+    //this.formGroup.get('group')?.setValue(finding.groupId);
 
     this.formGroup.get('isNormal')?.setValue(finding.isNormal);
 

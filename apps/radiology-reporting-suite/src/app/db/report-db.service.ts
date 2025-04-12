@@ -5,8 +5,16 @@ import { concatMap, forkJoin, map, mergeMap, Observable, of } from 'rxjs';
 import {
   EditorContentDto,
   FindingBaseDto,
+  FindingClassifierBaseDto,
+  FindingClassifierCreateDto,
+  FindingClassifierDto,
+  FindingClassifierUpdateDto,
   FindingCreateDto,
   FindingDto,
+  FindingGroupBaseDto,
+  FindingGroupCreateDto,
+  FindingGroupDto,
+  FindingGroupUpdateDto,
   FindingUpdateDto,
   ScopeBaseDto,
   ScopeCreateDto,
@@ -26,7 +34,9 @@ import {
 import { ReportBaseService } from '../services/report-base.service';
 
 import {
+  FindingClassifierDBModel,
   FindingDBModel,
+  FindingGroupDBModel,
   ScopeDBModel,
   TemplateDBModel,
 } from './report-db.models';
@@ -64,7 +74,11 @@ export class ReportDBService extends ReportBaseService {
       );
   }
 
-  override fetchFindings$(scopeId: string): Observable<FindingDto[]> {
+  override fetchFindings$(
+    scopeId: string,
+    groupId?: string,
+    classifierId?: string
+  ): Observable<FindingDto[]> {
     return this.dbService
       .getAllByIndex<FindingDBModel>(
         'findings',
@@ -73,10 +87,55 @@ export class ReportDBService extends ReportBaseService {
       )
       .pipe(
         map((findings: FindingDBModel[]) =>
-          findings.map(
-            (finding: FindingDBModel): FindingDto =>
-              this.mapFindingDBModelToDto(finding)
+          findings
+            .filter(
+              (item: FindingDBModel): boolean =>
+                item.groupId === groupId && item.classifierId === classifierId
+            )
+            .map(
+              (finding: FindingDBModel): FindingDto =>
+                this.mapFindingDBModelToDto(finding)
+            )
+        )
+      );
+  }
+
+  override fetchFindingGroups$(scopeId: string): Observable<FindingGroupDto[]> {
+    return this.dbService
+      .getAllByIndex<FindingGroupDBModel>(
+        'findingGroups',
+        'scopeId',
+        IDBKeyRange.only(scopeId)
+      )
+      .pipe(
+        map((groups: FindingGroupDBModel[]) =>
+          groups.map((group: FindingGroupDBModel) =>
+            this.mapFindingGroupDBModelToDto(group)
           )
+        )
+      );
+  }
+
+  override fetchFindingClassifiers$(
+    scopeId: string,
+    groupId?: string
+  ): Observable<FindingClassifierDto[]> {
+    return this.dbService
+      .getAllByIndex<FindingClassifierDBModel>(
+        'findingClassifiers',
+        'scopeId',
+        IDBKeyRange.only(scopeId)
+      )
+      .pipe(
+        map((classifiers: FindingClassifierDBModel[]) =>
+          classifiers
+            .filter(
+              (item: FindingClassifierDBModel): boolean =>
+                item.groupId === groupId
+            )
+            .map((classifier: FindingClassifierDBModel) =>
+              this.mapFindingClassifierDBModelToDto(classifier)
+            )
         )
       );
   }
@@ -107,6 +166,24 @@ export class ReportDBService extends ReportBaseService {
             this.mapFindingDBModelToDto(data)
         )
       );
+  }
+
+  override createFindingGroup$(
+    group: FindingGroupCreateDto
+  ): Observable<FindingGroupDto> {
+    const dbModel: FindingGroupDBModel =
+      this.mapFindingGroupCreateDtoToDBModel(group);
+
+    return this.createFindingGroupInDb$(dbModel);
+  }
+
+  override createFindingClassifier$(
+    classifier: FindingClassifierCreateDto
+  ): Observable<FindingClassifierDto> {
+    const dbModel: FindingClassifierDBModel =
+      this.mapFindingClassifierCreateDtoToDBModel(classifier);
+
+    return this.createFindingClassifierInDb$(dbModel);
   }
 
   override updateTemplate$(
@@ -148,6 +225,38 @@ export class ReportDBService extends ReportBaseService {
       );
   }
 
+  override updateFindingGroup$(
+    group: FindingGroupUpdateDto
+  ): Observable<FindingGroupDto> {
+    const dbModel: FindingGroupDBModel =
+      this.mapFindingGroupUpdateDtoToDBModel(group);
+
+    return this.dbService
+      .update<FindingGroupDBModel>('findingGroups', dbModel)
+      .pipe(
+        map(
+          (data: FindingGroupDBModel): FindingGroupDto =>
+            this.mapFindingGroupDBModelToDto(data)
+        )
+      );
+  }
+
+  override updateFindingClassifier$(
+    classifier: FindingClassifierUpdateDto
+  ): Observable<FindingClassifierDto> {
+    const dbModel: FindingClassifierDBModel =
+      this.mapFindingClassiferUpdateDtoToDBModel(classifier);
+
+    return this.dbService
+      .update<FindingClassifierDBModel>('findingClassifiers', dbModel)
+      .pipe(
+        map(
+          (data: FindingClassifierDBModel): FindingClassifierDto =>
+            this.mapFindingClassifierDBModelToDto(data)
+        )
+      );
+  }
+
   override deleteTemplate$(templateId: string): Observable<void> {
     return this.dbService
       .delete<TemplateDBModel>('templates', templateId)
@@ -164,6 +273,42 @@ export class ReportDBService extends ReportBaseService {
     return this.dbService
       .delete<FindingDBModel>('findings', findingId)
       .pipe(map(() => void 0));
+  }
+
+  override deleteFindingGroup$(groupId: string): Observable<void> {
+    return this.dbService
+      .delete<FindingGroupDBModel>('findingGroups', groupId)
+      .pipe(map(() => void 0));
+  }
+
+  override deleteFindingClassifier$(classifierId: string): Observable<void> {
+    return this.dbService
+      .delete<FindingClassifierDBModel>('findingClassifiers', classifierId)
+      .pipe(map(() => void 0));
+  }
+
+  override reorderTemplates$(
+    sortOrderUpdateRequest: SortOrderUpdateDto
+  ): Observable<void> {
+    const scopeIds: string[] = sortOrderUpdateRequest.sortOrdersMap.map(
+      (sortOrder: SortOrderItemDto): string => sortOrder.id
+    );
+
+    const templates$: Observable<TemplateDBModel[]> =
+      this.dbService.bulkGet<TemplateDBModel>('templates', scopeIds);
+
+    return templates$.pipe(
+      mergeMap((templates: TemplateDBModel[]) => {
+        const templatesToUpdate: TemplateDBModel[] =
+          this.getUpdatedTemplatesSortOrder(templates, sortOrderUpdateRequest);
+
+        return this.dbService.bulkPut<TemplateDBModel>(
+          'templates',
+          templatesToUpdate
+        );
+      }),
+      map(() => void 0)
+    );
   }
 
   override reorderScopes$(
@@ -210,6 +355,60 @@ export class ReportDBService extends ReportBaseService {
         return this.dbService.bulkPut<FindingDBModel>(
           'findings',
           findingsToUpdate
+        );
+      }),
+      map(() => void 0)
+    );
+  }
+
+  override reorderFindingGroups$(
+    sortOrderUpdateRequest: SortOrderUpdateDto
+  ): Observable<void> {
+    const groupIds: string[] = sortOrderUpdateRequest.sortOrdersMap.map(
+      (sortOrder: SortOrderItemDto): string => sortOrder.id
+    );
+
+    const groups$: Observable<FindingGroupDBModel[]> =
+      this.dbService.bulkGet<FindingGroupDBModel>('findingGroups', groupIds);
+
+    return groups$.pipe(
+      mergeMap((groups: FindingGroupDBModel[]) => {
+        const groupsToUpdate: FindingGroupDBModel[] =
+          this.getUpdatedGroupsSortOrder(groups, sortOrderUpdateRequest);
+
+        return this.dbService.bulkPut<FindingGroupDBModel>(
+          'findingGroups',
+          groupsToUpdate
+        );
+      }),
+      map(() => void 0)
+    );
+  }
+
+  override reorderFindingClassifiers$(
+    sortOrderUpdateRequest: SortOrderUpdateDto
+  ): Observable<void> {
+    const classifierIds: string[] = sortOrderUpdateRequest.sortOrdersMap.map(
+      (sortOrder: SortOrderItemDto): string => sortOrder.id
+    );
+
+    const classifiers$: Observable<FindingClassifierDBModel[]> =
+      this.dbService.bulkGet<FindingClassifierDBModel>(
+        'findingClassifiers',
+        classifierIds
+      );
+
+    return classifiers$.pipe(
+      mergeMap((classifiers: FindingClassifierDBModel[]) => {
+        const classifiersToUpdate: FindingClassifierDBModel[] =
+          this.getUpdatedClassifiersSortOrder(
+            classifiers,
+            sortOrderUpdateRequest
+          );
+
+        return this.dbService.bulkPut<FindingClassifierDBModel>(
+          'findingClassifiers',
+          classifiersToUpdate
         );
       }),
       map(() => void 0)
@@ -299,10 +498,12 @@ export class ReportDBService extends ReportBaseService {
     scopeDBModel: ScopeDBModel
   ): FindingDBModel[] {
     return scope.findings.map(
-      (finding: FindingBaseDto): FindingDBModel => ({
+      (finding: FindingDto): FindingDBModel => ({
         ...this.mapFindingBaseDtoToDBModel(finding),
         id: this.generateId(),
         protocolId: scopeDBModel.id,
+        groupId: finding.groupId,
+        classifierId: finding.classifierId,
       })
     );
   }
@@ -312,6 +513,32 @@ export class ReportDBService extends ReportBaseService {
       .add<ScopeDBModel>('protocols', dbModel)
       .pipe(
         map((data: ScopeDBModel): ScopeDto => this.mapScopeDBModelToDto(data))
+      );
+  }
+
+  private createFindingGroupInDb$(
+    dbModel: FindingGroupDBModel
+  ): Observable<FindingGroupDto> {
+    return this.dbService
+      .add<FindingGroupDBModel>('findingGroups', dbModel)
+      .pipe(
+        map(
+          (data: FindingGroupDBModel): FindingGroupDto =>
+            this.mapFindingGroupDBModelToDto(data)
+        )
+      );
+  }
+
+  private createFindingClassifierInDb$(
+    dbModel: FindingClassifierDBModel
+  ): Observable<FindingClassifierDto> {
+    return this.dbService
+      .add<FindingClassifierDBModel>('findingClassifiers', dbModel)
+      .pipe(
+        map(
+          (data: FindingClassifierDBModel): FindingClassifierDto =>
+            this.mapFindingClassifierDBModelToDto(data)
+        )
       );
   }
 
@@ -340,6 +567,8 @@ export class ReportDBService extends ReportBaseService {
             ...this.mapFindingBaseDtoToDBModel(finding),
             id: this.generateId(),
             protocolId: scopeId,
+            groupId: this.generateId(),
+            classifierId: this.generateId(),
           })
         )
       )
@@ -467,6 +696,27 @@ export class ReportDBService extends ReportBaseService {
       );
   }
 
+  private getUpdatedTemplatesSortOrder(
+    templates: TemplateDBModel[],
+    sortOrderUpdateRequest: SortOrderUpdateDto
+  ): TemplateDBModel[] {
+    return templates.map((template: TemplateDBModel): TemplateDBModel => {
+      const sortOrderItem: SortOrderItemDto | undefined =
+        sortOrderUpdateRequest.sortOrdersMap.find(
+          (sortOrder: SortOrderItemDto): boolean => sortOrder.id === template.id
+        );
+
+      if (!sortOrderItem) {
+        return template;
+      }
+
+      return {
+        ...template,
+        sortOrder: sortOrderItem.sortOrder,
+      };
+    });
+  }
+
   private getUpdatedScopesSortOrder(
     scopes: ScopeDBModel[],
     sortOrderUpdateRequest: SortOrderUpdateDto
@@ -509,6 +759,51 @@ export class ReportDBService extends ReportBaseService {
     });
   }
 
+  private getUpdatedGroupsSortOrder(
+    groups: FindingGroupDBModel[],
+    sortOrderUpdateRequest: SortOrderUpdateDto
+  ): FindingGroupDBModel[] {
+    return groups.map((group: FindingGroupDBModel): FindingGroupDBModel => {
+      const sortOrderItem: SortOrderItemDto | undefined =
+        sortOrderUpdateRequest.sortOrdersMap.find(
+          (sortOrder: SortOrderItemDto): boolean => sortOrder.id === group.id
+        );
+
+      if (!sortOrderItem) {
+        return group;
+      }
+
+      return {
+        ...group,
+        sortOrder: sortOrderItem.sortOrder,
+      };
+    });
+  }
+
+  private getUpdatedClassifiersSortOrder(
+    classifiers: FindingClassifierDBModel[],
+    sortOrderUpdateRequest: SortOrderUpdateDto
+  ): FindingClassifierDBModel[] {
+    return classifiers.map(
+      (classifier: FindingClassifierDBModel): FindingClassifierDBModel => {
+        const sortOrderItem: SortOrderItemDto | undefined =
+          sortOrderUpdateRequest.sortOrdersMap.find(
+            (sortOrder: SortOrderItemDto): boolean =>
+              sortOrder.id === classifier.id
+          );
+
+        if (!sortOrderItem) {
+          return classifier;
+        }
+
+        return {
+          ...classifier,
+          sortOrder: sortOrderItem.sortOrder,
+        };
+      }
+    );
+  }
+
   private mapTemplateUpdateDtoToDBModel(
     template: TemplateUpdateDto
   ): TemplateDBModel {
@@ -533,6 +828,29 @@ export class ReportDBService extends ReportBaseService {
       ...this.mapFindingBaseDtoToDBModel(finding),
       id: finding.id,
       protocolId: finding.scopeId,
+      groupId: finding.groupId,
+      classifierId: finding.classifierId,
+    };
+  }
+
+  private mapFindingGroupUpdateDtoToDBModel(
+    group: FindingGroupUpdateDto
+  ): FindingGroupDBModel {
+    return {
+      ...this.mapFindingGroupBaseDtoToDBModel(group),
+      id: group.id,
+      scopeId: group.scopeId,
+    };
+  }
+
+  private mapFindingClassiferUpdateDtoToDBModel(
+    classifier: FindingClassifierUpdateDto
+  ): FindingClassifierDBModel {
+    return {
+      ...this.mapFindingClassifierBaseDtoToDBModel(classifier),
+      id: classifier.id,
+      scopeId: classifier.scopeId,
+      groupId: classifier.groupId,
     };
   }
 
@@ -543,6 +861,7 @@ export class ReportDBService extends ReportBaseService {
       ...this.mapEditorContentToProtocol(template.protocol),
       ...this.mapEditorContentToPatientInfo(template.patientInfo),
       name: template.name,
+      sortOrder: template.sortOrder,
     };
   }
 
@@ -552,6 +871,8 @@ export class ReportDBService extends ReportBaseService {
     return {
       ...this.mapFindingDBModelToBaseDto(template),
       scopeId: template.protocolId,
+      groupId: template.groupId,
+      classifierId: template.classifierId,
     };
   }
 
@@ -569,6 +890,7 @@ export class ReportDBService extends ReportBaseService {
   ): TemplateBaseDto {
     return {
       name: template.name,
+      sortOrder: template.sortOrder,
       protocol: this.mapProtocolToEditorContent(template),
       patientInfo: this.mapPatientInfoToEditorContent(template),
     };
@@ -590,11 +912,50 @@ export class ReportDBService extends ReportBaseService {
     };
   }
 
+  private mapFindingGroupBaseDtoToDBModel(
+    scope: FindingGroupBaseDto
+  ): Omit<FindingGroupDBModel, 'id' | 'scopeId'> {
+    return {
+      name: scope.name,
+      sortOrder: scope.sortOrder,
+    };
+  }
+
+  private mapFindingClassifierBaseDtoToDBModel(
+    scope: FindingClassifierBaseDto
+  ): Omit<FindingClassifierDBModel, 'id' | 'scopeId' | 'groupId'> {
+    return {
+      name: scope.name,
+      sortOrder: scope.sortOrder,
+    };
+  }
+
   private mapScopeCreateDtoToDBModel(scope: ScopeCreateDto): ScopeDBModel {
     return {
       ...this.mapScopeBaseDtoToDBModel(scope),
       id: this.generateId(),
       templateId: scope.templateId,
+    };
+  }
+
+  private mapFindingGroupCreateDtoToDBModel(
+    group: FindingGroupCreateDto
+  ): FindingGroupDBModel {
+    return {
+      ...this.mapFindingGroupBaseDtoToDBModel(group),
+      id: this.generateId(),
+      scopeId: group.scopeId,
+    };
+  }
+
+  private mapFindingClassifierCreateDtoToDBModel(
+    classifier: FindingClassifierCreateDto
+  ): FindingClassifierDBModel {
+    return {
+      ...this.mapFindingGroupBaseDtoToDBModel(classifier),
+      id: this.generateId(),
+      scopeId: classifier.scopeId,
+      groupId: classifier.groupId,
     };
   }
 
@@ -624,15 +985,35 @@ export class ReportDBService extends ReportBaseService {
     };
   }
 
+  private mapFindingGroupDBModelToDto(
+    group: FindingGroupDBModel
+  ): FindingGroupDto {
+    return {
+      ...this.mapFindingGroupBaseDtoToDBModel(group),
+      id: group.id,
+      scopeId: group.scopeId,
+    };
+  }
+
+  private mapFindingClassifierDBModelToDto(
+    classifier: FindingClassifierDBModel
+  ): FindingClassifierDto {
+    return {
+      ...this.mapFindingClassifierBaseDtoToDBModel(classifier),
+      id: classifier.id,
+      scopeId: classifier.scopeId,
+      groupId: classifier.groupId,
+    };
+  }
+
   private mapFindingBaseDtoToDBModel(
     finding: FindingBaseDto
-  ): Omit<FindingDBModel, 'id' | 'protocolId'> {
+  ): Omit<FindingDBModel, 'id' | 'protocolId' | 'groupId' | 'classifierId'> {
     return {
       ...this.mapEditorContentToFindingDescription(finding.description),
       ...this.mapEditorContentToImpression(finding.impression),
       ...this.mapEditorContentToRecommendation(finding.recommendation),
       title: finding.name,
-      group: finding.group ?? undefined,
       order: finding.sortOrder,
       isNormal: finding.isNormal,
     };
@@ -645,13 +1026,14 @@ export class ReportDBService extends ReportBaseService {
       ...this.mapFindingBaseDtoToDBModel(finding),
       id: this.generateId(),
       protocolId: finding.scopeId,
+      groupId: finding.groupId,
+      classifierId: finding.classifierId,
     };
   }
 
   private mapFindingDBModelToBaseDto(finding: FindingDBModel): FindingBaseDto {
     return {
       name: finding.title,
-      group: finding.group ?? null,
       isNormal: finding.isNormal ?? false,
       sortOrder: finding.order ?? 0,
       description: this.mapFindingDescriptionToEditorContent(finding),
@@ -665,6 +1047,8 @@ export class ReportDBService extends ReportBaseService {
       ...this.mapFindingDBModelToBaseDto(finding),
       id: finding.id,
       scopeId: finding.protocolId,
+      groupId: finding.groupId,
+      classifierId: finding.classifierId,
     };
   }
 

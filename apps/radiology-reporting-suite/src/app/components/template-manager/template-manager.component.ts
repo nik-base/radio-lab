@@ -4,6 +4,7 @@ import {
   inject,
   input,
   InputSignal,
+  Signal,
   ViewChild,
 } from '@angular/core';
 import { Store } from '@ngrx/store';
@@ -18,19 +19,28 @@ import {
   FileUploadModule,
 } from 'primeng/fileupload';
 import { TooltipModule } from 'primeng/tooltip';
-import { take, tap } from 'rxjs';
+import { filter, take, tap } from 'rxjs';
 
 import { CHANGE_MODE } from '@app/constants';
 import { LegacyTemplateImportMapperService } from '@app/mapper/legacy-template-import-mapper.service';
-import { Template, TemplateImport } from '@app/models/domain';
+import {
+  SortOrderItem,
+  SortOrderUpdate,
+  Template,
+  TemplateImport,
+} from '@app/models/domain';
 import {
   EventData,
   LegacyTemplateImport,
   TemplateManagerDialogData,
 } from '@app/models/ui';
+import { selectSelectedTemplate } from '@app/store/report-manager/domain/report-manager.feature';
 import { TemplateUIActions } from '@app/store/report-manager/ui/actions/template-ui.actions';
+import { isNotNil } from '@app/utils/functions/common.functions';
+import { findNextSortOrder } from '@app/utils/functions/order.functions';
 import { JsonService } from '@app/utils/services/json.service';
 
+import { SortableListManagerLayoutComponent } from '../sortable-list-manager-layout/sortable-list-manager-layout.component';
 import { TemplateManagerDialogComponent } from '../template-manager-dialog/template-manager-dialog.component';
 import { TemplateManagerListComponent } from '../template-manager-list/template-manager-list.component';
 
@@ -44,9 +54,11 @@ import { TemplateManagerListComponent } from '../template-manager-list/template-
     ConfirmPopupModule,
     FileUploadModule,
     TemplateManagerListComponent,
+    SortableListManagerLayoutComponent,
   ],
   providers: [DialogService, ConfirmationService],
   templateUrl: './template-manager.component.html',
+  styleUrls: ['./template-manager.component.scss'],
 })
 export class TemplateManagerComponent {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -66,6 +78,10 @@ export class TemplateManagerComponent {
 
   @ViewChild('import') importRef: FileUpload | undefined;
 
+  readonly selectedTemplate: Signal<Template | null> = this.store$.selectSignal(
+    selectSelectedTemplate
+  );
+
   onChange(template: Template | null): void {
     if (isNil(template)) {
       this.store$.dispatch(TemplateUIActions.reset());
@@ -82,12 +98,15 @@ export class TemplateManagerComponent {
 
     dialogRef.onClose
       .pipe(
-        tap((template: Template | null | undefined): void => {
-          if (!template) {
-            return;
-          }
+        filter<Template>(isNotNil),
+        tap((template: Template): void => {
+          const nextSortOrder: number = findNextSortOrder(this.templates());
 
-          this.store$.dispatch(TemplateUIActions.create({ template }));
+          this.store$.dispatch(
+            TemplateUIActions.create({
+              template: { ...template, sortOrder: nextSortOrder },
+            })
+          );
         }),
         take(1)
       )
@@ -102,14 +121,15 @@ export class TemplateManagerComponent {
 
     dialogRef.onClose
       .pipe(
-        tap((updatedTemplate: Template | null | undefined): void => {
-          if (!updatedTemplate) {
-            return;
-          }
-
+        filter<Template>(isNotNil),
+        tap((updatedTemplate: Template): void => {
           this.store$.dispatch(
             TemplateUIActions.update({
-              template: { ...updatedTemplate, id: template.id },
+              template: {
+                ...updatedTemplate,
+                id: template.id,
+                sortOrder: template.sortOrder,
+              },
             })
           );
         }),
@@ -153,6 +173,19 @@ export class TemplateManagerComponent {
     };
 
     reader.readAsText(uploadedFile);
+  }
+
+  onReorder(templates: ReadonlyArray<Template>): void {
+    const sortOrders: SortOrderUpdate = {
+      sortOrdersMap: templates.map(
+        (template: Template, index: number): SortOrderItem => ({
+          id: template.id,
+          sortOrder: index,
+        })
+      ),
+    };
+
+    this.store$.dispatch(TemplateUIActions.reorder({ sortOrders }));
   }
 
   private import(eventTarget: FileReader | null): void {
@@ -203,6 +236,8 @@ export class TemplateManagerComponent {
   ): DynamicDialogRef {
     return this.dialogService.open(TemplateManagerDialogComponent, {
       header,
+      modal: true,
+      closable: true,
       width: '70rem',
       contentStyle: { overflow: 'auto' },
       baseZIndex: 3000,

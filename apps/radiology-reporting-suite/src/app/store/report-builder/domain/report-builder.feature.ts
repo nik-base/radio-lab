@@ -123,9 +123,9 @@ export const reportBuilderFeature = createFeature({
               accumulator: FindingGrouped[],
               currentValue: Finding
             ): FindingGrouped[] => {
-              const group: string = isNilOrEmpty(currentValue.group)
+              const group: string = isNilOrEmpty(currentValue.groupId)
                 ? 'Uncategorized'
-                : currentValue.group;
+                : currentValue.groupId;
 
               const existingGroup: FindingGrouped | undefined =
                 accumulator.find(

@@ -2,13 +2,14 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, input, InputSignal } from '@angular/core';
 import { PushPipe } from '@ngrx/component';
 import { Store } from '@ngrx/store';
+import { isNil } from 'lodash-es';
 import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FileUploadModule } from 'primeng/fileupload';
 import { TooltipModule } from 'primeng/tooltip';
-import { Observable, take, tap } from 'rxjs';
+import { filter, Observable, take, tap } from 'rxjs';
 
 import { CHANGE_MODE } from '@app/constants';
 import {
@@ -25,11 +26,13 @@ import {
 } from '@app/models/ui';
 import { selectSelectedScope } from '@app/store/report-manager/domain/report-manager.feature';
 import { ScopeUIActions } from '@app/store/report-manager/ui/actions/scope-ui.actions';
+import { isNotNil } from '@app/utils/functions/common.functions';
 import { findNextSortOrder } from '@app/utils/functions/order.functions';
 
 import { ScopeCloneDialogComponent } from '../scope-clone-dialog/scope-clone-dialog.component';
 import { ScopeManagerDialogComponent } from '../scope-manager-dialog/scope-manager-dialog.component';
 import { ScopeManagerListComponent } from '../scope-manager-list/scope-manager-list.component';
+import { SortableListManagerLayoutComponent } from '../sortable-list-manager-layout/sortable-list-manager-layout.component';
 
 @Component({
   selector: 'radio-scope-manager',
@@ -42,6 +45,7 @@ import { ScopeManagerListComponent } from '../scope-manager-list/scope-manager-l
     ConfirmPopupModule,
     FileUploadModule,
     ScopeManagerListComponent,
+    SortableListManagerLayoutComponent,
   ],
   providers: [DialogService, ConfirmationService],
   templateUrl: './scope-manager.component.html',
@@ -62,7 +66,12 @@ export class ScopeManagerComponent {
   readonly selectedScope: Observable<Scope | null> =
     this.store$.select(selectSelectedScope);
 
-  onChange(scope: Scope): void {
+  onChange(scope: Scope | null): void {
+    if (isNil(scope)) {
+      this.store$.dispatch(ScopeUIActions.reset());
+      return;
+    }
+
     this.store$.dispatch(ScopeUIActions.change({ scope }));
   }
 
@@ -76,11 +85,8 @@ export class ScopeManagerComponent {
 
     dialogRef.onClose
       .pipe(
-        tap((scope: Scope | null | undefined): void => {
-          if (!scope) {
-            return;
-          }
-
+        filter<Scope>(isNotNil),
+        tap((scope: Scope): void => {
           const nextSortOrder: number = findNextSortOrder(this.scopes());
 
           this.store$.dispatch(
@@ -106,16 +112,14 @@ export class ScopeManagerComponent {
 
     dialogRef.onClose
       .pipe(
-        tap((updatedScope: Scope | null | undefined): void => {
-          if (!updatedScope) {
-            return;
-          }
-
+        filter<Scope>(isNotNil),
+        tap((updatedScope: Scope): void => {
           this.store$.dispatch(
             ScopeUIActions.update({
               scope: {
                 ...updatedScope,
                 id: scope.id,
+                sortOrder: scope.sortOrder,
                 templateId: scope.templateId,
               },
             })
@@ -134,11 +138,8 @@ export class ScopeManagerComponent {
 
     dialogRef.onClose
       .pipe(
-        tap((cloneOutput: ScopeCloneDialogOutput | null | undefined): void => {
-          if (!cloneOutput) {
-            return;
-          }
-
+        filter<ScopeCloneDialogOutput>(isNotNil),
+        tap((cloneOutput: ScopeCloneDialogOutput): void => {
           this.store$.dispatch(
             ScopeUIActions.clone({
               scope: cloneOutput.scope,

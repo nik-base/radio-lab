@@ -3,8 +3,10 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { map } from 'rxjs';
 
 import { ApplicationErrorMapperService } from '@app/mapper/application-error-mapper.service';
+import { SortOrderMapperService } from '@app/mapper/sort-order-mapper.service';
 import { TemplateMapperService } from '@app/mapper/template-mapper.service';
 import {
+  SortOrderUpdateDto,
   TemplateCreateDto,
   TemplateDto,
   TemplateImportDto,
@@ -29,6 +31,10 @@ export class TemplateEffects {
 
   private readonly errorMapper: ApplicationErrorMapperService = inject(
     ApplicationErrorMapperService
+  );
+
+  private readonly sortOrderMapper: SortOrderMapperService = inject(
+    SortOrderMapperService
   );
 
   // eslint-disable-next-line @typescript-eslint/typedef
@@ -312,6 +318,51 @@ export class TemplateEffects {
   });
 
   // eslint-disable-next-line @typescript-eslint/typedef
+  readonly reorder$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TemplateActions.reorder),
+      map(({ sortOrders }: ReturnType<typeof TemplateActions.reorder>) => {
+        const dto: SortOrderUpdateDto =
+          this.sortOrderMapper.mapToDto(sortOrders);
+
+        return TemplateDataActions.reorder({
+          sortOrders: dto,
+        });
+      })
+    );
+  });
+
+  // eslint-disable-next-line @typescript-eslint/typedef
+  readonly reorderFailure$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TemplateDataActions.reorderFailure),
+      map(
+        ({ error }: ReturnType<typeof TemplateDataActions.reorderFailure>) => {
+          return TemplateActions.reorderFailure({
+            error: this.errorMapper.mapFromDto(
+              error,
+              'Failed to reorder scopes'
+            ),
+          });
+        }
+      )
+    );
+  });
+
+  // eslint-disable-next-line @typescript-eslint/typedef
+  readonly reorderSuccess$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TemplateDataActions.reorderSuccess),
+      map(
+        ({
+          sortOrders,
+        }: ReturnType<typeof TemplateDataActions.reorderSuccess>) =>
+          TemplateActions.reorderSuccess({ sortOrders })
+      )
+    );
+  });
+
+  // eslint-disable-next-line @typescript-eslint/typedef
   readonly failure$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(
@@ -320,7 +371,8 @@ export class TemplateEffects {
         TemplateActions.updateFailure,
         TemplateActions.deleteFailure,
         TemplateActions.exportFailure,
-        TemplateActions.importFailure
+        TemplateActions.importFailure,
+        TemplateActions.reorderFailure
       ),
       map(
         ({
@@ -331,7 +383,8 @@ export class TemplateEffects {
           | ReturnType<typeof TemplateActions.updateFailure>
           | ReturnType<typeof TemplateActions.deleteFailure>
           | ReturnType<typeof TemplateActions.exportFailure>
-          | ReturnType<typeof TemplateActions.importFailure>) =>
+          | ReturnType<typeof TemplateActions.importFailure>
+          | ReturnType<typeof TemplateActions.reorderFailure>) =>
           ApplicationActions.error({ error })
       )
     );

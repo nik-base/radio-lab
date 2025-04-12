@@ -12,6 +12,18 @@ export { ScopeDto } from './scope/scope-dto.interface';
 export { ScopeImportDto } from './scope/scope-import-dto.interface';
 export { ScopeUpdateDto } from './scope/scope-update-dto.interface';
 
+export { FindingGroupBaseDto } from './finding-group/finding-group-base-dto.interface';
+export { FindingGroupCreateDto } from './finding-group/finding-group-create-dto.interface';
+export { FindingGroupDto } from './finding-group/finding-group-dto.interface';
+export { FindingGroupImportDto } from './finding-group/finding-group-import-dto.interface';
+export { FindingGroupUpdateDto } from './finding-group/finding-group-update-dto.interface';
+
+export { FindingClassifierBaseDto } from './finding-classifier/finding-classifier-base-dto.interface';
+export { FindingClassifierCreateDto } from './finding-classifier/finding-classifier-create-dto.interface';
+export { FindingClassifierDto } from './finding-classifier/finding-classifier-dto.interface';
+export { FindingClassifierImportDto } from './finding-classifier/finding-classifier-import-dto.interface';
+export { FindingClassifierUpdateDto } from './finding-classifier/finding-classifier-update-dto.interface';
+
 export { FindingBaseDto } from './finding/finding-base-dto.interface';
 export { FindingCreateDto } from './finding/finding-create-dto.interface';
 export { FindingDto } from './finding/finding-dto.interface';

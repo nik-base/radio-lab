@@ -1,0 +1,7 @@
+:host {
+  ::ng-deep {
+    .radio-icon-only-file-upload .p-button-label {
+      display: none; /* Hide the label text */
+    }
+  }
+}

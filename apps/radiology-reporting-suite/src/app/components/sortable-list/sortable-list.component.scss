@@ -1,0 +1,30 @@
+:host {
+  /* stylelint-disable-next-line selector-pseudo-element-no-unknown */
+  ::ng-deep {
+    .p-orderlist-list-container {
+      width: 100%;
+      overflow: auto;
+    }
+
+    .p-listbox {
+      height: 100%;
+      /* min-height: 0; */
+      display: flex;
+      flex-direction: column;
+    }
+
+    p-listbox {
+      max-height: 100%;
+    }
+
+    li:has(> .sortable-item-active) {
+      border: 1px solid var(--p-list-option-selected-color);
+      font-weight: bold;
+      color: var(--p-list-option-selected-color);
+    }
+
+    .p-orderlist-controls {
+      display: none;
+    }
+  }
+}

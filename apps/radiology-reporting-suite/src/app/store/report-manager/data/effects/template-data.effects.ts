@@ -153,4 +153,24 @@ export class TemplateDataEffects {
       )
     );
   });
+
+  // eslint-disable-next-line @typescript-eslint/typedef
+  readonly reorder$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(TemplateDataActions.reorder),
+      switchMap(
+        ({ sortOrders }: ReturnType<typeof TemplateDataActions.reorder>) =>
+          this.reportManagerService.reorderTemplates$(sortOrders).pipe(
+            map(() => TemplateDataActions.reorderSuccess({ sortOrders })),
+            catchError((error: unknown) =>
+              of(
+                TemplateDataActions.reorderFailure({
+                  error: { error },
+                })
+              )
+            )
+          )
+      )
+    );
+  });
 }
