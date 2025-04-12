@@ -11,3 +11,8 @@ export { ScopeManagerDialogData } from './scope-manager-dialog-data.interface';
 export { LegacyTemplateImport } from './legacy-template-import.interface';
 
 export { FindingGrouped } from './finding-grouped.interface';
+
+export { SortableListItem } from './sortable-list-item.interface';
+export { SortableListMenuItem } from './sortable-list-menu-item.interface';
+
+export { CommonDialogData } from './common-dialog-data.interface';

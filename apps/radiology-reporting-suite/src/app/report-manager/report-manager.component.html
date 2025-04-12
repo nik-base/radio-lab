@@ -15,8 +15,19 @@
     </radio-scope-manager>
   }
 
-  @let findings = findings$ | ngrxPush;
   @let selectedScope = selectedScope$ | ngrxPush;
+
+  @let _groups = groups();
+
+  @if (selectedScope) {
+    <radio-group-manager
+      [groups]="_groups ?? []"
+      [scope]="selectedScope"
+      style="width: 20vh">
+    </radio-group-manager>
+  }
+
+  @let findings = findings$ | ngrxPush;
 
   @if (findings && selectedScope) {
     <radio-finding-manager

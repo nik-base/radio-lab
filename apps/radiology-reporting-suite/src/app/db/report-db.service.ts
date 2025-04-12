@@ -913,20 +913,22 @@ export class ReportDBService extends ReportBaseService {
   }
 
   private mapFindingGroupBaseDtoToDBModel(
-    scope: FindingGroupBaseDto
+    group: FindingGroupBaseDto
   ): Omit<FindingGroupDBModel, 'id' | 'scopeId'> {
     return {
-      name: scope.name,
-      sortOrder: scope.sortOrder,
+      name: group.name,
+      sortOrder: group.sortOrder,
+      isDefault: group.isDefault,
     };
   }
 
   private mapFindingClassifierBaseDtoToDBModel(
-    scope: FindingClassifierBaseDto
+    classifier: FindingClassifierBaseDto
   ): Omit<FindingClassifierDBModel, 'id' | 'scopeId' | 'groupId'> {
     return {
-      name: scope.name,
-      sortOrder: scope.sortOrder,
+      name: classifier.name,
+      sortOrder: classifier.sortOrder,
+      isDefault: classifier.isDefault,
     };
   }
 

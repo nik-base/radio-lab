@@ -62,6 +62,7 @@ const reportDBConfig: DBConfig = {
       storeSchema: [
         { name: 'name', keypath: 'name', options: { unique: false } },
         { name: 'sortOrder', keypath: 'sortOrder', options: { unique: false } },
+        { name: 'isDefault', keypath: 'isDefault', options: { unique: false } },
         {
           name: 'scopeId',
           keypath: 'scopeId',
@@ -75,6 +76,7 @@ const reportDBConfig: DBConfig = {
       storeSchema: [
         { name: 'name', keypath: 'name', options: { unique: false } },
         { name: 'sortOrder', keypath: 'sortOrder', options: { unique: false } },
+        { name: 'isDefault', keypath: 'isDefault', options: { unique: false } },
         {
           name: 'scopeId',
           keypath: 'scopeId',

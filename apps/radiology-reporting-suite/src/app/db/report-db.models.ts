@@ -22,6 +22,7 @@ export interface FindingGroupDBModel {
   readonly name: string;
   readonly sortOrder: number;
   readonly scopeId: string;
+  readonly isDefault: boolean;
 }
 
 export interface FindingClassifierDBModel {
@@ -30,6 +31,7 @@ export interface FindingClassifierDBModel {
   readonly sortOrder: number;
   readonly scopeId: string;
   readonly groupId: string;
+  readonly isDefault: boolean;
 }
 
 export interface FindingDBModel {

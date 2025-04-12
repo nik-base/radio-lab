@@ -2,16 +2,27 @@ import { createFeature, createReducer, createSelector, on } from '@ngrx/store';
 import { produce } from 'immer';
 import { isNil, orderBy, uniq } from 'lodash-es';
 
-import { Finding, Scope, SortOrderItem, Template } from '@app/models/domain';
+import {
+  Finding,
+  FindingClassifier,
+  FindingGroup,
+  Scope,
+  SortOrderItem,
+  Template,
+} from '@app/models/domain';
 import { Writable } from '@app/types';
 import { isNotNil } from '@app/utils/functions/common.functions';
 import {
+  orderClassifiers,
   orderFindings,
+  orderGroups,
   orderScopes,
   orderTemplates,
 } from '@app/utils/functions/order.functions';
 
+import { ClassifierActions } from './actions/classifier.actions';
 import { FindingActions } from './actions/finding.actions';
+import { GroupActions } from './actions/group.actions';
 import { ScopeActions } from './actions/scope.actions';
 import { TemplateActions } from './actions/template.actions';
 import { ReportManagerState } from './report-manager-state.interface';
@@ -21,6 +32,10 @@ export const reportManagerInitialState: ReportManagerState = {
   selectedTemplate: null,
   scopes: null,
   selectedScope: null,
+  groups: null,
+  selectedGroup: null,
+  classifiers: null,
+  selectedClassifier: null,
   findings: null,
   selectedFinding: null,
 };
@@ -245,6 +260,237 @@ export const reportManagerFeature = createFeature({
           draft.selectedScope = null;
         })
     ),
+    // Group Actions
+    on(
+      GroupActions.fetchSuccess,
+      (
+        state: ReportManagerState,
+        { groups }: ReturnType<typeof GroupActions.fetchSuccess>
+      ): ReportManagerState =>
+        produce(state, (draft: Writable<ReportManagerState>) => {
+          draft.groups = groups;
+        })
+    ),
+    on(
+      GroupActions.createSuccess,
+      (
+        state: ReportManagerState,
+        { group }: ReturnType<typeof GroupActions.createSuccess>
+      ): ReportManagerState =>
+        produce(state, (draft: Writable<ReportManagerState>) => {
+          if (isNil(draft.groups)) {
+            return;
+          }
+
+          draft.groups = [...draft.groups, group];
+        })
+    ),
+    on(
+      GroupActions.updateSuccess,
+      (
+        state: ReportManagerState,
+        { group }: ReturnType<typeof GroupActions.updateSuccess>
+      ): ReportManagerState =>
+        produce(state, (draft: Writable<ReportManagerState>) => {
+          if (isNil(draft.groups)) {
+            return;
+          }
+
+          const index: number = draft.groups.findIndex(
+            (item: FindingGroup): boolean => item.id === group.id
+          );
+
+          if (index === -1) {
+            return;
+          }
+
+          draft.groups[index] = group;
+        })
+    ),
+    on(
+      GroupActions.deleteSuccess,
+      (
+        state: ReportManagerState,
+        { group }: ReturnType<typeof GroupActions.deleteSuccess>
+      ): ReportManagerState =>
+        produce(state, (draft: Writable<ReportManagerState>) => {
+          if (isNil(draft.groups)) {
+            return;
+          }
+
+          const index: number = draft.groups.findIndex(
+            (item: FindingGroup): boolean => item.id === group.id
+          );
+
+          if (index === -1) {
+            return;
+          }
+
+          draft.groups.splice(index, 1);
+        })
+    ),
+    on(
+      GroupActions.reorderSuccess,
+      (
+        state: ReportManagerState,
+        { sortOrders }: ReturnType<typeof GroupActions.reorderSuccess>
+      ): ReportManagerState =>
+        produce(state, (draft: Writable<ReportManagerState>) => {
+          if (isNil(draft.groups)) {
+            return;
+          }
+
+          for (const group of draft.groups) {
+            const newSortOrderItem: SortOrderItem | undefined =
+              sortOrders.sortOrdersMap.find(
+                (item: SortOrderItem): boolean => item.id === group.id
+              );
+
+            if (!isNil(newSortOrderItem)) {
+              group.sortOrder = newSortOrderItem.sortOrder;
+
+              if (draft.selectedGroup && draft.selectedGroup.id === group.id) {
+                draft.selectedGroup.sortOrder = newSortOrderItem.sortOrder;
+              }
+            }
+          }
+        })
+    ),
+    on(
+      GroupActions.setSelected,
+      (
+        state: ReportManagerState,
+        { group }: ReturnType<typeof GroupActions.setSelected>
+      ): ReportManagerState =>
+        produce(state, (draft: Writable<ReportManagerState>) => {
+          draft.selectedGroup = group;
+        })
+    ),
+    on(
+      GroupActions.reset,
+      (state: ReportManagerState): ReportManagerState =>
+        produce(state, (draft: Writable<ReportManagerState>) => {
+          draft.groups = null;
+          draft.selectedGroup = null;
+        })
+    ),
+    // Classifier Actions
+    on(
+      ClassifierActions.fetchSuccess,
+      (
+        state: ReportManagerState,
+        { classifiers }: ReturnType<typeof ClassifierActions.fetchSuccess>
+      ): ReportManagerState =>
+        produce(state, (draft: Writable<ReportManagerState>) => {
+          draft.classifiers = classifiers;
+        })
+    ),
+    on(
+      ClassifierActions.createSuccess,
+      (
+        state: ReportManagerState,
+        { classifier }: ReturnType<typeof ClassifierActions.createSuccess>
+      ): ReportManagerState =>
+        produce(state, (draft: Writable<ReportManagerState>) => {
+          if (isNil(draft.classifiers)) {
+            return;
+          }
+
+          draft.classifiers = [...draft.classifiers, classifier];
+        })
+    ),
+    on(
+      ClassifierActions.updateSuccess,
+      (
+        state: ReportManagerState,
+        { classifier }: ReturnType<typeof ClassifierActions.updateSuccess>
+      ): ReportManagerState =>
+        produce(state, (draft: Writable<ReportManagerState>) => {
+          if (isNil(draft.classifiers)) {
+            return;
+          }
+
+          const index: number = draft.classifiers.findIndex(
+            (item: FindingClassifier): boolean => item.id === classifier.id
+          );
+
+          if (index === -1) {
+            return;
+          }
+
+          draft.classifiers[index] = classifier;
+        })
+    ),
+    on(
+      ClassifierActions.deleteSuccess,
+      (
+        state: ReportManagerState,
+        { classifier }: ReturnType<typeof ClassifierActions.deleteSuccess>
+      ): ReportManagerState =>
+        produce(state, (draft: Writable<ReportManagerState>) => {
+          if (isNil(draft.classifiers)) {
+            return;
+          }
+
+          const index: number = draft.classifiers.findIndex(
+            (item: FindingClassifier): boolean => item.id === classifier.id
+          );
+
+          if (index === -1) {
+            return;
+          }
+
+          draft.classifiers.splice(index, 1);
+        })
+    ),
+    on(
+      ClassifierActions.reorderSuccess,
+      (
+        state: ReportManagerState,
+        { sortOrders }: ReturnType<typeof ClassifierActions.reorderSuccess>
+      ): ReportManagerState =>
+        produce(state, (draft: Writable<ReportManagerState>) => {
+          if (isNil(draft.classifiers)) {
+            return;
+          }
+
+          for (const classifier of draft.classifiers) {
+            const newSortOrderItem: SortOrderItem | undefined =
+              sortOrders.sortOrdersMap.find(
+                (item: SortOrderItem): boolean => item.id === classifier.id
+              );
+
+            if (!isNil(newSortOrderItem)) {
+              classifier.sortOrder = newSortOrderItem.sortOrder;
+
+              if (
+                draft.selectedClassifier &&
+                draft.selectedClassifier.id === classifier.id
+              ) {
+                draft.selectedClassifier.sortOrder = newSortOrderItem.sortOrder;
+              }
+            }
+          }
+        })
+    ),
+    on(
+      ClassifierActions.setSelected,
+      (
+        state: ReportManagerState,
+        { classifier }: ReturnType<typeof ClassifierActions.setSelected>
+      ): ReportManagerState =>
+        produce(state, (draft: Writable<ReportManagerState>) => {
+          draft.selectedClassifier = classifier;
+        })
+    ),
+    on(
+      ClassifierActions.reset,
+      (state: ReportManagerState): ReportManagerState =>
+        produce(state, (draft: Writable<ReportManagerState>) => {
+          draft.classifiers = null;
+          draft.selectedClassifier = null;
+        })
+    ),
     // Finding Actions
     on(
       FindingActions.fetchSuccess,
@@ -369,7 +615,13 @@ export const reportManagerFeature = createFeature({
     )
   ),
   // eslint-disable-next-line @typescript-eslint/typedef
-  extraSelectors: ({ selectTemplates, selectScopes, selectFindings }) => ({
+  extraSelectors: ({
+    selectTemplates,
+    selectScopes,
+    selectGroups,
+    selectClassifiers,
+    selectFindings,
+  }) => ({
     selectOrderedTemplates: createSelector(
       selectTemplates,
       (templates: Template[]): Template[] => orderTemplates(templates)
@@ -378,6 +630,16 @@ export const reportManagerFeature = createFeature({
       selectScopes,
       (scopes: Scope[] | null): Scope[] | null =>
         isNil(scopes) ? null : orderScopes(scopes)
+    ),
+    selectOrderedGroups: createSelector(
+      selectGroups,
+      (groups: FindingGroup[] | null): FindingGroup[] | null =>
+        isNil(groups) ? null : orderGroups(groups)
+    ),
+    selectOrderedClassifiers: createSelector(
+      selectClassifiers,
+      (classifiers: FindingClassifier[] | null): FindingGroup[] | null =>
+        isNil(classifiers) ? null : orderClassifiers(classifiers)
     ),
     selectOrderedFindings: createSelector(
       selectFindings,
@@ -413,9 +675,13 @@ export const {
   reducer,
   selectOrderedTemplates,
   selectOrderedScopes,
+  selectOrderedGroups,
+  selectOrderedClassifiers,
   selectOrderedFindings,
   selectGroups,
   selectSelectedTemplate,
   selectSelectedScope,
+  selectSelectedGroup,
+  selectSelectedClassifier,
   selectSelectedFinding,
 } = reportManagerFeature;

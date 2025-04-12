@@ -1,0 +1,23 @@
+<radio-sortable-list-manager-layout>
+  <ng-container actions>
+    <p-button
+      icon="pi pi-plus"
+      pTooltip="Create Group"
+      tooltipPosition="bottom"
+      [outlined]="true"
+      (onClick)="onCreate()" />
+  </ng-container>
+
+  <radio-group-manager-list
+    list
+    class="w-full"
+    [groups]="groups()"
+    [selectedGroup]="selectedGroup()"
+    (edit)="onEdit($event)"
+    (delete)="onDelete($event)"
+    (reorder)="onReorder($event)"
+    (changed)="onChange($event)">
+  </radio-group-manager-list>
+</radio-sortable-list-manager-layout>
+
+<p-confirmPopup />

@@ -16,6 +16,7 @@ import { ApplicationActions } from '@app/store/actions/application.actions';
 
 import { ScopeDataActions } from '../../data/actions/scope-data.actions';
 import { FindingActions } from '../actions/finding.actions';
+import { GroupActions } from '../actions/group.actions';
 import { ScopeActions } from '../actions/scope.actions';
 
 @Injectable()
@@ -106,6 +107,23 @@ export class ScopeEffects {
       map(({ scope }: ReturnType<typeof ScopeDataActions.createSuccess>) =>
         ScopeActions.createSuccess({
           scope: this.scopeMapper.mapFromDto(scope),
+        })
+      )
+    );
+  });
+
+  // eslint-disable-next-line @typescript-eslint/typedef
+  readonly createDefaultFindingGroup$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(ScopeActions.createSuccess),
+      map(({ scope }: ReturnType<typeof ScopeActions.createSuccess>) =>
+        GroupActions.create({
+          group: {
+            name: 'Uncategorized',
+            scopeId: scope.id,
+            sortOrder: 0,
+            isDefault: true,
+          },
         })
       )
     );

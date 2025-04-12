@@ -19,6 +19,7 @@ import {
   Template,
 } from '@app/models/domain';
 import {
+  CommonDialogData,
   EventData,
   ScopeCloneDialogData,
   ScopeCloneDialogOutput,
@@ -29,8 +30,8 @@ import { ScopeUIActions } from '@app/store/report-manager/ui/actions/scope-ui.ac
 import { isNotNil } from '@app/utils/functions/common.functions';
 import { findNextSortOrder } from '@app/utils/functions/order.functions';
 
+import { CommonManagerDialogComponent } from '../common-manager-dialog/common-manager-dialog.component';
 import { ScopeCloneDialogComponent } from '../scope-clone-dialog/scope-clone-dialog.component';
-import { ScopeManagerDialogComponent } from '../scope-manager-dialog/scope-manager-dialog.component';
 import { ScopeManagerListComponent } from '../scope-manager-list/scope-manager-list.component';
 import { SortableListManagerLayoutComponent } from '../sortable-list-manager-layout/sortable-list-manager-layout.component';
 
@@ -181,13 +182,16 @@ export class ScopeManagerComponent {
     header: string,
     data: ScopeManagerDialogData
   ): DynamicDialogRef {
-    return this.dialogService.open(ScopeManagerDialogComponent, {
+    return this.dialogService.open(CommonManagerDialogComponent, {
       header,
       width: '25rem',
       contentStyle: { overflow: 'auto' },
       baseZIndex: 3000,
       position: 'top',
-      data,
+      data: {
+        mode: data.mode,
+        name: data.scope?.name,
+      } satisfies CommonDialogData,
     });
   }
 

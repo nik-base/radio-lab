@@ -1,6 +1,12 @@
 import { isNil, maxBy, orderBy } from 'lodash-es';
 
-import { Finding, Scope, Template } from '@app/models/domain';
+import {
+  Finding,
+  FindingClassifier,
+  FindingGroup,
+  Scope,
+  Template,
+} from '@app/models/domain';
 
 export function orderTemplates(templates: Template[]): Template[] {
   return orderBy(
@@ -12,6 +18,24 @@ export function orderTemplates(templates: Template[]): Template[] {
 
 export function orderScopes(scopes: Scope[]): Scope[] {
   return orderBy(scopes, (scope: Scope): number => scope.sortOrder, 'asc');
+}
+
+export function orderGroups(groups: FindingGroup[]): FindingGroup[] {
+  return orderBy(
+    groups,
+    (group: FindingGroup): number => group.sortOrder,
+    'asc'
+  );
+}
+
+export function orderClassifiers(
+  classifiers: FindingClassifier[]
+): FindingClassifier[] {
+  return orderBy(
+    classifiers,
+    (classifier: FindingClassifier): number => classifier.sortOrder,
+    'asc'
+  );
 }
 
 export function orderFindings(findings: Finding[]): Finding[] {

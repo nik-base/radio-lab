@@ -14,12 +14,14 @@ export { ScopeUpdateDto } from './scope/scope-update-dto.interface';
 
 export { FindingGroupBaseDto } from './finding-group/finding-group-base-dto.interface';
 export { FindingGroupCreateDto } from './finding-group/finding-group-create-dto.interface';
+export { FindingGroupDataDto } from './finding-group/finding-group-data-dto.interface';
 export { FindingGroupDto } from './finding-group/finding-group-dto.interface';
 export { FindingGroupImportDto } from './finding-group/finding-group-import-dto.interface';
 export { FindingGroupUpdateDto } from './finding-group/finding-group-update-dto.interface';
 
 export { FindingClassifierBaseDto } from './finding-classifier/finding-classifier-base-dto.interface';
 export { FindingClassifierCreateDto } from './finding-classifier/finding-classifier-create-dto.interface';
+export { FindingClassifierDataDto } from './finding-classifier/finding-classifier-data-dto.interface';
 export { FindingClassifierDto } from './finding-classifier/finding-classifier-dto.interface';
 export { FindingClassifierImportDto } from './finding-classifier/finding-classifier-import-dto.interface';
 export { FindingClassifierUpdateDto } from './finding-classifier/finding-classifier-update-dto.interface';

@@ -2,8 +2,14 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import {
+  FindingClassifierCreateDto,
+  FindingClassifierDto,
+  FindingClassifierUpdateDto,
   FindingCreateDto,
   FindingDto,
+  FindingGroupCreateDto,
+  FindingGroupDto,
+  FindingGroupUpdateDto,
   FindingUpdateDto,
   ScopeCreateDto,
   ScopeDto,
@@ -29,8 +35,15 @@ export class ReportManagerService {
     return this.reportService.fetchScopes$(templateId);
   }
 
-  fetchGroups$(scopeId: string): Observable<FindingDto[]> {
-    return this.reportService.fetchFindings$(scopeId);
+  fetchFindingGroups$(scopeId: string): Observable<FindingGroupDto[]> {
+    return this.reportService.fetchFindingGroups$(scopeId);
+  }
+
+  fetchFindingClassifiers$(
+    scopeId: string,
+    groupId: string
+  ): Observable<FindingClassifierDto[]> {
+    return this.reportService.fetchFindingClassifiers$(scopeId, groupId);
   }
 
   fetchFindings$(scopeId: string): Observable<FindingDto[]> {
@@ -45,6 +58,18 @@ export class ReportManagerService {
     return this.reportService.createScope$(scope);
   }
 
+  createFindingGroup$(
+    group: FindingGroupCreateDto
+  ): Observable<FindingGroupDto> {
+    return this.reportService.createFindingGroup$(group);
+  }
+
+  createFindingClassifier$(
+    classifier: FindingClassifierCreateDto
+  ): Observable<FindingClassifierDto> {
+    return this.reportService.createFindingClassifier$(classifier);
+  }
+
   createFinding$(finding: FindingCreateDto): Observable<FindingDto> {
     return this.reportService.createFinding$(finding);
   }
@@ -55,6 +80,18 @@ export class ReportManagerService {
 
   updateScope$(scope: ScopeUpdateDto): Observable<ScopeDto> {
     return this.reportService.updateScope$(scope);
+  }
+
+  updateFindingGroup$(
+    group: FindingGroupUpdateDto
+  ): Observable<FindingGroupDto> {
+    return this.reportService.updateFindingGroup$(group);
+  }
+
+  updateFindingClassifier$(
+    classifier: FindingClassifierUpdateDto
+  ): Observable<FindingClassifierDto> {
+    return this.reportService.updateFindingClassifier$(classifier);
   }
 
   updateFinding$(finding: FindingUpdateDto): Observable<FindingDto> {
@@ -69,6 +106,14 @@ export class ReportManagerService {
     return this.reportService.deleteScope$(scopeId);
   }
 
+  deleteFindingGroup$(groupId: string): Observable<void> {
+    return this.reportService.deleteFindingGroup$(groupId);
+  }
+
+  deleteFindingClassifier$(classifierId: string): Observable<void> {
+    return this.reportService.deleteFindingClassifier$(classifierId);
+  }
+
   deleteFinding$(findingId: string): Observable<void> {
     return this.reportService.deleteFinding$(findingId);
   }
@@ -81,6 +126,20 @@ export class ReportManagerService {
 
   reorderScopes$(sortOrderUpdateRequest: SortOrderUpdateDto): Observable<void> {
     return this.reportService.reorderScopes$(sortOrderUpdateRequest);
+  }
+
+  reorderFindingGroups$(
+    sortOrderUpdateRequest: SortOrderUpdateDto
+  ): Observable<void> {
+    return this.reportService.reorderFindingGroups$(sortOrderUpdateRequest);
+  }
+
+  reorderFindingClassifiers$(
+    sortOrderUpdateRequest: SortOrderUpdateDto
+  ): Observable<void> {
+    return this.reportService.reorderFindingClassifiers$(
+      sortOrderUpdateRequest
+    );
   }
 
   reorderFindings$(

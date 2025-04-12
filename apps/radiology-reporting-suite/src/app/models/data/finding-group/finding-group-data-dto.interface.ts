@@ -1,7 +1,7 @@
-import { FindingDto } from '../finding/finding-dto.interface';
+import { FindingClassifierDto } from '../finding-classifier/finding-classifier-dto.interface';
 
 import { FindingGroupDto } from './finding-group-dto.interface';
 
 export interface FindingGroupDataDto extends FindingGroupDto {
-  readonly findings: ReadonlyArray<FindingDto>;
+  readonly classifiers: ReadonlyArray<FindingClassifierDto>;
 }
