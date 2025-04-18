@@ -8,7 +8,6 @@ import {
   ViewChild,
 } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { isNil } from 'lodash-es';
 import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
@@ -35,6 +34,7 @@ import {
   TemplateManagerDialogData,
 } from '@app/models/ui';
 import { selectSelectedTemplate } from '@app/store/report-manager/domain/report-manager.feature';
+import { TemplateStore } from '@app/store/report-manager/template.store';
 import { TemplateUIActions } from '@app/store/report-manager/ui/actions/template-ui.actions';
 import { isNotNil } from '@app/utils/functions/common.functions';
 import { findNextSortOrder } from '@app/utils/functions/order.functions';
@@ -64,6 +64,9 @@ export class TemplateManagerComponent {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   private readonly store$: Store = inject(Store);
 
+  readonly templateStore$: InstanceType<typeof TemplateStore> =
+    inject(TemplateStore);
+
   private readonly jsonService: JsonService = inject(JsonService);
 
   private readonly dialogService: DialogService = inject(DialogService);
@@ -83,12 +86,7 @@ export class TemplateManagerComponent {
   );
 
   onChange(template: Template | null): void {
-    if (isNil(template)) {
-      this.store$.dispatch(TemplateUIActions.reset());
-      return;
-    }
-
-    this.store$.dispatch(TemplateUIActions.change({ template }));
+    this.templateStore$.change(template);
   }
 
   onCreate(): void {
@@ -102,11 +100,10 @@ export class TemplateManagerComponent {
         tap((template: Template): void => {
           const nextSortOrder: number = findNextSortOrder(this.templates());
 
-          this.store$.dispatch(
-            TemplateUIActions.create({
-              template: { ...template, sortOrder: nextSortOrder },
-            })
-          );
+          this.templateStore$.create({
+            ...template,
+            sortOrder: nextSortOrder,
+          });
         }),
         take(1)
       )
@@ -123,15 +120,11 @@ export class TemplateManagerComponent {
       .pipe(
         filter<Template>(isNotNil),
         tap((updatedTemplate: Template): void => {
-          this.store$.dispatch(
-            TemplateUIActions.update({
-              template: {
-                ...updatedTemplate,
-                id: template.id,
-                sortOrder: template.sortOrder,
-              },
-            })
-          );
+          this.templateStore$.update({
+            ...updatedTemplate,
+            id: template.id,
+            sortOrder: template.sortOrder,
+          });
         }),
         take(1)
       )
@@ -146,15 +139,13 @@ export class TemplateManagerComponent {
       icon: 'pi pi-info-circle',
       acceptButtonStyleClass: 'p-button-danger p-button-sm',
       accept: () => {
-        this.store$.dispatch(
-          TemplateUIActions.delete({ template: eventData.data })
-        );
+        this.templateStore$.delete(eventData.data);
       },
     });
   }
 
   onExport(template: Template): void {
-    this.store$.dispatch(TemplateUIActions.export({ template }));
+    this.templateStore$.export(template);
   }
 
   onImport(event: FileSelectEvent): void {
@@ -185,7 +176,7 @@ export class TemplateManagerComponent {
       ),
     };
 
-    this.store$.dispatch(TemplateUIActions.reorder({ sortOrders }));
+    this.templateStore$.reorder(sortOrders);
   }
 
   private import(eventTarget: FileReader | null): void {
@@ -216,7 +207,7 @@ export class TemplateManagerComponent {
       return;
     }
 
-    this.store$.dispatch(TemplateUIActions.import({ template }));
+    this.templateStore$.import(template);
   }
 
   private parseImportedTemplate(content: string): TemplateImport {

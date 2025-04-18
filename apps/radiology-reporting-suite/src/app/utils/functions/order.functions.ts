@@ -8,6 +8,12 @@ import {
   Template,
 } from '@app/models/domain';
 
+export function orderBySortOrder<T extends { sortOrder: number }>(
+  items: T[]
+): T[] {
+  return orderBy(items, (item: T): number => item.sortOrder, 'asc');
+}
+
 export function orderTemplates(templates: Template[]): Template[] {
   return orderBy(
     templates,

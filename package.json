@@ -20,6 +20,7 @@
     "@ngrx/effects": "19.0.1",
     "@ngrx/entity": "19.0.1",
     "@ngrx/router-store": "19.0.1",
+    "@ngrx/signals": "^19.0.1",
     "@ngrx/store": "19.0.1",
     "@primeng/themes": "^19.0.9",
     "@tiptap/core": "2.11.5",

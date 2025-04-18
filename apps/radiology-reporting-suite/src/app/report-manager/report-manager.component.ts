@@ -23,7 +23,9 @@ import {
   selectSelectedScope,
   selectSelectedTemplate,
 } from '@app/store/report-manager/domain/report-manager.feature';
-import { ReportManagerUIActions } from '@app/store/report-manager/ui/actions/report-manager-ui.actions';
+import { GroupStore } from '@app/store/report-manager/group.store';
+import { ScopeStore } from '@app/store/report-manager/scope.store';
+import { TemplateStore } from '@app/store/report-manager/template.store';
 
 import { GroupManagerComponent } from '../components/group-manager/group-manager.component';
 
@@ -41,10 +43,18 @@ import { GroupManagerComponent } from '../components/group-manager/group-manager
   templateUrl: './report-manager.component.html',
   styleUrl: './report-manager.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [TemplateStore, ScopeStore, GroupStore],
 })
 export class ReportManagerComponent implements OnInit {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   private readonly store$: Store = inject(Store);
+
+  readonly templateStore$: InstanceType<typeof TemplateStore> =
+    inject(TemplateStore);
+
+  readonly scopeStore$: InstanceType<typeof ScopeStore> = inject(ScopeStore);
+
+  readonly groupStore$: InstanceType<typeof GroupStore> = inject(GroupStore);
 
   readonly templates$: Observable<Template[]> = this.store$.select(
     selectOrderedTemplates
@@ -71,6 +81,6 @@ export class ReportManagerComponent implements OnInit {
     this.store$.selectSignal(selectSelectedGroup);
 
   ngOnInit(): void {
-    this.store$.dispatch(ReportManagerUIActions.load());
+    this.templateStore$.fetchAll();
   }
 }

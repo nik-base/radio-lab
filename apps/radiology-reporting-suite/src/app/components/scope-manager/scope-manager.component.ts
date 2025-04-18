@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, input, InputSignal } from '@angular/core';
 import { PushPipe } from '@ngrx/component';
 import { Store } from '@ngrx/store';
-import { isNil } from 'lodash-es';
 import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
@@ -30,6 +29,7 @@ import { ScopeUIActions } from '@app/store/report-manager/ui/actions/scope-ui.ac
 import { isNotNil } from '@app/utils/functions/common.functions';
 import { findNextSortOrder } from '@app/utils/functions/order.functions';
 
+import { ScopeStore } from '@app/store/report-manager/scope.store';
 import { CommonManagerDialogComponent } from '../common-manager-dialog/common-manager-dialog.component';
 import { ScopeCloneDialogComponent } from '../scope-clone-dialog/scope-clone-dialog.component';
 import { ScopeManagerListComponent } from '../scope-manager-list/scope-manager-list.component';
@@ -55,6 +55,8 @@ export class ScopeManagerComponent {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   private readonly store$: Store = inject(Store);
 
+  readonly scopeStore$: InstanceType<typeof ScopeStore> = inject(ScopeStore);
+
   private readonly dialogService: DialogService = inject(DialogService);
 
   private readonly confirmationService: ConfirmationService =
@@ -68,12 +70,7 @@ export class ScopeManagerComponent {
     this.store$.select(selectSelectedScope);
 
   onChange(scope: Scope | null): void {
-    if (isNil(scope)) {
-      this.store$.dispatch(ScopeUIActions.reset());
-      return;
-    }
-
-    this.store$.dispatch(ScopeUIActions.change({ scope }));
+    this.scopeStore$.change(scope);
   }
 
   onCreate(): void {
@@ -90,15 +87,11 @@ export class ScopeManagerComponent {
         tap((scope: Scope): void => {
           const nextSortOrder: number = findNextSortOrder(this.scopes());
 
-          this.store$.dispatch(
-            ScopeUIActions.create({
-              scope: {
-                ...scope,
-                templateId: this.template().id,
-                sortOrder: nextSortOrder,
-              },
-            })
-          );
+          this.scopeStore$.createWithGroup({
+            ...scope,
+            templateId: this.template().id,
+            sortOrder: nextSortOrder,
+          });
         }),
         take(1)
       )
@@ -115,16 +108,12 @@ export class ScopeManagerComponent {
       .pipe(
         filter<Scope>(isNotNil),
         tap((updatedScope: Scope): void => {
-          this.store$.dispatch(
-            ScopeUIActions.update({
-              scope: {
-                ...updatedScope,
-                id: scope.id,
-                sortOrder: scope.sortOrder,
-                templateId: scope.templateId,
-              },
-            })
-          );
+          this.scopeStore$.update({
+            ...updatedScope,
+            id: scope.id,
+            sortOrder: scope.sortOrder,
+            templateId: scope.templateId,
+          });
         }),
         take(1)
       )

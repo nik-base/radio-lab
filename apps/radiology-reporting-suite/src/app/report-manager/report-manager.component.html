@@ -1,11 +1,11 @@
 <div class="flex h-full gap-2">
   <radio-template-manager
-    [templates]="(templates$ | ngrxPush) ?? []"
-    style="width: 20vh">
+    [templates]="templateStore$.orderedList()"
+    style="width: 40vh">
   </radio-template-manager>
 
-  @let scopes = scopes$ | ngrxPush;
-  @let selectedTemplate = selectedTemplate$ | ngrxPush;
+  @let scopes = scopeStore$.orderedList();
+  @let selectedTemplate = templateStore$.current();
 
   @if (scopes && selectedTemplate) {
     <radio-scope-manager
@@ -15,13 +15,12 @@
     </radio-scope-manager>
   }
 
-  @let selectedScope = selectedScope$ | ngrxPush;
-
-  @let _groups = groups();
+  @let groups = groupStore$.orderedList();
+  @let selectedScope = scopeStore$.current();
 
   @if (selectedScope) {
     <radio-group-manager
-      [groups]="_groups ?? []"
+      [groups]="groups"
       [scope]="selectedScope"
       style="width: 20vh">
     </radio-group-manager>
