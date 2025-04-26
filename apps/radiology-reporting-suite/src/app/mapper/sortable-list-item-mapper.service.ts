@@ -6,7 +6,7 @@ import { SortableListItem } from '@app/models/ui/sortable-list-item.interface';
   providedIn: 'root',
 })
 export class SortableListItemMapperService<
-  T extends { id: string; name: string },
+  T extends { id: string; name: string; isDefault?: boolean },
 > {
   mapToSortableListItems(items: T[]): SortableListItem<T>[] {
     return items.map((item: T) => this.mapToSortableListItem(item));
@@ -17,6 +17,7 @@ export class SortableListItemMapperService<
       id: item.id,
       label: item.name,
       value: item,
+      disableMore: item.isDefault,
     };
   }
 

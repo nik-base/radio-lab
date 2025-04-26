@@ -1,10 +1,9 @@
-import { computed, inject, Type } from '@angular/core';
+import { computed, inject, Injector, Type } from '@angular/core';
 import {
   patchState,
   signalStoreFeature,
   withComputed,
   withMethods,
-  withState,
 } from '@ngrx/signals';
 import {
   addEntity,
@@ -26,13 +25,21 @@ import { orderBySortOrder } from '@app/utils/functions/order.functions';
 
 import { withRequestStatus } from './with-request-status.store-feature';
 
+export interface WithCrudOptions<TEntity> {
+  onCreateSuccess?: (injector: Injector, entity: TEntity) => void;
+}
+
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function withCRUD<
-  TEntity extends { id: string; name: string; sortOrder: number },
+  TEntity extends {
+    readonly id: string;
+    readonly name: string;
+    readonly sortOrder: number;
+  },
   TDto,
-  TCreate extends { name: string },
+  TCreate extends { readonly name: string },
   TCreateDto,
-  TUpdate extends { id: string; name: string },
+  TUpdate extends { readonly id: string; readonly name: string },
   TUpdateDto,
   TFetchAll,
   TService extends EntityManagerBaseService<
@@ -45,10 +52,10 @@ export function withCRUD<
   initialState: AppEntityState<TEntity>,
   entityManagerServiceType: Type<TService>,
   entityNameSingular: string,
-  entityNamePlural: string
+  entityNamePlural: string,
+  options?: WithCrudOptions<TEntity>
 ) {
   return signalStoreFeature(
-    withState(initialState),
     withEntities<TEntity>(),
     withRequestStatus<TEntity>(initialState),
     // eslint-disable-next-line @typescript-eslint/typedef
@@ -62,7 +69,8 @@ export function withCRUD<
         entityManagerService: TService = inject(entityManagerServiceType),
         genericEntityMapper: GenericEntityMapperService = inject(
           GenericEntityMapperService
-        )
+        ),
+        injector: Injector = inject(Injector)
       ) => ({
         fetchAll: rxMethod<TFetchAll>(
           pipe(
@@ -101,6 +109,8 @@ export function withCRUD<
                   ),
                   tap((result: TEntity): void => {
                     patchState(store, addEntity(result));
+
+                    options?.onCreateSuccess?.(injector, result);
                   }),
 
                   store.handleStatus({

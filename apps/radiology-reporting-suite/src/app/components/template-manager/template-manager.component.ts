@@ -4,10 +4,8 @@ import {
   inject,
   input,
   InputSignal,
-  Signal,
   ViewChild,
 } from '@angular/core';
-import { Store } from '@ngrx/store';
 import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
@@ -33,9 +31,7 @@ import {
   LegacyTemplateImport,
   TemplateManagerDialogData,
 } from '@app/models/ui';
-import { selectSelectedTemplate } from '@app/store/report-manager/domain/report-manager.feature';
 import { TemplateStore } from '@app/store/report-manager/template.store';
-import { TemplateUIActions } from '@app/store/report-manager/ui/actions/template-ui.actions';
 import { isNotNil } from '@app/utils/functions/common.functions';
 import { findNextSortOrder } from '@app/utils/functions/order.functions';
 import { JsonService } from '@app/utils/services/json.service';
@@ -61,9 +57,6 @@ import { TemplateManagerListComponent } from '../template-manager-list/template-
   styleUrls: ['./template-manager.component.scss'],
 })
 export class TemplateManagerComponent {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  private readonly store$: Store = inject(Store);
-
   readonly templateStore$: InstanceType<typeof TemplateStore> =
     inject(TemplateStore);
 
@@ -80,10 +73,6 @@ export class TemplateManagerComponent {
   readonly templates: InputSignal<Template[]> = input.required<Template[]>();
 
   @ViewChild('import') importRef: FileUpload | undefined;
-
-  readonly selectedTemplate: Signal<Template | null> = this.store$.selectSignal(
-    selectSelectedTemplate
-  );
 
   onChange(template: Template | null): void {
     this.templateStore$.change(template);
@@ -184,11 +173,11 @@ export class TemplateManagerComponent {
       eventTarget?.result;
 
     if (!fileContent) {
-      this.store$.dispatch(
-        TemplateUIActions.importFailure({
-          message: 'Cannot import empty template data',
-        })
-      );
+      // this.store$.dispatch(
+      //   TemplateUIActions.importFailure({
+      //     message: 'Cannot import empty template data',
+      //   })
+      // );
 
       return;
     }
@@ -198,11 +187,11 @@ export class TemplateManagerComponent {
     );
 
     if (!template) {
-      this.store$.dispatch(
-        TemplateUIActions.importFailure({
-          message: 'Cannot parse invalid template data',
-        })
-      );
+      // this.store$.dispatch(
+      //   TemplateUIActions.importFailure({
+      //     message: 'Cannot parse invalid template data',
+      //   })
+      // );
 
       return;
     }

@@ -14,6 +14,7 @@ import { FindingManagerComponent } from '@app/components/finding-manager/finding
 import { ScopeManagerComponent } from '@app/components/scope-manager/scope-manager.component';
 import { TemplateManagerComponent } from '@app/components/template-manager/template-manager.component';
 import { Finding, FindingGroup, Scope, Template } from '@app/models/domain';
+import { ClassifierStore } from '@app/store/report-manager/classifier.store';
 import {
   selectOrderedFindings,
   selectOrderedGroups,
@@ -27,6 +28,7 @@ import { GroupStore } from '@app/store/report-manager/group.store';
 import { ScopeStore } from '@app/store/report-manager/scope.store';
 import { TemplateStore } from '@app/store/report-manager/template.store';
 
+import { ClassifierManagerComponent } from '../components/classifier-manager/classifier-manager.component';
 import { GroupManagerComponent } from '../components/group-manager/group-manager.component';
 
 @Component({
@@ -39,11 +41,12 @@ import { GroupManagerComponent } from '../components/group-manager/group-manager
     ScopeManagerComponent,
     FindingManagerComponent,
     GroupManagerComponent,
+    ClassifierManagerComponent,
   ],
   templateUrl: './report-manager.component.html',
   styleUrl: './report-manager.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [TemplateStore, ScopeStore, GroupStore],
+  providers: [TemplateStore, ScopeStore, GroupStore, ClassifierStore],
 })
 export class ReportManagerComponent implements OnInit {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -55,6 +58,9 @@ export class ReportManagerComponent implements OnInit {
   readonly scopeStore$: InstanceType<typeof ScopeStore> = inject(ScopeStore);
 
   readonly groupStore$: InstanceType<typeof GroupStore> = inject(GroupStore);
+
+  readonly classifierStore$: InstanceType<typeof ClassifierStore> =
+    inject(ClassifierStore);
 
   readonly templates$: Observable<Template[]> = this.store$.select(
     selectOrderedTemplates

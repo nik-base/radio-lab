@@ -1,0 +1,9 @@
+<radio-sortable-list
+  [items]="classifierItems()"
+  [selectedItem]="selectedItem()"
+  [menuItems]="menuItems"
+  headerLabel="Classifiers"
+  emptyMessage="No classifiers available"
+  (changed)="onChange($event)"
+  (reorder)="onReorder($event)">
+</radio-sortable-list>

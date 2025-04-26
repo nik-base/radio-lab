@@ -1,14 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, input, InputSignal } from '@angular/core';
-import { PushPipe } from '@ngrx/component';
-import { Store } from '@ngrx/store';
 import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FileUploadModule } from 'primeng/fileupload';
 import { TooltipModule } from 'primeng/tooltip';
-import { filter, Observable, take, tap } from 'rxjs';
+import { filter, take, tap } from 'rxjs';
 
 import { CHANGE_MODE } from '@app/constants';
 import {
@@ -24,12 +22,10 @@ import {
   ScopeCloneDialogOutput,
   ScopeManagerDialogData,
 } from '@app/models/ui';
-import { selectSelectedScope } from '@app/store/report-manager/domain/report-manager.feature';
-import { ScopeUIActions } from '@app/store/report-manager/ui/actions/scope-ui.actions';
+import { ScopeStore } from '@app/store/report-manager/scope.store';
 import { isNotNil } from '@app/utils/functions/common.functions';
 import { findNextSortOrder } from '@app/utils/functions/order.functions';
 
-import { ScopeStore } from '@app/store/report-manager/scope.store';
 import { CommonManagerDialogComponent } from '../common-manager-dialog/common-manager-dialog.component';
 import { ScopeCloneDialogComponent } from '../scope-clone-dialog/scope-clone-dialog.component';
 import { ScopeManagerListComponent } from '../scope-manager-list/scope-manager-list.component';
@@ -40,7 +36,6 @@ import { SortableListManagerLayoutComponent } from '../sortable-list-manager-lay
   standalone: true,
   imports: [
     CommonModule,
-    PushPipe,
     TooltipModule,
     ButtonModule,
     ConfirmPopupModule,
@@ -52,9 +47,6 @@ import { SortableListManagerLayoutComponent } from '../sortable-list-manager-lay
   templateUrl: './scope-manager.component.html',
 })
 export class ScopeManagerComponent {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  private readonly store$: Store = inject(Store);
-
   readonly scopeStore$: InstanceType<typeof ScopeStore> = inject(ScopeStore);
 
   private readonly dialogService: DialogService = inject(DialogService);
@@ -65,9 +57,6 @@ export class ScopeManagerComponent {
   readonly scopes: InputSignal<Scope[]> = input.required<Scope[]>();
 
   readonly template: InputSignal<Template> = input.required<Template>();
-
-  readonly selectedScope: Observable<Scope | null> =
-    this.store$.select(selectSelectedScope);
 
   onChange(scope: Scope | null): void {
     this.scopeStore$.change(scope);
@@ -130,12 +119,10 @@ export class ScopeManagerComponent {
       .pipe(
         filter<ScopeCloneDialogOutput>(isNotNil),
         tap((cloneOutput: ScopeCloneDialogOutput): void => {
-          this.store$.dispatch(
-            ScopeUIActions.clone({
-              scope: cloneOutput.scope,
-              templateId: cloneOutput.template.id,
-            })
-          );
+          this.scopeStore$.clone({
+            scope: cloneOutput.scope,
+            templateId: cloneOutput.template.id,
+          });
         }),
         take(1)
       )
@@ -149,7 +136,7 @@ export class ScopeManagerComponent {
       icon: 'pi pi-info-circle',
       acceptButtonStyleClass: 'p-button-danger p-button-sm',
       accept: () => {
-        this.store$.dispatch(ScopeUIActions.delete({ scope: eventData.data }));
+        this.scopeStore$.delete(eventData.data);
       },
     });
   }
@@ -164,7 +151,7 @@ export class ScopeManagerComponent {
       ),
     };
 
-    this.store$.dispatch(ScopeUIActions.reorder({ sortOrders }));
+    this.scopeStore$.reorder(sortOrders);
   }
 
   private openManagerDialog(

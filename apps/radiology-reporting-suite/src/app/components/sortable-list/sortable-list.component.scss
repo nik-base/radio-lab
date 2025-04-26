@@ -17,14 +17,35 @@
       max-height: 100%;
     }
 
-    li:has(> .sortable-item-active) {
-      border: 1px solid var(--p-list-option-selected-color);
-      font-weight: bold;
-      color: var(--p-list-option-selected-color);
-    }
-
     .p-orderlist-controls {
       display: none;
+    }
+
+    .p-listbox .p-listbox-list .p-listbox-option.p-listbox-option-selected {
+      background-color: inherit;
+      color: inherit;
+    }
+
+    .p-listbox:not(.p-disabled)
+      .p-listbox-option:not(.p-listbox-option-selected):not(
+        .p-disabled
+      ):hover:not(:has(> .sortable-item-active)) {
+      background: var(--p-listbox-option-focus-background) !important;
+      color: var(--p-listbox-option-focus-color) !important;
+    }
+
+    .p-listbox:not(.p-disabled)
+      .p-listbox-option.p-listbox-option-selected.p-focus:not(
+        :has(> .sortable-item-active)
+      ) {
+      background: var(--p-listbox-option-focus-background) !important;
+      color: var(--p-listbox-option-focus-color) !important;
+    }
+
+    li:has(> .sortable-item-active) {
+      font-weight: bold;
+      background: var(--p-listbox-option-selected-focus-background) !important;
+      color: var(--p-listbox-option-selected-focus-color) !important;
     }
   }
 }

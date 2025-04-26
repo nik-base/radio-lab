@@ -20,7 +20,7 @@
   <ng-template #item let-listItem>
     <div
       (click)="onSelect(listItem)"
-      class="flex flex-row gap-2 w-full items-center cursor-pointer"
+      class="flex flex-row gap-2 w-full items-center cursor-pointer sortable-item"
       [ngClass]="
         selectedItem()?.id === listItem.id ? 'sortable-item-active' : ''
       ">
@@ -39,23 +39,25 @@
         {{ listItem.label }}
       </div>
 
-      <div class="flex flex-row gap-2">
-        <p-button
-          icon="pi pi-ellipsis-v"
-          pTooltip="More"
-          tooltipPosition="bottom"
-          [tooltipOptions]="tooltipOptions"
-          [text]="true"
-          (onClick)="onMore($event, menu)" />
+      @if (!listItem.disableMore) {
+        <div class="flex flex-row gap-2">
+          <p-button
+            icon="pi pi-ellipsis-v"
+            pTooltip="More"
+            tooltipPosition="bottom"
+            [tooltipOptions]="tooltipOptions"
+            [text]="true"
+            (onClick)="onMore($event, menu)" />
 
-        <p-menu
-          #menu
-          [model]="dynamicMenuItems()"
-          [popup]="true"
-          appendTo="body"
-          (onShow)="showMoreMenu(listItem)">
-        </p-menu>
-      </div>
+          <p-menu
+            #menu
+            [model]="dynamicMenuItems()"
+            [popup]="true"
+            appendTo="body"
+            (onShow)="showMoreMenu(listItem)">
+          </p-menu>
+        </div>
+      }
     </div>
   </ng-template>
 

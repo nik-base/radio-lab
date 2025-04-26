@@ -1,7 +1,7 @@
 <div class="flex h-full gap-2">
   <radio-template-manager
     [templates]="templateStore$.orderedList()"
-    style="width: 40vh">
+    style="width: 20vh">
   </radio-template-manager>
 
   @let scopes = scopeStore$.orderedList();
@@ -24,6 +24,17 @@
       [scope]="selectedScope"
       style="width: 20vh">
     </radio-group-manager>
+  }
+
+  @let classifiers = classifierStore$.orderedList();
+  @let selectedGroup = groupStore$.current();
+
+  @if (selectedGroup) {
+    <radio-classifier-manager
+      [classifiers]="classifiers"
+      [group]="selectedGroup"
+      style="width: 20vh">
+    </radio-classifier-manager>
   }
 
   @let findings = findings$ | ngrxPush;

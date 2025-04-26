@@ -18,12 +18,12 @@ export class ScopeManagerService
       ScopeDto,
       ScopeCreateDto,
       ScopeUpdateDto,
-      { id: string }
+      { readonly id: string }
     >
 {
   private readonly reportService: ReportBaseService = inject(ReportBaseService);
 
-  fetchAll$({ id }: { id: string }): Observable<ScopeDto[]> {
+  fetchAll$({ id }: { readonly id: string }): Observable<ScopeDto[]> {
     return this.reportService.fetchScopes$(id);
   }
 

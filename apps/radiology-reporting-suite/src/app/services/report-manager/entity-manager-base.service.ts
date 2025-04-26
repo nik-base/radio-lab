@@ -6,7 +6,7 @@ export abstract class EntityManagerBaseService<
   TDto,
   TCreateDto,
   TTUpdateDto,
-  TFetchAll = { id: string },
+  TFetchAll = { readonly id: string },
 > {
   abstract fetchAll$(params?: TFetchAll): Observable<TDto[]>;
 

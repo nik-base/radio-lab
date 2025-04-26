@@ -8,7 +8,7 @@
   filterBy="name"
   filterPlaceholder="Filter by name"
   [dragdrop]="true"
-  (onReorder)="onReorder()">
+  (onReorder)="onReorder([])">
   <ng-template #header>
     <div class="font-semibold text-gray-500">Findings</div>
   </ng-template>
@@ -49,3 +49,13 @@
     </div>
   </ng-template>
 </p-orderList>
+
+<radio-sortable-list
+  [items]="findingItems()"
+  [selectedItem]="selectedItem()"
+  [menuItems]="menuItems"
+  headerLabel="Scopes"
+  emptyMessage="No scopes available"
+  (changed)="onChange($event)"
+  (reorder)="onReorder($event)">
+</radio-sortable-list>

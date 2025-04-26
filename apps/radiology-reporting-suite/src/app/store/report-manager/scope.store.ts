@@ -42,7 +42,7 @@ export const ScopeStore = signalStore(
     ScopeCreateDto,
     ScopeUpdate,
     ScopeUpdateDto,
-    { id: string },
+    { readonly id: string },
     ScopeManagerService
   >(initialState, ScopeManagerService, 'scope', 'scopes'),
   withMethods(
@@ -72,7 +72,7 @@ export const ScopeStore = signalStore(
                 tap((result: Scope): void => {
                   patchState(store, addEntity(result));
 
-                  groupStore.create({
+                  groupStore.createWithClassifer({
                     ...defaultGroup,
                     scopeId: result.id,
                   });

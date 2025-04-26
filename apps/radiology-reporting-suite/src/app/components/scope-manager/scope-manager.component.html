@@ -12,7 +12,7 @@
     list
     class="w-full"
     [scopes]="scopes()"
-    [selectedScope]="(selectedScope | ngrxPush) ?? null"
+    [selectedScope]="scopeStore$.current()"
     (edit)="onEdit($event)"
     (delete)="onDelete($event)"
     (clone)="onClone($event)"

@@ -18,12 +18,12 @@ export class GroupManagerService
       FindingGroupDto,
       FindingGroupCreateDto,
       FindingGroupUpdateDto,
-      { id: string }
+      { readonly id: string }
     >
 {
   private readonly reportService: ReportBaseService = inject(ReportBaseService);
 
-  fetchAll$({ id }: { id: string }): Observable<FindingGroupDto[]> {
+  fetchAll$({ id }: { readonly id: string }): Observable<FindingGroupDto[]> {
     return this.reportService.fetchFindingGroups$(id);
   }
 

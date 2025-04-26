@@ -56,8 +56,6 @@ export class GroupManagerListComponent {
   readonly delete: OutputEmitterRef<EventData<FindingGroup>> =
     output<EventData<FindingGroup>>();
 
-  readonly clone: OutputEmitterRef<FindingGroup> = output<FindingGroup>();
-
   readonly reorder: OutputEmitterRef<ReadonlyArray<FindingGroup>> =
     output<ReadonlyArray<FindingGroup>>();
 

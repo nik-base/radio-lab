@@ -10,22 +10,22 @@ import { filter, take, tap } from 'rxjs';
 
 import { CHANGE_MODE } from '@app/constants';
 import {
+  FindingClassifier,
   FindingGroup,
-  Scope,
   SortOrderItem,
   SortOrderUpdate,
 } from '@app/models/domain';
 import { CommonDialogData, EventData } from '@app/models/ui';
-import { GroupStore } from '@app/store/report-manager/group.store';
+import { ClassifierStore } from '@app/store/report-manager/classifier.store';
 import { isNotNil } from '@app/utils/functions/common.functions';
 import { findNextSortOrder } from '@app/utils/functions/order.functions';
 
+import { ClassifierManagerListComponent } from '../classifier-manager-list/classifier-manager-list.component';
 import { CommonManagerDialogComponent } from '../common-manager-dialog/common-manager-dialog.component';
-import { GroupManagerListComponent } from '../group-manager-list/group-manager-list.component';
 import { SortableListManagerLayoutComponent } from '../sortable-list-manager-layout/sortable-list-manager-layout.component';
 
 @Component({
-  selector: 'radio-group-manager',
+  selector: 'radio-classifier-manager',
   standalone: true,
   imports: [
     CommonModule,
@@ -33,32 +33,33 @@ import { SortableListManagerLayoutComponent } from '../sortable-list-manager-lay
     ButtonModule,
     ConfirmPopupModule,
     FileUploadModule,
-    GroupManagerListComponent,
+    ClassifierManagerListComponent,
     SortableListManagerLayoutComponent,
   ],
   providers: [DialogService, ConfirmationService],
-  templateUrl: './group-manager.component.html',
+  templateUrl: './classifier-manager.component.html',
 })
-export class GroupManagerComponent {
-  readonly groupStore$: InstanceType<typeof GroupStore> = inject(GroupStore);
+export class ClassifierManagerComponent {
+  readonly classifierStore$: InstanceType<typeof ClassifierStore> =
+    inject(ClassifierStore);
 
   private readonly dialogService: DialogService = inject(DialogService);
 
   private readonly confirmationService: ConfirmationService =
     inject(ConfirmationService);
 
-  readonly groups: InputSignal<FindingGroup[]> =
-    input.required<FindingGroup[]>();
+  readonly classifiers: InputSignal<FindingClassifier[]> =
+    input.required<FindingClassifier[]>();
 
-  readonly scope: InputSignal<Scope> = input.required<Scope>();
+  readonly group: InputSignal<FindingGroup> = input.required<FindingGroup>();
 
-  onChange(group: FindingGroup | null): void {
-    this.groupStore$.change(group);
+  onChange(classifier: FindingClassifier | null): void {
+    this.classifierStore$.change(classifier);
   }
 
   onCreate(): void {
     const dialogRef: DynamicDialogRef = this.openManagerDialog(
-      'Create New Group',
+      'Create New Classifier',
       {
         mode: CHANGE_MODE.Create,
       }
@@ -66,13 +67,14 @@ export class GroupManagerComponent {
 
     dialogRef.onClose
       .pipe(
-        filter<FindingGroup>(isNotNil),
-        tap((group: FindingGroup): void => {
-          const nextSortOrder: number = findNextSortOrder(this.groups());
+        filter<FindingClassifier>(isNotNil),
+        tap((classifier: FindingClassifier): void => {
+          const nextSortOrder: number = findNextSortOrder(this.classifiers());
 
-          this.groupStore$.createWithClassifer({
-            ...group,
-            scopeId: this.scope().id,
+          this.classifierStore$.create({
+            ...classifier,
+            scopeId: this.group().scopeId,
+            groupId: this.group().id,
             sortOrder: nextSortOrder,
           });
         }),
@@ -81,21 +83,25 @@ export class GroupManagerComponent {
       .subscribe();
   }
 
-  onEdit(group: FindingGroup): void {
-    const dialogRef: DynamicDialogRef = this.openManagerDialog('Edit Group', {
-      mode: CHANGE_MODE.Update,
-      name: group.name,
-    });
+  onEdit(classifier: FindingClassifier): void {
+    const dialogRef: DynamicDialogRef = this.openManagerDialog(
+      'Edit Classifier',
+      {
+        mode: CHANGE_MODE.Update,
+        name: classifier.name,
+      }
+    );
 
     dialogRef.onClose
       .pipe(
-        filter<FindingGroup>(isNotNil),
-        tap((updatedFindingGroup: FindingGroup): void => {
-          this.groupStore$.update({
-            ...updatedFindingGroup,
-            id: group.id,
-            sortOrder: group.sortOrder,
-            scopeId: group.scopeId,
+        filter<FindingClassifier>(isNotNil),
+        tap((updatedFindingClassifier: FindingClassifier): void => {
+          this.classifierStore$.update({
+            ...updatedFindingClassifier,
+            id: classifier.id,
+            sortOrder: classifier.sortOrder,
+            scopeId: classifier.scopeId,
+            groupId: classifier.groupId,
           });
         }),
         take(1)
@@ -103,29 +109,29 @@ export class GroupManagerComponent {
       .subscribe();
   }
 
-  onDelete(eventData: EventData<FindingGroup>): void {
+  onDelete(eventData: EventData<FindingClassifier>): void {
     this.confirmationService.confirm({
       target: eventData.event.target as EventTarget,
-      message: 'Do you want to delete this group and all its findings?',
+      message: 'Do you want to delete this classifier and all its findings?',
       icon: 'pi pi-info-circle',
       acceptButtonStyleClass: 'p-button-danger p-button-sm',
       accept: () => {
-        this.groupStore$.delete(eventData.data);
+        this.classifierStore$.delete(eventData.data);
       },
     });
   }
 
-  onReorder(groups: ReadonlyArray<FindingGroup>): void {
+  onReorder(classifiers: ReadonlyArray<FindingClassifier>): void {
     const sortOrders: SortOrderUpdate = {
-      sortOrdersMap: groups.map(
-        (group: FindingGroup, index: number): SortOrderItem => ({
-          id: group.id,
+      sortOrdersMap: classifiers.map(
+        (classifier: FindingClassifier, index: number): SortOrderItem => ({
+          id: classifier.id,
           sortOrder: index,
         })
       ),
     };
 
-    this.groupStore$.reorder(sortOrders);
+    this.classifierStore$.reorder(sortOrders);
   }
 
   private openManagerDialog(

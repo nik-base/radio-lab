@@ -28,7 +28,7 @@
     list
     class="w-full"
     [templates]="templates()"
-    [selectedTemplate]="selectedTemplate()"
+    [selectedTemplate]="templateStore$.current()"
     (edit)="onEdit($event)"
     (delete)="onDelete($event)"
     (export)="onExport($event)"
