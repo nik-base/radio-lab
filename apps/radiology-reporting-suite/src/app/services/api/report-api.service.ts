@@ -3,8 +3,14 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import {
+  FindingClassifierCreateDto,
+  FindingClassifierDto,
+  FindingClassifierUpdateDto,
   FindingCreateDto,
   FindingDto,
+  FindingGroupCreateDto,
+  FindingGroupDto,
+  FindingGroupUpdateDto,
   FindingUpdateDto,
   ScopeCreateDto,
   ScopeDto,
@@ -20,6 +26,67 @@ import { ReportBaseService } from '../report-base.service';
 
 @Injectable({ providedIn: 'root' })
 export class ReportApiService extends ReportBaseService {
+  override fetchFindingGroups$(scopeId: string): Observable<FindingGroupDto[]> {
+    throw new Error('Method not implemented.');
+  }
+
+  override fetchFindingClassifiers$(
+    scopeId: string,
+    groupId?: string
+  ): Observable<FindingClassifierDto[]> {
+    throw new Error('Method not implemented.');
+  }
+
+  override createFindingGroup$(
+    group: FindingGroupCreateDto
+  ): Observable<FindingGroupDto> {
+    throw new Error('Method not implemented.');
+  }
+
+  override createFindingClassifier$(
+    classifier: FindingClassifierCreateDto
+  ): Observable<FindingClassifierDto> {
+    throw new Error('Method not implemented.');
+  }
+
+  override updateFindingGroup$(
+    group: FindingGroupUpdateDto
+  ): Observable<FindingGroupDto> {
+    throw new Error('Method not implemented.');
+  }
+
+  override updateFindingClassifier$(
+    classifier: FindingClassifierUpdateDto
+  ): Observable<FindingClassifierDto> {
+    throw new Error('Method not implemented.');
+  }
+
+  override deleteFindingGroup$(groupId: string): Observable<void> {
+    throw new Error('Method not implemented.');
+  }
+
+  override deleteFindingClassifier$(classifierId: string): Observable<void> {
+    throw new Error('Method not implemented.');
+  }
+
+  override reorderTemplates$(
+    sortOrderUpdateRequest: SortOrderUpdateDto
+  ): Observable<void> {
+    throw new Error('Method not implemented.');
+  }
+
+  override reorderFindingGroups$(
+    sortOrderUpdateRequest: SortOrderUpdateDto
+  ): Observable<void> {
+    throw new Error('Method not implemented.');
+  }
+
+  override reorderFindingClassifiers$(
+    sortOrderUpdateRequest: SortOrderUpdateDto
+  ): Observable<void> {
+    throw new Error('Method not implemented.');
+  }
+
   override fetchTemplates$(): Observable<TemplateDto[]> {
     throw new Error('Method not implemented.');
   }

@@ -14,11 +14,9 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import {
-  AutoCompleteCompleteEvent,
-  AutoCompleteModule,
-} from 'primeng/autocomplete';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
+import { DividerModule } from 'primeng/divider';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { InputTextModule } from 'primeng/inputtext';
@@ -42,28 +40,25 @@ import { ChangeModes, FormGroupModel } from '@app/types';
     InputTextModule,
     InputSwitchModule,
     ScrollPanelModule,
+    DividerModule,
     FloatLabelModule,
     AutoCompleteModule,
     EditorComponent,
   ],
   templateUrl: './finding-manager-view.component.html',
 })
-export class ScopeManagerComponent {
+export class FindingManagerViewComponent {
   readonly finding: InputSignal<Finding | null> = input<Finding | null>(null);
 
   readonly mode: InputSignal<ChangeModes> = input<ChangeModes>(
     CHANGE_MODE.Update
   );
 
-  readonly groups: InputSignal<string[]> = input<string[]>([]);
-
   readonly save: OutputEmitterRef<Finding> = output<Finding>();
 
   readonly formGroup: FormGroupModel<FindingBase> = this.createFormGroup();
 
   readonly ChangeModes: typeof CHANGE_MODE = CHANGE_MODE;
-
-  filteredGroups: string[] = [];
 
   constructor() {
     this.createSetFormValuesEffect();
@@ -75,12 +70,6 @@ export class ScopeManagerComponent {
     }
 
     this.save.emit(this.getFinding());
-  }
-
-  filterGroups(event: AutoCompleteCompleteEvent): void {
-    this.filteredGroups = this.groups().filter((group: string): boolean =>
-      group.toLowerCase().includes(event.query.toLowerCase())
-    );
   }
 
   private createSetFormValuesEffect(): void {
@@ -97,8 +86,6 @@ export class ScopeManagerComponent {
     }
 
     this.formGroup.get('name')?.setValue(finding.name);
-
-    //this.formGroup.get('group')?.setValue(finding.groupId);
 
     this.formGroup.get('isNormal')?.setValue(finding.isNormal);
 
@@ -126,7 +113,6 @@ export class ScopeManagerComponent {
         nonNullable: true,
         validators: [Validators.required.bind(this)],
       }),
-      group: new FormControl<string | null>(null),
       isNormal: new FormControl<boolean>(false),
       description: new FormControl<EditorContent | null>(null, {
         nonNullable: true,

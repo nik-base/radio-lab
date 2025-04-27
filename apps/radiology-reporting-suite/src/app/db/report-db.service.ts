@@ -1,6 +1,14 @@
 import { inject, Injectable } from '@angular/core';
 import { NgxIndexedDBService } from 'ngx-indexed-db';
-import { concatMap, forkJoin, map, mergeMap, Observable, of } from 'rxjs';
+import {
+  concatMap,
+  forkJoin,
+  map,
+  mergeMap,
+  Observable,
+  of,
+  switchMap,
+} from 'rxjs';
 
 import {
   EditorContentDto,
@@ -260,13 +268,13 @@ export class ReportDBService extends ReportBaseService {
   override deleteTemplate$(templateId: string): Observable<void> {
     return this.dbService
       .delete<TemplateDBModel>('templates', templateId)
-      .pipe(map(() => void 0));
+      .pipe(switchMap(() => this.deleteAllScopesByTemplateId$(templateId)));
   }
 
   override deleteScope$(scopeId: string): Observable<void> {
     return this.dbService
       .delete<ScopeDBModel>('protocols', scopeId)
-      .pipe(map(() => void 0));
+      .pipe(switchMap(() => this.deleteAllGroupsByScopeId$(scopeId)));
   }
 
   override deleteFinding$(findingId: string): Observable<void> {
@@ -278,13 +286,15 @@ export class ReportDBService extends ReportBaseService {
   override deleteFindingGroup$(groupId: string): Observable<void> {
     return this.dbService
       .delete<FindingGroupDBModel>('findingGroups', groupId)
-      .pipe(map(() => void 0));
+      .pipe(switchMap(() => this.deleteAllClassifiersByGroupId$(groupId)));
   }
 
   override deleteFindingClassifier$(classifierId: string): Observable<void> {
     return this.dbService
       .delete<FindingClassifierDBModel>('findingClassifiers', classifierId)
-      .pipe(map(() => void 0));
+      .pipe(
+        switchMap(() => this.deleteAllFindingByClassifierId$(classifierId))
+      );
   }
 
   override reorderTemplates$(
@@ -491,6 +501,94 @@ export class ReportDBService extends ReportBaseService {
 
   private generateId(): string {
     return crypto.randomUUID();
+  }
+
+  private deleteAllFindingByClassifierId$(
+    classifierId: string
+  ): Observable<void> {
+    return this.dbService
+      .deleteAllByIndex<FindingDBModel>(
+        'findings',
+        'classifierId',
+        classifierId
+      )
+      .pipe(map(() => void 0));
+  }
+
+  private deleteAllClassifiersByGroupId$(groupId: string): Observable<void> {
+    return this.dbService
+      .getAllByIndex<FindingClassifierDBModel>(
+        'findingClassifiers',
+        'groupId',
+        groupId
+      )
+      .pipe(
+        mergeMap((items: FindingClassifierDBModel[]) => {
+          const obserables: Observable<void>[] = [];
+
+          obserables.push(
+            this.dbService.deleteAllByIndex<FindingClassifierDBModel>(
+              'findingClassifiers',
+              'groupId',
+              groupId
+            )
+          );
+
+          items.forEach((item: FindingClassifierDBModel) => {
+            obserables.push(this.deleteAllFindingByClassifierId$(item.id));
+          });
+
+          return forkJoin(obserables).pipe(map(() => void 0));
+        })
+      );
+  }
+
+  private deleteAllGroupsByScopeId$(scopeId: string): Observable<void> {
+    return this.dbService
+      .getAllByIndex<FindingGroupDBModel>('findingGroups', 'scopeId', scopeId)
+      .pipe(
+        mergeMap((items: FindingGroupDBModel[]) => {
+          const obserables: Observable<void>[] = [];
+
+          obserables.push(
+            this.dbService.deleteAllByIndex<FindingGroupDBModel>(
+              'findingGroups',
+              'scopeId',
+              scopeId
+            )
+          );
+
+          items.forEach((item: FindingGroupDBModel) => {
+            obserables.push(this.deleteAllClassifiersByGroupId$(item.id));
+          });
+
+          return forkJoin(obserables).pipe(map(() => void 0));
+        })
+      );
+  }
+
+  private deleteAllScopesByTemplateId$(templateId: string): Observable<void> {
+    return this.dbService
+      .getAllByIndex<ScopeDBModel>('protocols', 'templateId', templateId)
+      .pipe(
+        mergeMap((items: ScopeDBModel[]) => {
+          const obserables: Observable<void>[] = [];
+
+          obserables.push(
+            this.dbService.deleteAllByIndex<ScopeDBModel>(
+              'protocols',
+              'templateId',
+              templateId
+            )
+          );
+
+          items.forEach((item: ScopeDBModel) => {
+            obserables.push(this.deleteAllGroupsByScopeId$(item.id));
+          });
+
+          return forkJoin(obserables).pipe(map(() => void 0));
+        })
+      );
   }
 
   private generateFindingsForClone$(

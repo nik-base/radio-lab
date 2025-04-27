@@ -26,7 +26,11 @@ export abstract class ReportBaseService {
 
   abstract fetchScopes$(templateId: string): Observable<ScopeDto[]>;
 
-  abstract fetchFindings$(scopeId: string): Observable<FindingDto[]>;
+  abstract fetchFindings$(
+    scopeId: string,
+    groupId?: string,
+    classifierId?: string
+  ): Observable<FindingDto[]>;
 
   abstract fetchFindingGroups$(scopeId: string): Observable<FindingGroupDto[]>;
 

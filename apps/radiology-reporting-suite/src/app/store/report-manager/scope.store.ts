@@ -100,9 +100,11 @@ export const ScopeStore = signalStore(
                   genericEntityMapper.mapFromDto<Scope, ScopeDto>(dto)
               ),
               tap((result: Scope): void => {
-                patchState(store, addEntity(result));
+                if (input.scope.templateId === input.templateId) {
+                  patchState(store, addEntity(result));
+                }
 
-                groupStore.create({
+                groupStore.createWithClassifer({
                   ...defaultGroup,
                   scopeId: result.id,
                 });

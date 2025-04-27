@@ -46,8 +46,12 @@ export class ReportManagerService {
     return this.reportService.fetchFindingClassifiers$(scopeId, groupId);
   }
 
-  fetchFindings$(scopeId: string): Observable<FindingDto[]> {
-    return this.reportService.fetchFindings$(scopeId);
+  fetchFindings$(
+    scopeId: string,
+    groupId: string,
+    classifierId: string
+  ): Observable<FindingDto[]> {
+    return this.reportService.fetchFindings$(scopeId, groupId, classifierId);
   }
 
   createTemplate$(template: TemplateCreateDto): Observable<TemplateDto> {

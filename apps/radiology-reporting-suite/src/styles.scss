@@ -37,8 +37,14 @@ html > body {
   padding: var(--radio-default-padding, 0.5rem);
   flex: auto;
   flex-direction: column;
+  min-width: 0;
 }
 
 .flex-basis-auto {
   flex-basis: auto;
+}
+
+*::before,
+*::after {
+  box-sizing: border-box;
 }

@@ -20,7 +20,7 @@ export class FindingDataEffects {
     return this.actions$.pipe(
       ofType(FindingDataActions.fetch),
       switchMap(({ scopeId }: ReturnType<typeof FindingDataActions.fetch>) =>
-        this.reportManagerService.fetchFindings$(scopeId).pipe(
+        this.reportManagerService.fetchFindings$(scopeId, '', '').pipe(
           map((findings: FindingDto[]) =>
             FindingDataActions.fetchSuccess({ findings })
           ),

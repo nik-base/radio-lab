@@ -1,4 +1,4 @@
-<div class="flex flex-col gap-2">
+<div class="flex flex-col gap-2 w-full">
   <p-button
     class="flex self-end"
     [label]="
@@ -11,8 +11,10 @@
     tooltipPosition="bottom"
     (onClick)="onSave()" />
 
-  <p-scrollPanel>
-    <div [formGroup]="formGroup" class="flex flex-col gap-2">
+  <p-divider />
+
+  <div class="flex h-full min-h-0 overflow-auto">
+    <div [formGroup]="formGroup" class="flex flex-col gap-2 w-full">
       <div class="flex flex-row gap-8">
         <div>
           <p-floatLabel>
@@ -31,18 +33,6 @@
               >Name is required</small
             >
           }
-        </div>
-
-        <div>
-          <p-floatLabel>
-            <p-autoComplete
-              id="findingGroup"
-              formControlName="group"
-              [suggestions]="filteredGroups"
-              (completeMethod)="filterGroups($event)" />
-
-            <label for="findingGroup">Group</label>
-          </p-floatLabel>
         </div>
 
         <div class="flex gap-2">
@@ -90,5 +80,5 @@
         </radio-editor>
       </div>
     </div>
-  </p-scrollPanel>
+  </div>
 </div>
