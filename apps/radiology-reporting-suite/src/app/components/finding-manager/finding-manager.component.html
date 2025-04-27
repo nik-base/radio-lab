@@ -16,7 +16,6 @@
       class="w-full"
       [findings]="findings()"
       [selectedFinding]="selectedFinding"
-      (edit)="onEdit($event)"
       (delete)="onDelete($event)"
       (clone)="onClone($event)"
       (reorder)="onReorder($event)"
@@ -36,13 +35,15 @@
           class="flex h-full min-h-0 w-full"
           [finding]="selectedFinding"
           [mode]="ChangeModes.Update"
-          (save)="onSave($event, ChangeModes.Update, selectedFinding)">
+          (save)="onSave($event, ChangeModes.Update, selectedFinding)"
+          (canceled)="onCancel()">
         </radio-finding-manager-view>
       } @else {
         <radio-finding-manager-view
           class="flex h-full min-h-0 w-full"
           [mode]="ChangeModes.Create"
-          (save)="onSave($event, ChangeModes.Create)">
+          (save)="onSave($event, ChangeModes.Create)"
+          (canceled)="onCancel()">
         </radio-finding-manager-view>
       }
     </p-panel>

@@ -69,7 +69,7 @@ export class ReportDBService extends ReportBaseService {
   override fetchScopes$(templateId: string): Observable<ScopeDto[]> {
     return this.dbService
       .getAllByIndex<ScopeDBModel>(
-        'protocols',
+        'scopes',
         'templateId',
         IDBKeyRange.only(templateId)
       )
@@ -90,7 +90,7 @@ export class ReportDBService extends ReportBaseService {
     return this.dbService
       .getAllByIndex<FindingDBModel>(
         'findings',
-        'protocolId',
+        'scopeId',
         IDBKeyRange.only(scopeId)
       )
       .pipe(
@@ -214,7 +214,7 @@ export class ReportDBService extends ReportBaseService {
     const dbModel: ScopeDBModel = this.mapScopeUpdateDtoToDBModel(scope);
 
     return this.dbService
-      .update<ScopeDBModel>('protocols', dbModel)
+      .update<ScopeDBModel>('scopes', dbModel)
       .pipe(
         map((data: ScopeDBModel): ScopeDto => this.mapScopeDBModelToDto(data))
       );
@@ -273,7 +273,7 @@ export class ReportDBService extends ReportBaseService {
 
   override deleteScope$(scopeId: string): Observable<void> {
     return this.dbService
-      .delete<ScopeDBModel>('protocols', scopeId)
+      .delete<ScopeDBModel>('scopes', scopeId)
       .pipe(switchMap(() => this.deleteAllGroupsByScopeId$(scopeId)));
   }
 
@@ -329,7 +329,7 @@ export class ReportDBService extends ReportBaseService {
     );
 
     const scopes$: Observable<ScopeDBModel[]> =
-      this.dbService.bulkGet<ScopeDBModel>('protocols', scopeIds);
+      this.dbService.bulkGet<ScopeDBModel>('scopes', scopeIds);
 
     return scopes$.pipe(
       mergeMap((scopes: ScopeDBModel[]) => {
@@ -338,10 +338,7 @@ export class ReportDBService extends ReportBaseService {
           sortOrderUpdateRequest
         );
 
-        return this.dbService.bulkPut<ScopeDBModel>(
-          'protocols',
-          scopesToUpdate
-        );
+        return this.dbService.bulkPut<ScopeDBModel>('scopes', scopesToUpdate);
       }),
       map(() => void 0)
     );
@@ -455,7 +452,7 @@ export class ReportDBService extends ReportBaseService {
 
     return forkJoin([
       this.createTemplateInDb$(templateDbModel),
-      this.dbService.bulkAdd<ScopeDBModel>('protocols', scopes),
+      this.dbService.bulkAdd<ScopeDBModel>('scopes', scopes),
       this.dbService.bulkAdd<FindingDBModel>('findings', findings),
     ]).pipe(
       map(
@@ -569,14 +566,14 @@ export class ReportDBService extends ReportBaseService {
 
   private deleteAllScopesByTemplateId$(templateId: string): Observable<void> {
     return this.dbService
-      .getAllByIndex<ScopeDBModel>('protocols', 'templateId', templateId)
+      .getAllByIndex<ScopeDBModel>('scopes', 'templateId', templateId)
       .pipe(
         mergeMap((items: ScopeDBModel[]) => {
           const obserables: Observable<void>[] = [];
 
           obserables.push(
             this.dbService.deleteAllByIndex<ScopeDBModel>(
-              'protocols',
+              'scopes',
               'templateId',
               templateId
             )
@@ -599,7 +596,7 @@ export class ReportDBService extends ReportBaseService {
       (finding: FindingDto): FindingDBModel => ({
         ...this.mapFindingBaseDtoToDBModel(finding),
         id: this.generateId(),
-        protocolId: scopeDBModel.id,
+        scopeId: scopeDBModel.id,
         groupId: finding.groupId,
         classifierId: finding.classifierId,
       })
@@ -608,7 +605,7 @@ export class ReportDBService extends ReportBaseService {
 
   private createScopeInDb$(dbModel: ScopeDBModel): Observable<ScopeDto> {
     return this.dbService
-      .add<ScopeDBModel>('protocols', dbModel)
+      .add<ScopeDBModel>('scopes', dbModel)
       .pipe(
         map((data: ScopeDBModel): ScopeDto => this.mapScopeDBModelToDto(data))
       );
@@ -664,7 +661,7 @@ export class ReportDBService extends ReportBaseService {
           (finding: FindingBaseDto): FindingDBModel => ({
             ...this.mapFindingBaseDtoToDBModel(finding),
             id: this.generateId(),
-            protocolId: scopeId,
+            scopeId: scopeId,
             groupId: this.generateId(),
             classifierId: this.generateId(),
           })
@@ -704,7 +701,7 @@ export class ReportDBService extends ReportBaseService {
   ): Observable<TemplateDataDto> {
     return this.dbService
       .getAllByIndex<ScopeDBModel>(
-        'protocols',
+        'scopes',
         'templateId',
         IDBKeyRange.only(template.id)
       )
@@ -757,7 +754,7 @@ export class ReportDBService extends ReportBaseService {
     return this.dbService
       .getAllByIndex<FindingDBModel>(
         'findings',
-        'protocolId',
+        'scopeId',
         IDBKeyRange.only(scope.id)
       )
       .pipe(
@@ -785,7 +782,7 @@ export class ReportDBService extends ReportBaseService {
 
   private fetchScopesData$(scopeId: string): Observable<ScopeDataDto> {
     return this.dbService
-      .getByID<ScopeDBModel>('protocols', scopeId)
+      .getByID<ScopeDBModel>('scopes', scopeId)
       .pipe(
         mergeMap(
           (scope: ScopeDBModel): Observable<ScopeDataDto> =>
@@ -831,7 +828,7 @@ export class ReportDBService extends ReportBaseService {
 
       return {
         ...scope,
-        order: sortOrderItem.sortOrder,
+        sortOrder: sortOrderItem.sortOrder,
       };
     });
   }
@@ -852,7 +849,7 @@ export class ReportDBService extends ReportBaseService {
 
       return {
         ...finding,
-        order: sortOrderItem.sortOrder,
+        sortOrder: sortOrderItem.sortOrder,
       };
     });
   }
@@ -925,7 +922,7 @@ export class ReportDBService extends ReportBaseService {
     return {
       ...this.mapFindingBaseDtoToDBModel(finding),
       id: finding.id,
-      protocolId: finding.scopeId,
+      scopeId: finding.scopeId,
       groupId: finding.groupId,
       classifierId: finding.classifierId,
     };
@@ -968,7 +965,7 @@ export class ReportDBService extends ReportBaseService {
   ): FindingCreateDto {
     return {
       ...this.mapFindingDBModelToBaseDto(template),
-      scopeId: template.protocolId,
+      scopeId: template.scopeId,
       groupId: template.groupId,
       classifierId: template.classifierId,
     };
@@ -1006,7 +1003,7 @@ export class ReportDBService extends ReportBaseService {
   ): Omit<ScopeDBModel, 'id' | 'templateId'> {
     return {
       name: scope.name,
-      order: scope.sortOrder,
+      sortOrder: scope.sortOrder,
     };
   }
 
@@ -1073,7 +1070,7 @@ export class ReportDBService extends ReportBaseService {
   private mapScopeDBModelToBaseDto(scope: ScopeDBModel): ScopeBaseDto {
     return {
       name: scope.name,
-      sortOrder: scope.order,
+      sortOrder: scope.sortOrder,
     };
   }
 
@@ -1108,13 +1105,13 @@ export class ReportDBService extends ReportBaseService {
 
   private mapFindingBaseDtoToDBModel(
     finding: FindingBaseDto
-  ): Omit<FindingDBModel, 'id' | 'protocolId' | 'groupId' | 'classifierId'> {
+  ): Omit<FindingDBModel, 'id' | 'scopeId' | 'groupId' | 'classifierId'> {
     return {
       ...this.mapEditorContentToFindingDescription(finding.description),
       ...this.mapEditorContentToImpression(finding.impression),
       ...this.mapEditorContentToRecommendation(finding.recommendation),
-      title: finding.name,
-      order: finding.sortOrder,
+      name: finding.name,
+      sortOrder: finding.sortOrder,
       isNormal: finding.isNormal,
     };
   }
@@ -1125,7 +1122,7 @@ export class ReportDBService extends ReportBaseService {
     return {
       ...this.mapFindingBaseDtoToDBModel(finding),
       id: this.generateId(),
-      protocolId: finding.scopeId,
+      scopeId: finding.scopeId,
       groupId: finding.groupId,
       classifierId: finding.classifierId,
     };
@@ -1133,9 +1130,9 @@ export class ReportDBService extends ReportBaseService {
 
   private mapFindingDBModelToBaseDto(finding: FindingDBModel): FindingBaseDto {
     return {
-      name: finding.title,
+      name: finding.name,
       isNormal: finding.isNormal ?? false,
-      sortOrder: finding.order ?? 0,
+      sortOrder: finding.sortOrder ?? 0,
       description: this.mapFindingDescriptionToEditorContent(finding),
       impression: this.mapImpressionToEditorContent(finding),
       recommendation: this.mapRecommendationToEditorContent(finding),
@@ -1146,7 +1143,7 @@ export class ReportDBService extends ReportBaseService {
     return {
       ...this.mapFindingDBModelToBaseDto(finding),
       id: finding.id,
-      scopeId: finding.protocolId,
+      scopeId: finding.scopeId,
       groupId: finding.groupId,
       classifierId: finding.classifierId,
     };

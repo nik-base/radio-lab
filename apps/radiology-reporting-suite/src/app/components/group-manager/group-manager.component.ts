@@ -134,6 +134,8 @@ export class GroupManagerComponent {
   ): DynamicDialogRef {
     return this.dialogService.open(CommonManagerDialogComponent, {
       header,
+      modal: true,
+      closable: true,
       width: '25rem',
       contentStyle: { overflow: 'auto' },
       baseZIndex: 3000,

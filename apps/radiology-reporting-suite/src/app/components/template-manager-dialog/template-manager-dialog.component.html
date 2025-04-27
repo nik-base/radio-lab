@@ -13,7 +13,9 @@
       @let nameControl = formGroup.get('name');
 
       @if (nameControl?.hasError('required') && nameControl?.dirty) {
-        <small class="p-error"> Name is required </small>
+        <p-message severity="error" variant="simple" size="small">
+          Name is required
+        </p-message>
       }
     </div>
 
@@ -29,7 +31,9 @@
       @let protocolControl = formGroup.get('protocol');
 
       @if (protocolControl?.hasError('required') && protocolControl?.dirty) {
-        <small class="p-error"> Description is required </small>
+        <p-message severity="error" variant="simple" size="small">
+          Description is required
+        </p-message>
       }
     </div>
 

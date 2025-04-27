@@ -9,6 +9,7 @@ import {
 import { ButtonModule } from 'primeng/button';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { InputTextModule } from 'primeng/inputtext';
+import { MessageModule } from 'primeng/message';
 import { TooltipModule } from 'primeng/tooltip';
 
 import { CHANGE_MODE } from '@app/constants';
@@ -29,6 +30,7 @@ import { DialogLayoutComponent } from '../dialog-layout/dialog-layout.component'
     InputTextModule,
     TooltipModule,
     ButtonModule,
+    MessageModule,
     EditorComponent,
     DialogLayoutComponent,
   ],

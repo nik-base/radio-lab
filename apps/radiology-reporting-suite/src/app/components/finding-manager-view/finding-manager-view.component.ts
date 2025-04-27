@@ -14,13 +14,13 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { FloatLabelModule } from 'primeng/floatlabel';
-import { InputSwitchModule } from 'primeng/inputswitch';
 import { InputTextModule } from 'primeng/inputtext';
+import { MessageModule } from 'primeng/message';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
+import { ToggleSwitch } from 'primeng/toggleswitch';
 import { TooltipModule } from 'primeng/tooltip';
 
 import { CHANGE_MODE } from '@app/constants';
@@ -38,11 +38,11 @@ import { ChangeModes, FormGroupModel } from '@app/types';
     TooltipModule,
     ButtonModule,
     InputTextModule,
-    InputSwitchModule,
+    ToggleSwitch,
     ScrollPanelModule,
     DividerModule,
     FloatLabelModule,
-    AutoCompleteModule,
+    MessageModule,
     EditorComponent,
   ],
   templateUrl: './finding-manager-view.component.html',
@@ -55,6 +55,8 @@ export class FindingManagerViewComponent {
   );
 
   readonly save: OutputEmitterRef<Finding> = output<Finding>();
+
+  readonly canceled: OutputEmitterRef<void> = output<void>();
 
   readonly formGroup: FormGroupModel<FindingBase> = this.createFormGroup();
 
@@ -70,6 +72,10 @@ export class FindingManagerViewComponent {
     }
 
     this.save.emit(this.getFinding());
+  }
+
+  onCancel(): void {
+    this.canceled.emit();
   }
 
   private createSetFormValuesEffect(): void {

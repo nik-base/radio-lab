@@ -51,8 +51,6 @@ export class FindingManagerListComponent {
 
   readonly changed: OutputEmitterRef<Finding | null> = output<Finding | null>();
 
-  readonly edit: OutputEmitterRef<Finding> = output<Finding>();
-
   readonly delete: OutputEmitterRef<EventData<Finding>> =
     output<EventData<Finding>>();
 
@@ -80,15 +78,6 @@ export class FindingManagerListComponent {
 
   readonly menuItems: SortableListMenuItem<Finding>[] = [
     {
-      label: 'Edit',
-      icon: 'pi pi-pencil',
-      command: (
-        _: MenuItemCommandEvent,
-        __: Event | null,
-        item: SortableListItem<Finding>
-      ): void => this.onEdit(item.value),
-    },
-    {
       label: 'Clone',
       icon: 'pi pi-clone',
       command: (
@@ -112,10 +101,6 @@ export class FindingManagerListComponent {
 
   onChange(item: SortableListItem<Finding> | null): void {
     this.changed.emit(item?.value ?? null);
-  }
-
-  onEdit(finding: Finding): void {
-    this.edit.emit(finding);
   }
 
   onDelete(event: Event, finding: Finding): void {

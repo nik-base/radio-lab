@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { DBConfig, NgxIndexedDBModule } from 'ngx-indexed-db';
 
 const reportDBConfig: DBConfig = {
-  name: 'RadioReportDB',
+  name: 'RadioReportDataDB',
   version: 1,
   objectStoresMeta: [
     {
@@ -44,11 +44,11 @@ const reportDBConfig: DBConfig = {
       ],
     },
     {
-      store: 'protocols',
+      store: 'scopes',
       storeConfig: { keyPath: 'id', autoIncrement: false },
       storeSchema: [
         { name: 'name', keypath: 'name', options: { unique: false } },
-        { name: 'order', keypath: 'order', options: { unique: false } },
+        { name: 'sortOrder', keypath: 'sortOrder', options: { unique: false } },
         {
           name: 'templateId',
           keypath: 'templateId',
@@ -93,8 +93,8 @@ const reportDBConfig: DBConfig = {
       store: 'findings',
       storeConfig: { keyPath: 'id', autoIncrement: false },
       storeSchema: [
-        { name: 'title', keypath: 'title', options: { unique: false } },
-        { name: 'order', keypath: 'order', options: { unique: false } },
+        { name: 'name', keypath: 'name', options: { unique: false } },
+        { name: 'sortOrder', keypath: 'sortOrder', options: { unique: false } },
         { name: 'groupId', keypath: 'groupId', options: { unique: false } },
         {
           name: 'classifierId',
@@ -102,8 +102,8 @@ const reportDBConfig: DBConfig = {
           options: { unique: false },
         },
         {
-          name: 'protocolId',
-          keypath: 'protocolId',
+          name: 'scopeId',
+          keypath: 'scopeId',
           options: { unique: false },
         },
         {

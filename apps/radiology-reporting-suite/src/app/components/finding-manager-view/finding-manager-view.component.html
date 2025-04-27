@@ -1,15 +1,23 @@
 <div class="flex flex-col gap-2 w-full">
-  <p-button
-    class="flex self-end"
-    [label]="
-      mode() === ChangeModes.Update ? 'Update Finding' : ' Create Finding'
-    "
-    [disabled]="formGroup.invalid"
-    [pTooltip]="
-      mode() === ChangeModes.Update ? 'Update Finding' : ' Create Finding'
-    "
-    tooltipPosition="bottom"
-    (onClick)="onSave()" />
+  <div class="flex gap-2 self-end">
+    <p-button
+      label="Cancel"
+      severity="secondary"
+      pTooltip="Cancel"
+      tooltipPosition="bottom"
+      (onClick)="onCancel()" />
+
+    <p-button
+      [label]="
+        mode() === ChangeModes.Update ? 'Update Finding' : ' Create Finding'
+      "
+      [disabled]="formGroup.invalid"
+      [pTooltip]="
+        mode() === ChangeModes.Update ? 'Update Finding' : ' Create Finding'
+      "
+      tooltipPosition="bottom"
+      (onClick)="onSave()" />
+  </div>
 
   <p-divider />
 
@@ -29,16 +37,16 @@
           @let nameControl = formGroup.get('name');
 
           @if (nameControl?.hasError('required') && nameControl?.dirty) {
-            <small id="findingName-error" class="p-error"
-              >Name is required</small
-            >
+            <p-message severity="error" variant="simple" size="small">
+              Name is required
+            </p-message>
           }
         </div>
 
-        <div class="flex gap-2">
+        <div class="flex gap-2 self-end">
           <label for="findingIsNormal">Is Normal</label>
 
-          <p-inputSwitch id="findingIsNormal" formControlName="isNormal" />
+          <p-toggleswitch id="findingIsNormal" formControlName="isNormal" />
         </div>
       </div>
 
@@ -56,7 +64,9 @@
         @if (
           descriptionControl?.hasError('required') && descriptionControl?.dirty
         ) {
-          <small class="p-error"> Description is required </small>
+          <p-message severity="error" variant="simple" size="small">
+            Description is required
+          </p-message>
         }
       </div>
 

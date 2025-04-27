@@ -31,7 +31,6 @@ export function withRequestStatus<TStatus extends { id: string }>(
         ): OperatorFunction<TEntity, TEntity> {
           return tap(() => {
             patchState(store, {
-              current: null,
               isLoading: true,
               error: null,
               currentOperation,

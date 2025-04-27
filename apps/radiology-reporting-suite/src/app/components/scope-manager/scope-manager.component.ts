@@ -160,6 +160,8 @@ export class ScopeManagerComponent {
   ): DynamicDialogRef {
     return this.dialogService.open(CommonManagerDialogComponent, {
       header,
+      modal: true,
+      closable: true,
       width: '25rem',
       contentStyle: { overflow: 'auto' },
       baseZIndex: 3000,
@@ -177,6 +179,8 @@ export class ScopeManagerComponent {
   ): DynamicDialogRef {
     return this.dialogService.open(ScopeCloneDialogComponent, {
       header,
+      modal: true,
+      closable: true,
       width: '40rem',
       contentStyle: { overflow: 'auto' },
       baseZIndex: 3000,

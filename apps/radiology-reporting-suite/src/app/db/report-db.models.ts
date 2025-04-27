@@ -13,7 +13,7 @@ export interface TemplateDBModel {
 export interface ScopeDBModel {
   readonly id: string;
   readonly name: string;
-  readonly order: number;
+  readonly sortOrder: number;
   readonly templateId: string;
 }
 
@@ -36,9 +36,9 @@ export interface FindingClassifierDBModel {
 
 export interface FindingDBModel {
   readonly id: string;
-  readonly title: string;
+  readonly name: string;
   readonly isNormal?: boolean;
-  readonly order?: number;
+  readonly sortOrder?: number;
   readonly description?: string;
   readonly descriptionHTML?: string;
   readonly descriptionJSON?: string | null;
@@ -49,7 +49,7 @@ export interface FindingDBModel {
   readonly recommendation?: string;
   readonly recommendationHTML?: string;
   readonly recommendationJSON?: string | null;
-  readonly protocolId: string;
+  readonly scopeId: string;
   readonly groupId: string;
   readonly classifierId: string;
 }

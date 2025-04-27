@@ -1,18 +1,23 @@
 import { CommonModule } from '@angular/common';
 import {
   Component,
+  effect,
   inject,
   input,
   InputSignal,
+  NgZone,
   signal,
+  untracked,
   WritableSignal,
 } from '@angular/core';
+import { isNil } from 'lodash';
 import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { FileUploadModule } from 'primeng/fileupload';
 import { PanelModule } from 'primeng/panel';
 import { TooltipModule } from 'primeng/tooltip';
+import { take, tap } from 'rxjs';
 
 import { CHANGE_MODE } from '@app/constants';
 import {
@@ -24,6 +29,7 @@ import {
 import { EventData } from '@app/models/ui';
 import { FindingStore } from '@app/store/report-manager/finding.store';
 import { ChangeModes } from '@app/types';
+import { isNotNil } from '@app/utils/functions/common.functions';
 import { findNextSortOrder } from '@app/utils/functions/order.functions';
 
 import { FindingManagerListComponent } from '../finding-manager-list/finding-manager-list.component';
@@ -56,6 +62,8 @@ export class FindingManagerComponent {
   private readonly confirmationService: ConfirmationService =
     inject(ConfirmationService);
 
+  private readonly ngZone: NgZone = inject(NgZone);
+
   readonly findings: InputSignal<Finding[]> = input.required<Finding[]>();
 
   readonly classifier: InputSignal<FindingClassifier> =
@@ -65,8 +73,22 @@ export class FindingManagerComponent {
 
   readonly ChangeModes: typeof CHANGE_MODE = CHANGE_MODE;
 
-  onChange(scope: Finding | null): void {
-    this.findingStore$.change(scope);
+  constructor() {
+    effect(() => {
+      this.findingStore$.orderedList();
+
+      if (isNil(this.findingStore$.current())) {
+        untracked(() => this.mode.set(null));
+      }
+    });
+  }
+
+  onChange(finding: Finding | null): void {
+    this.findingStore$.change(finding);
+
+    if (isNotNil(finding)) {
+      this.onEdit(finding);
+    }
   }
 
   onSave(
@@ -88,6 +110,10 @@ export class FindingManagerComponent {
         sortOrder: storeSelectedFinding?.sortOrder ?? selectedFinding.sortOrder,
       });
 
+      this.mode.set(null);
+
+      this.findingStore$.change(null);
+
       return;
     }
 
@@ -106,10 +132,24 @@ export class FindingManagerComponent {
     this.findingStore$.change(null);
   }
 
-  onCreate(): void {
-    this.mode.set(CHANGE_MODE.Create);
+  onCancel(): void {
+    this.mode.set(null);
 
     this.findingStore$.change(null);
+  }
+
+  onCreate(): void {
+    this.findingStore$.change(null);
+
+    // Ensuring effect in constructor is ran first
+    this.ngZone.onMicrotaskEmpty
+      .pipe(
+        tap(() => {
+          this.mode.set(CHANGE_MODE.Create);
+        }),
+        take(1)
+      )
+      .subscribe();
   }
 
   onEdit(finding: Finding): void {
