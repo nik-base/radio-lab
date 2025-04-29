@@ -5,8 +5,8 @@ import { isNil, minBy, orderBy } from 'lodash-es';
 import { Finding, ScopeData, Template, TemplateData } from '@app/models/domain';
 import { FindingGrouped } from '@app/models/ui';
 import { Writable } from '@app/types';
-import { isNilOrEmpty } from '@app/utils/functions/common.functions';
 import {
+  orderBySortOrder,
   orderFindings,
   orderTemplates,
 } from '@app/utils/functions/order.functions';
@@ -46,7 +46,7 @@ export const reportBuilderFeature = createFeature({
         }: ReturnType<typeof ReportBuilderActions.fetchTemplateDataSuccess>
       ): ReportBuilderState =>
         produce(state, (draft: Writable<ReportBuilderState>) => {
-          draft.templateData = template;
+          //draft.templateData = template;
         })
     ),
     on(
@@ -68,7 +68,7 @@ export const reportBuilderFeature = createFeature({
               (item: ScopeData): boolean => item.id === scope.id
             ) ?? null;
 
-          draft.selectedScope = selectedScope;
+          //draft.selectedScope = selectedScope;
         })
     ),
     on(
@@ -100,7 +100,7 @@ export const reportBuilderFeature = createFeature({
         const scopes: ScopeData[] = template.scopes.map(
           (scope: ScopeData): ScopeData => ({
             ...scope,
-            findings: orderFindings(scope.findings),
+            groups: orderBySortOrder(scope.groups),
           })
         );
 
@@ -117,35 +117,35 @@ export const reportBuilderFeature = createFeature({
     selectScopeOrderedGroupedFindings: createSelector(
       selectSelectedScope,
       (scope: ScopeData | null): FindingGrouped[] => {
-        const groupedFindingsList: FindingGrouped[] =
-          scope?.findings.reduce(
-            (
-              accumulator: FindingGrouped[],
-              currentValue: Finding
-            ): FindingGrouped[] => {
-              const group: string = isNilOrEmpty(currentValue.groupId)
-                ? 'Uncategorized'
-                : currentValue.groupId;
+        const groupedFindingsList: FindingGrouped[] = [];
+        // scope?.findings.reduce(
+        //   (
+        //     accumulator: FindingGrouped[],
+        //     currentValue: Finding
+        //   ): FindingGrouped[] => {
+        //     const group: string = isNilOrEmpty(currentValue.groupId)
+        //       ? 'Uncategorized'
+        //       : currentValue.groupId;
 
-              const existingGroup: FindingGrouped | undefined =
-                accumulator.find(
-                  (groupedFinding: FindingGrouped): boolean =>
-                    groupedFinding.group === group
-                );
+        //     const existingGroup: FindingGrouped | undefined =
+        //       accumulator.find(
+        //         (groupedFinding: FindingGrouped): boolean =>
+        //           groupedFinding.group === group
+        //       );
 
-              if (existingGroup) {
-                existingGroup.findings.push(currentValue);
-              } else {
-                accumulator.push({
-                  group,
-                  findings: [currentValue],
-                });
-              }
+        //     if (existingGroup) {
+        //       existingGroup.findings.push(currentValue);
+        //     } else {
+        //       accumulator.push({
+        //         group,
+        //         findings: [currentValue],
+        //       });
+        //     }
 
-              return accumulator;
-            },
-            [] as FindingGrouped[]
-          ) ?? [];
+        //     return accumulator;
+        //   },
+        //   [] as FindingGrouped[]
+        // ) ?? [];
 
         const groupedFindings: FindingGrouped[] = groupedFindingsList.map(
           (groupedFinding: FindingGrouped): FindingGrouped => {
@@ -180,10 +180,10 @@ export const reportBuilderFeature = createFeature({
     selectScopeOrderedNormalFindings: createSelector(
       selectSelectedScope,
       (scope: ScopeData | null): Finding[] => {
-        const normalFindings: Finding[] =
-          scope?.findings.filter(
-            (finding: Finding): boolean => finding.isNormal
-          ) ?? [];
+        const normalFindings: Finding[] = [];
+        // scope?.findings.filter(
+        //   (finding: Finding): boolean => finding.isNormal
+        // ) ?? [];
 
         return orderBy(
           normalFindings,

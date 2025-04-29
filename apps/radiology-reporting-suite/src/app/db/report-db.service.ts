@@ -1,33 +1,37 @@
 import { inject, Injectable } from '@angular/core';
 import { NgxIndexedDBService } from 'ngx-indexed-db';
-import {
-  concatMap,
-  forkJoin,
-  map,
-  mergeMap,
-  Observable,
-  of,
-  switchMap,
-} from 'rxjs';
+import { forkJoin, map, mergeMap, Observable, of, switchMap } from 'rxjs';
+
+import { VARIABLE_SOURCE } from '@app/constants';
 
 import {
   EditorContentDto,
   FindingBaseDto,
   FindingClassifierBaseDto,
   FindingClassifierCreateDto,
+  FindingClassifierDataDto,
   FindingClassifierDto,
+  FindingClassifierExportDto,
+  FindingClassifierImportDto,
   FindingClassifierUpdateDto,
   FindingCreateDto,
+  FindingDataDto,
   FindingDto,
+  FindingExportDto,
   FindingGroupBaseDto,
   FindingGroupCreateDto,
+  FindingGroupDataDto,
   FindingGroupDto,
+  FindingGroupExportDto,
+  FindingGroupImportDto,
   FindingGroupUpdateDto,
+  FindingImportDto,
   FindingUpdateDto,
   ScopeBaseDto,
   ScopeCreateDto,
   ScopeDataDto,
   ScopeDto,
+  ScopeExportDto,
   ScopeImportDto,
   ScopeUpdateDto,
   SortOrderItemDto,
@@ -36,17 +40,33 @@ import {
   TemplateCreateDto,
   TemplateDataDto,
   TemplateDto,
+  TemplateExportDto,
   TemplateImportDto,
   TemplateUpdateDto,
+  VariableBaseDto,
+  VariableCreateDto,
+  VariableDto,
+  VariableExportDto,
+  VariableImportDto,
+  VariableUpdateDto,
+  VariableValueBaseDto,
+  VariableValueCreateDto,
+  VariableValueDto,
+  VariableValueExportDto,
+  VariableValueImportDto,
+  VariableValueUpdateDto,
 } from '../models/data';
 import { ReportBaseService } from '../services/report-base.service';
 
+import { findNextSortOrderWhenOptional } from '@app/utils/functions/order.functions';
 import {
   FindingClassifierDBModel,
   FindingDBModel,
   FindingGroupDBModel,
   ScopeDBModel,
   TemplateDBModel,
+  VariableDBModel,
+  VariableValueDBModel,
 } from './report-db.models';
 
 @Injectable({ providedIn: 'root' })
@@ -148,6 +168,66 @@ export class ReportDBService extends ReportBaseService {
       );
   }
 
+  override fetchAllFindingVariables$(): Observable<VariableDto[]> {
+    return this.dbService
+      .getAllByIndex<VariableDBModel>(
+        'variables',
+        'source',
+        IDBKeyRange.only(VARIABLE_SOURCE.Finding)
+      )
+      .pipe(
+        map((variables: VariableDBModel[]) =>
+          variables.map(
+            (item: VariableDBModel): VariableDto =>
+              this.mapVariableDBModelToDto(item)
+          )
+        )
+      );
+  }
+
+  override fetchFindingVariables$(
+    findingId: string
+  ): Observable<VariableDto[]> {
+    return this.dbService
+      .getAllByIndex<VariableDBModel>(
+        'variables',
+        'entityId',
+        IDBKeyRange.only(findingId)
+      )
+      .pipe(
+        map((variables: VariableDBModel[]) =>
+          variables
+            .filter(
+              (item: VariableDBModel): boolean =>
+                item.source === VARIABLE_SOURCE.Finding
+            )
+            .map(
+              (item: VariableDBModel): VariableDto =>
+                this.mapVariableDBModelToDto(item)
+            )
+        )
+      );
+  }
+
+  override fetchVariableValues$(
+    variableId: string
+  ): Observable<VariableValueDto[]> {
+    return this.dbService
+      .getAllByIndex<VariableValueDBModel>(
+        'variableValues',
+        'variableId',
+        IDBKeyRange.only(variableId)
+      )
+      .pipe(
+        map((variableValues: VariableValueDBModel[]) =>
+          variableValues.map(
+            (item: VariableValueDBModel): VariableValueDto =>
+              this.mapVariableValueDBModelToDto(item)
+          )
+        )
+      );
+  }
+
   override createTemplate$(
     template: TemplateCreateDto
   ): Observable<TemplateDto> {
@@ -166,14 +246,7 @@ export class ReportDBService extends ReportBaseService {
   override createFinding$(finding: FindingCreateDto): Observable<FindingDto> {
     const dbModel: FindingDBModel = this.mapFindingCreateDtoToDBModel(finding);
 
-    return this.dbService
-      .add<FindingDBModel>('findings', dbModel)
-      .pipe(
-        map(
-          (data: FindingDBModel): FindingDto =>
-            this.mapFindingDBModelToDto(data)
-        )
-      );
+    return this.createFindingInDb$(dbModel);
   }
 
   override createFindingGroup$(
@@ -192,6 +265,24 @@ export class ReportDBService extends ReportBaseService {
       this.mapFindingClassifierCreateDtoToDBModel(classifier);
 
     return this.createFindingClassifierInDb$(dbModel);
+  }
+
+  override createVariable$(
+    variable: VariableCreateDto
+  ): Observable<VariableDto> {
+    const dbModel: VariableDBModel =
+      this.mapVariableCreateDtoToDBModel(variable);
+
+    return this.createVariableInDb$(dbModel);
+  }
+
+  override createVariableValue$(
+    variableValue: VariableValueCreateDto
+  ): Observable<VariableValueDto> {
+    const dbModel: VariableValueDBModel =
+      this.mapVariableValueCreateDtoToDBModel(variableValue);
+
+    return this.createVariableValueInDb$(dbModel);
   }
 
   override updateTemplate$(
@@ -265,6 +356,38 @@ export class ReportDBService extends ReportBaseService {
       );
   }
 
+  override updateVariable$(
+    variable: VariableUpdateDto
+  ): Observable<VariableDto> {
+    const dbModel: VariableDBModel =
+      this.mapVariableUpdateDtoToDBModel(variable);
+
+    return this.dbService
+      .update<VariableDBModel>('variables', dbModel)
+      .pipe(
+        map(
+          (data: VariableDBModel): VariableDto =>
+            this.mapVariableDBModelToDto(data)
+        )
+      );
+  }
+
+  override updateVariableValue$(
+    variableValue: VariableValueUpdateDto
+  ): Observable<VariableValueDto> {
+    const dbModel: VariableValueDBModel =
+      this.mapVariableValueUpdateDtoToDBModel(variableValue);
+
+    return this.dbService
+      .update<VariableValueDBModel>('variableValues', dbModel)
+      .pipe(
+        map(
+          (data: VariableValueDBModel): VariableValueDto =>
+            this.mapVariableValueDBModelToDto(data)
+        )
+      );
+  }
+
   override deleteTemplate$(templateId: string): Observable<void> {
     return this.dbService
       .delete<TemplateDBModel>('templates', templateId)
@@ -280,7 +403,7 @@ export class ReportDBService extends ReportBaseService {
   override deleteFinding$(findingId: string): Observable<void> {
     return this.dbService
       .delete<FindingDBModel>('findings', findingId)
-      .pipe(map(() => void 0));
+      .pipe(switchMap(() => this.deleteAllVariablesByEntityId$(findingId)));
   }
 
   override deleteFindingGroup$(groupId: string): Observable<void> {
@@ -295,6 +418,20 @@ export class ReportDBService extends ReportBaseService {
       .pipe(
         switchMap(() => this.deleteAllFindingByClassifierId$(classifierId))
       );
+  }
+
+  override deleteVariable$(variableId: string): Observable<void> {
+    return this.dbService
+      .delete<VariableValueDBModel>('variables', variableId)
+      .pipe(
+        switchMap(() => this.deleteAllVariableValuesByVariableId$(variableId))
+      );
+  }
+
+  override deleteVariableValue$(variableValueId: string): Observable<void> {
+    return this.dbService
+      .delete<VariableValueDBModel>('variableValues', variableValueId)
+      .pipe(map(() => void 0));
   }
 
   override reorderTemplates$(
@@ -422,15 +559,66 @@ export class ReportDBService extends ReportBaseService {
     );
   }
 
+  override reorderVariables$(
+    sortOrderUpdateRequest: SortOrderUpdateDto
+  ): Observable<void> {
+    const ids: string[] = sortOrderUpdateRequest.sortOrdersMap.map(
+      (sortOrder: SortOrderItemDto): string => sortOrder.id
+    );
+
+    const entities$: Observable<VariableDBModel[]> =
+      this.dbService.bulkGet<VariableDBModel>('variables', ids);
+
+    return entities$.pipe(
+      mergeMap((entities: VariableDBModel[]) => {
+        const entityToUpdate: VariableDBModel[] =
+          this.getUpdatedVariablesSortOrder(entities, sortOrderUpdateRequest);
+
+        return this.dbService.bulkPut<VariableDBModel>(
+          'variables',
+          entityToUpdate
+        );
+      }),
+      map(() => void 0)
+    );
+  }
+
+  override reorderVariableValues$(
+    sortOrderUpdateRequest: SortOrderUpdateDto
+  ): Observable<void> {
+    const ids: string[] = sortOrderUpdateRequest.sortOrdersMap.map(
+      (sortOrder: SortOrderItemDto): string => sortOrder.id
+    );
+
+    const entities$: Observable<VariableValueDBModel[]> =
+      this.dbService.bulkGet<VariableValueDBModel>('variableValues', ids);
+
+    return entities$.pipe(
+      mergeMap((entities: VariableValueDBModel[]) => {
+        const entityToUpdate: VariableValueDBModel[] =
+          this.getUpdatedVariableValuesSortOrder(
+            entities,
+            sortOrderUpdateRequest
+          );
+
+        return this.dbService.bulkPut<VariableValueDBModel>(
+          'variableValues',
+          entityToUpdate
+        );
+      }),
+      map(() => void 0)
+    );
+  }
+
   override fetchTemplate$(templateId: string): Observable<TemplateDataDto> {
-    return this.dbService
-      .getByID<TemplateDBModel>('templates', templateId)
-      .pipe(
-        mergeMap(
-          (template: TemplateDBModel): Observable<TemplateDataDto> =>
-            this.getScopesForTemplate$(template)
-        )
-      );
+    return this.fetchTemplateData$(templateId);
+  }
+
+  override exportTemplate$(templateId: string): Observable<TemplateExportDto> {
+    return this.fetchTemplateData$(
+      templateId,
+      true
+    ) as Observable<TemplateExportDto>;
   }
 
   override importTemplate$(
@@ -447,16 +635,125 @@ export class ReportDBService extends ReportBaseService {
       templateDbModel
     );
 
-    const findings: FindingDBModel[] =
-      this.generateFindingsForImport(scopeIdsMap);
+    const observables: Observable<number[]>[] = [];
+
+    Object.entries(scopeIdsMap).forEach(
+      ([scopeId, scope]: [string, ScopeImportDto]): void => {
+        const groupObs: {
+          observable: Observable<number[]>;
+          entries: [string, FindingGroupImportDto][];
+        } = this.getImportObservable$(
+          scope,
+          'groups',
+          'scopeId',
+          scopeId,
+          'findingGroups',
+          (row: FindingGroupImportDto) => ({
+            ...this.mapFindingGroupBaseDtoToDBModel(row),
+          })
+        );
+
+        observables.push(groupObs.observable);
+
+        groupObs.entries.forEach(
+          ([groupId, group]: [string, FindingGroupImportDto]): void => {
+            const classifierObs: {
+              observable: Observable<number[]>;
+              entries: [string, FindingClassifierImportDto][];
+            } = this.getImportObservable$(
+              group,
+              'classifiers',
+              'groupId',
+              groupId,
+              'findingClassifiers',
+              (row: FindingClassifierImportDto) => ({
+                ...this.mapFindingClassifierBaseDtoToDBModel(row),
+                scopeId,
+              })
+            );
+
+            observables.push(classifierObs.observable);
+
+            classifierObs.entries.forEach(
+              ([classifierId, classifier]: [
+                string,
+                FindingClassifierImportDto,
+              ]): void => {
+                const findingObs: {
+                  observable: Observable<number[]>;
+                  entries: [string, FindingImportDto][];
+                } = this.getImportObservable$(
+                  classifier,
+                  'findings',
+                  'classifierId',
+                  classifierId,
+                  'findings',
+                  (row: FindingImportDto) => ({
+                    ...this.mapFindingBaseDtoToDBModel(row),
+                    scopeId,
+                    groupId,
+                  })
+                );
+
+                observables.push(findingObs.observable);
+
+                findingObs.entries.forEach(
+                  ([findingId, finding]: [string, FindingImportDto]): void => {
+                    const variableObs: {
+                      observable: Observable<number[]>;
+                      entries: [string, VariableImportDto][];
+                    } = this.getImportObservable$(
+                      finding,
+                      'variables',
+                      'entityId',
+                      findingId,
+                      'variables',
+                      (row: VariableImportDto) => ({
+                        ...this.mapVariableBaseDtoToDBModel(row),
+                      })
+                    );
+
+                    observables.push(variableObs.observable);
+
+                    variableObs.entries.forEach(
+                      ([variableId, variable]: [
+                        string,
+                        VariableImportDto,
+                      ]): void => {
+                        const variableValueObs: {
+                          observable: Observable<number[]>;
+                          entries: [string, VariableValueImportDto][];
+                        } = this.getImportObservable$(
+                          variable,
+                          'variableValues',
+                          'variableId',
+                          variableId,
+                          'variableValues',
+                          (row: VariableValueImportDto) => ({
+                            ...this.mapVariableValueBaseDtoToDBModel(row),
+                          })
+                        );
+
+                        observables.push(variableValueObs.observable);
+                      }
+                    );
+                  }
+                );
+              }
+            );
+          }
+        );
+      }
+    );
 
     return forkJoin([
       this.createTemplateInDb$(templateDbModel),
       this.dbService.bulkAdd<ScopeDBModel>('scopes', scopes),
-      this.dbService.bulkAdd<FindingDBModel>('findings', findings),
+      ...observables,
     ]).pipe(
       map(
-        ([template]: [TemplateDto, number[], number[]]): TemplateDto => template
+        // eslint-disable-next-line @typescript-eslint/typedef
+        ([template]): TemplateDto => template
       )
     );
   }
@@ -465,39 +762,702 @@ export class ReportDBService extends ReportBaseService {
     scopeId: string,
     templateId: string
   ): Observable<ScopeDto> {
-    return this.fetchScopesData$(scopeId).pipe(
-      mergeMap((scope: ScopeDataDto): Observable<ScopeDto> => {
-        const scopeDbModel: ScopeDBModel = this.mapScopeBaseDtoToCloneDBModel(
-          scope,
-          templateId
-        );
-
-        const findings: FindingDBModel[] = this.generateFindingsForClone$(
-          scope,
-          scopeDbModel
-        );
-
-        return forkJoin([
-          this.createScopeInDb$(scopeDbModel),
-          this.dbService.bulkAdd<FindingDBModel>('findings', findings),
-        ]).pipe(map(([scope]: [ScopeDto, number[]]): ScopeDto => scope));
-      })
-    );
+    return this.cloneScopeByIdIntoTemplate$(scopeId, templateId);
   }
 
   override cloneFinding$(findingId: string): Observable<FindingDto> {
-    return this.dbService.getByID<FindingDBModel>('findings', findingId).pipe(
-      mergeMap(
-        (finding: FindingDBModel): Observable<FindingDto> =>
-          this.createFinding$({
-            ...this.mapFindingDBModelToCreateDto(finding),
-          })
-      )
-    );
+    return this.cloneFindingById$(findingId);
+  }
+
+  override cloneVariable$(
+    variableId: string,
+    entityId: string
+  ): Observable<VariableDto> {
+    return this.cloneVariableByIdIntoEntity$(variableId, entityId);
   }
 
   private generateId(): string {
     return crypto.randomUUID();
+  }
+
+  private fetchVariableValuesForVariable$(
+    variableId: string
+  ): Observable<VariableValueExportDto[]> {
+    return this.dbService
+      .getAllByIndex<VariableValueDBModel>(
+        'variableValues',
+        'variableId',
+        variableId
+      )
+      .pipe(
+        map((db: VariableValueDBModel[]) =>
+          db.map(this.mapVariableValueDBModelToDto.bind(this))
+        )
+      );
+  }
+
+  private fetchVariablesForFinding$(
+    findingId: string
+  ): Observable<VariableExportDto[]> {
+    return this.dbService
+      .getAllByIndex<VariableDBModel>('variables', 'entityId', findingId)
+      .pipe(
+        mergeMap((rows: VariableDBModel[]) => {
+          if (!rows || rows.length === 0) {
+            return of([]);
+          }
+
+          const obs: Observable<VariableExportDto>[] = rows.map(
+            (row: VariableDBModel) => {
+              const dto: VariableDto = this.mapVariableDBModelToDto(row);
+
+              return this.fetchVariableValuesForVariable$(row.id).pipe(
+                map((variableValues: VariableValueExportDto[]) => ({
+                  ...dto,
+                  variableValues,
+                }))
+              );
+            }
+          );
+
+          return forkJoin(obs);
+        })
+      );
+  }
+
+  private fetchFindingsForClassifier$(
+    classifierId: string,
+    isExport?: boolean
+  ): Observable<(FindingDataDto | FindingExportDto)[]> {
+    if (isExport) {
+      return this.dbService
+        .getAllByIndex<FindingDBModel>('findings', 'classifierId', classifierId)
+        .pipe(
+          mergeMap((rows: FindingDBModel[]) => {
+            if (!rows || rows.length === 0) {
+              return of([]);
+            }
+
+            const obs: Observable<FindingExportDto>[] = rows.map(
+              (row: FindingDBModel) => {
+                const dto: FindingDto = this.mapFindingDBModelToDto(row);
+
+                return this.fetchVariablesForFinding$(row.id).pipe(
+                  map((variables: VariableExportDto[]) => ({
+                    ...dto,
+                    variables,
+                  }))
+                );
+              }
+            );
+
+            return forkJoin(obs);
+          })
+        );
+    }
+
+    return this.dbService
+      .getAllByIndex<FindingDBModel>('findings', 'classifierId', classifierId)
+      .pipe(
+        map((findingsDb: FindingDBModel[]) =>
+          findingsDb.map(this.mapFindingDBModelToDto.bind(this))
+        )
+      );
+  }
+
+  private fetchClassifiersForGroup$(
+    groupId: string,
+    isExport?: boolean
+  ): Observable<(FindingClassifierDataDto | FindingClassifierExportDto)[]> {
+    return this.dbService
+      .getAllByIndex<FindingClassifierDBModel>(
+        'findingClassifiers',
+        'groupId',
+        groupId
+      )
+      .pipe(
+        mergeMap((classifiersDb: FindingClassifierDBModel[]) => {
+          if (!classifiersDb || classifiersDb.length === 0) {
+            return of([]);
+          }
+
+          const classifierObservables: Observable<FindingClassifierDataDto>[] =
+            classifiersDb.map((classifierDb: FindingClassifierDBModel) => {
+              const classifierDto: FindingClassifierDto =
+                this.mapFindingClassifierDBModelToDto(classifierDb);
+
+              return this.fetchFindingsForClassifier$(
+                classifierDb.id,
+                isExport
+              ).pipe(
+                map((findingsDto: FindingDataDto[]) => ({
+                  ...classifierDto,
+                  findings: findingsDto,
+                }))
+              );
+            });
+
+          return forkJoin(classifierObservables);
+        })
+      );
+  }
+
+  private fetchGroupsForScope$(
+    scopeId: string,
+    isExport?: boolean
+  ): Observable<(FindingGroupDataDto | FindingGroupExportDto)[]> {
+    return this.dbService
+      .getAllByIndex<FindingGroupDBModel>('findingGroups', 'scopeId', scopeId)
+      .pipe(
+        mergeMap((groupsDb: FindingGroupDBModel[]) => {
+          if (!groupsDb || groupsDb.length === 0) {
+            return of([]);
+          }
+
+          const groupObservables: Observable<FindingGroupDataDto>[] =
+            groupsDb.map((groupDb: FindingGroupDBModel) => {
+              const groupDto: FindingGroupDto =
+                this.mapFindingGroupDBModelToDto(groupDb);
+
+              return this.fetchClassifiersForGroup$(groupDb.id, isExport).pipe(
+                map((classifiersDataDto: FindingClassifierDataDto[]) => ({
+                  ...groupDto,
+                  classifiers: classifiersDataDto,
+                }))
+              );
+            });
+
+          return forkJoin(groupObservables);
+        })
+      );
+  }
+
+  private fetchScopesForTemplate$(
+    templateId: string,
+    isExport?: boolean
+  ): Observable<(ScopeDataDto | ScopeExportDto)[]> {
+    return this.dbService
+      .getAllByIndex<ScopeDBModel>('scopes', 'templateId', templateId)
+      .pipe(
+        mergeMap((scopesDb: ScopeDBModel[]) => {
+          if (!scopesDb || scopesDb.length === 0) {
+            return of([]);
+          }
+
+          const scopeObservables: Observable<ScopeDataDto>[] = scopesDb.map(
+            (scopeDb: ScopeDBModel) => {
+              const scopeDto: ScopeDto = this.mapScopeDBModelToDto(scopeDb);
+
+              return this.fetchGroupsForScope$(scopeDb.id, isExport).pipe(
+                map((groupsDataDto: FindingGroupDataDto[]) => ({
+                  ...scopeDto,
+                  groups: groupsDataDto,
+                }))
+              );
+            }
+          );
+
+          return forkJoin(scopeObservables);
+        })
+      );
+  }
+
+  private fetchTemplateData$(
+    templateId: string,
+    isExport?: boolean
+  ): Observable<TemplateDataDto | TemplateExportDto> {
+    return this.dbService
+      .getByID<TemplateDBModel>('templates', templateId)
+      .pipe(
+        mergeMap((templateDb: TemplateDBModel) => {
+          const templateDto: TemplateDto =
+            this.mapTemplateDBModelToDto(templateDb);
+
+          return this.fetchScopesForTemplate$(templateDb.id, isExport).pipe(
+            map((scopesDataDto: ScopeDataDto[]) => ({
+              ...templateDto,
+              scopes: scopesDataDto,
+            }))
+          );
+        })
+      );
+  }
+
+  private cloneFindingById$(findingId: string): Observable<FindingDto> {
+    return this.dbService.getByID<FindingDBModel>('findings', findingId).pipe(
+      switchMap((originalFinding: FindingDBModel) =>
+        this.dbService
+          .getAllByIndex<FindingDBModel>(
+            'findings',
+            'classifierId',
+            IDBKeyRange.only(originalFinding.classifierId)
+          )
+          .pipe(
+            mergeMap((siblingFindings: FindingDBModel[]) => {
+              const nextSortOrder: number =
+                findNextSortOrderWhenOptional(siblingFindings);
+
+              const newFindingId: string = this.generateId();
+
+              return this.createFindingInDb$({
+                ...originalFinding,
+                id: newFindingId,
+                sortOrder: nextSortOrder,
+              }).pipe(
+                mergeMap((newFindingDto: FindingDto) =>
+                  this.cloneVariables$(findingId, newFindingDto.id).pipe(
+                    map(() => newFindingDto)
+                  )
+                )
+              );
+            })
+          )
+      )
+    );
+  }
+
+  private cloneVariables$(
+    cloneEntityId: string,
+    entityId: string
+  ): Observable<VariableDto[]> {
+    return this.dbService
+      .getAllByIndex<VariableDBModel>('variables', 'entityId', cloneEntityId)
+      .pipe(
+        mergeMap((originalVariables: VariableDBModel[]) => {
+          if (!originalVariables || originalVariables.length === 0) {
+            return of([]);
+          }
+
+          const cloneOps$: Observable<VariableDto>[] = originalVariables.map(
+            (originalVariable: VariableDBModel) => {
+              const newVariableId: string = this.generateId();
+
+              return this.createVariableInDb$({
+                ...originalVariable,
+                id: newVariableId,
+                entityId,
+              }).pipe(
+                mergeMap((newVariableDto: VariableDto) =>
+                  this.cloneVariableValues$(
+                    originalVariable.id,
+                    newVariableDto.id
+                  ).pipe(map(() => newVariableDto))
+                )
+              );
+            }
+          );
+
+          return forkJoin(cloneOps$);
+        })
+      );
+  }
+
+  private cloneVariableValues$(
+    cloneVariableId: string,
+    variableId: string
+  ): Observable<VariableValueDto[]> {
+    return this.dbService
+      .getAllByIndex<VariableValueDBModel>(
+        'variableValues',
+        'variableId',
+        cloneVariableId
+      )
+      .pipe(
+        mergeMap((originalValues: VariableValueDBModel[]) => {
+          if (!originalValues || originalValues.length === 0) {
+            return of([]);
+          }
+
+          const cloneOps$: Observable<VariableValueDto>[] = originalValues.map(
+            (originalValue: VariableValueDBModel) =>
+              this.createVariableValueInDb$({
+                ...originalValue,
+                id: this.generateId(),
+                variableId,
+              })
+          );
+
+          return forkJoin(cloneOps$);
+        })
+      );
+  }
+
+  private cloneVariableByIdIntoEntity$(
+    variableId: string,
+    entityId: string
+  ): Observable<VariableDto> {
+    return this.dbService
+      .getByID<VariableDBModel>('variables', variableId)
+      .pipe(
+        switchMap((originalVariable: VariableDBModel) =>
+          this.dbService
+            .getAllByIndex<VariableDBModel>(
+              'variables',
+              'entityId',
+              IDBKeyRange.only(entityId)
+            )
+            .pipe(
+              mergeMap((siblingVariables: VariableDBModel[]) => {
+                const newSortOrder: number =
+                  findNextSortOrderWhenOptional(siblingVariables);
+
+                const newVariableId: string = this.generateId();
+
+                return this.createVariableInDb$({
+                  ...originalVariable,
+                  id: newVariableId,
+                  entityId,
+                  sortOrder: newSortOrder,
+                }).pipe(
+                  mergeMap((newVariableDto: VariableDto) =>
+                    this.cloneVariableValues$(
+                      variableId,
+                      newVariableDto.id
+                    ).pipe(map(() => newVariableDto))
+                  )
+                );
+              })
+            )
+        )
+      );
+  }
+
+  // private cloneFindings$(
+  //   cloneClassifierId: string,
+  //   classifierId: string,
+  //   groupId: string,
+  //   scopeId: string
+  // ): Observable<FindingDto[]> {
+  //   return this.dbService
+  //     .getAllByIndex<FindingDBModel>(
+  //       'findings',
+  //       'classifierId',
+  //       cloneClassifierId
+  //     )
+  //     .pipe(
+  //       mergeMap((entities: FindingDBModel[]) =>
+  //         forkJoin(
+  //           entities.map((entity: FindingDBModel) =>
+  //             this.createFindingInDb$({
+  //               ...entity,
+  //               id: this.generateId(),
+  //               classifierId,
+  //               groupId,
+  //               scopeId,
+  //             }).pipe(
+  //               mergeMap((dto: FindingDto) =>
+  //                 this.cloneVariables$(entity.id, dto.id).pipe(map(() => dto))
+  //               )
+  //             )
+  //           )
+  //         )
+  //       )
+  //     );
+  // }
+
+  // private cloneClassifiers$(
+  //   cloneGroupId: string,
+  //   groupId: string,
+  //   scopeId: string
+  // ): Observable<FindingClassifierDto[]> {
+  //   return this.dbService
+  //     .getAllByIndex<FindingClassifierDBModel>(
+  //       'findingClassifiers',
+  //       'groupId',
+  //       cloneGroupId
+  //     )
+  //     .pipe(
+  //       mergeMap((entities: FindingClassifierDBModel[]) =>
+  //         forkJoin(
+  //           entities.map((entity: FindingClassifierDBModel) =>
+  //             this.createFindingClassifierInDb$({
+  //               ...entity,
+  //               id: this.generateId(),
+  //               groupId,
+  //               scopeId,
+  //             }).pipe(
+  //               mergeMap((dto: FindingClassifierDto) =>
+  //                 this.cloneFindings$(entity.id, dto.id, groupId, scopeId).pipe(
+  //                   map(() => dto)
+  //                 )
+  //               )
+  //             )
+  //           )
+  //         )
+  //       )
+  //     );
+  // }
+
+  // private cloneGroups$(
+  //   cloneScopeId: string,
+  //   scopeId: string
+  // ): Observable<FindingGroupDto[]> {
+  //   return this.dbService
+  //     .getAllByIndex<FindingGroupDBModel>(
+  //       'findingGroups',
+  //       'scopeId',
+  //       cloneScopeId
+  //     )
+  //     .pipe(
+  //       mergeMap((entities: FindingGroupDBModel[]) =>
+  //         forkJoin(
+  //           entities.map((entity: FindingGroupDBModel) =>
+  //             this.createFindingGroupInDb$({
+  //               ...entity,
+  //               id: this.generateId(),
+  //               scopeId,
+  //             }).pipe(
+  //               mergeMap((dto: FindingGroupDto) =>
+  //                 this.cloneClassifiers$(entity.id, dto.id, scopeId).pipe(
+  //                   map(() => dto)
+  //                 )
+  //               )
+  //             )
+  //           )
+  //         )
+  //       )
+  //     );
+  // }
+
+  private cloneScopeByIdIntoTemplate$(
+    scopeId: string,
+    templateId: string
+  ): Observable<ScopeDto> {
+    return this.dbService.getByID<ScopeDBModel>('scopes', scopeId).pipe(
+      switchMap((originalScope: ScopeDBModel) =>
+        this.dbService
+          .getAllByIndex<ScopeDBModel>(
+            'scopes',
+            'templateId',
+            IDBKeyRange.only(templateId)
+          )
+          .pipe(
+            mergeMap((siblingScopes: ScopeDBModel[]) => {
+              const newSortOrder: number =
+                findNextSortOrderWhenOptional(siblingScopes);
+
+              const newScopeId: string = this.generateId();
+
+              return this.createScopeInDb$({
+                ...originalScope,
+                id: newScopeId,
+                templateId,
+                sortOrder: newSortOrder,
+              }).pipe(
+                mergeMap((newScopeDto: ScopeDto) =>
+                  this.cloneGroups$(scopeId, newScopeDto.id).pipe(
+                    map(() => newScopeDto)
+                  )
+                )
+              );
+            })
+          )
+      )
+    );
+  }
+
+  private cloneGroups$(
+    cloneScopeId: string,
+    scopeId: string
+  ): Observable<FindingGroupDto[]> {
+    return this.dbService
+      .getAllByIndex<FindingGroupDBModel>(
+        'findingGroups',
+        'scopeId',
+        cloneScopeId
+      )
+      .pipe(
+        mergeMap((originalGroups: FindingGroupDBModel[]) => {
+          if (!originalGroups || originalGroups.length === 0) {
+            return of([]);
+          }
+
+          const cloneOps$: Observable<FindingGroupDto>[] = originalGroups.map(
+            (originalGroup: FindingGroupDBModel) => {
+              const newGroupId: string = this.generateId();
+
+              return this.createFindingGroupInDb$({
+                ...originalGroup,
+                id: newGroupId,
+                scopeId,
+              }).pipe(
+                mergeMap((newGroupDto: FindingGroupDto) =>
+                  this.cloneClassifiers$(
+                    originalGroup.id,
+                    newGroupDto.id,
+                    scopeId
+                  ).pipe(map(() => newGroupDto))
+                )
+              );
+            }
+          );
+
+          return forkJoin(cloneOps$);
+        })
+      );
+  }
+
+  private cloneClassifiers$(
+    cloneGroupId: string,
+    groupId: string,
+    scopeId: string
+  ): Observable<FindingClassifierDto[]> {
+    return this.dbService
+      .getAllByIndex<FindingClassifierDBModel>(
+        'findingClassifiers',
+        'groupId',
+        cloneGroupId
+      )
+      .pipe(
+        mergeMap((originalClassifiers: FindingClassifierDBModel[]) => {
+          if (!originalClassifiers || originalClassifiers.length === 0) {
+            return of([]);
+          }
+
+          const cloneOps$: Observable<FindingClassifierDto>[] =
+            originalClassifiers.map(
+              (originalClassifier: FindingClassifierDBModel) => {
+                const newClassifierId: string = this.generateId();
+
+                return this.createFindingClassifierInDb$({
+                  ...originalClassifier,
+                  id: newClassifierId,
+                  groupId,
+                  scopeId,
+                }).pipe(
+                  mergeMap((newClassifierDto: FindingClassifierDto) =>
+                    this.cloneFindings$(
+                      originalClassifier.id,
+                      newClassifierDto.id,
+                      groupId,
+                      scopeId
+                    ).pipe(map(() => newClassifierDto))
+                  )
+                );
+              }
+            );
+
+          return forkJoin(cloneOps$);
+        })
+      );
+  }
+
+  private cloneFindings$(
+    cloneClassifierId: string,
+    classifierId: string,
+    groupId: string,
+    scopeId: string
+  ): Observable<FindingDto[]> {
+    return this.dbService
+      .getAllByIndex<FindingDBModel>(
+        'findings',
+        'classifierId',
+        cloneClassifierId
+      )
+      .pipe(
+        mergeMap((originalFindings: FindingDBModel[]) => {
+          if (!originalFindings || originalFindings.length === 0) {
+            return of([]);
+          }
+
+          const cloneOps$: Observable<FindingDto>[] = originalFindings.map(
+            (originalFinding: FindingDBModel) => {
+              const newFindingId: string = this.generateId();
+
+              return this.createFindingInDb$({
+                ...originalFinding,
+                id: newFindingId,
+                classifierId,
+                groupId,
+                scopeId,
+              }).pipe(
+                mergeMap((newFindingDto: FindingDto) =>
+                  this.cloneVariables$(
+                    originalFinding.id,
+                    newFindingDto.id
+                  ).pipe(map(() => newFindingDto))
+                )
+              );
+            }
+          );
+
+          return forkJoin(cloneOps$);
+        })
+      );
+  }
+
+  private cloneVariableValue$(
+    variableValueId: string,
+    variableId: string
+  ): Observable<VariableValueDto> {
+    return this.dbService
+      .getByID<VariableValueDBModel>('variableValues', variableValueId)
+      .pipe(
+        mergeMap((variableValue: VariableValueDBModel) =>
+          this.createVariableValueInDb$({
+            ...variableValue,
+            id: this.generateId(),
+            variableId,
+          })
+        )
+      );
+  }
+
+  private getImportObservable$<
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    TParentImport extends Record<string, any>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    TEntityImport extends Record<string, any>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    TDBModel extends Record<string, any>,
+  >(
+    parent: TParentImport,
+    childKey: string,
+    parentIdKey: string,
+    parentId: string,
+    dbStoreName: string,
+    dbModelMapper: (entity: TEntityImport) => Partial<TDBModel>
+  ): {
+    readonly observable: Observable<number[]>;
+    entries: [string, TEntityImport][];
+  } {
+    const idsMap: Record<string, TEntityImport> = this.generateIdsMap([
+      ...(parent[childKey] as Iterable<TEntityImport>),
+    ]);
+
+    const entries: [string, TEntityImport][] = Object.entries(idsMap);
+
+    const rows: TDBModel[] = entries.map(
+      ([id, row]: [string, TEntityImport]): TDBModel =>
+        ({
+          ...dbModelMapper(row),
+          id,
+          [parentIdKey]: parentId,
+        }) as unknown as TDBModel
+    );
+
+    return {
+      observable: this.dbService.bulkAdd<TDBModel>(dbStoreName, rows),
+      entries,
+    };
+  }
+
+  private deleteAllVariablesByEntityId$(entityId: string): Observable<void> {
+    return this.dbService
+      .deleteAllByIndex<VariableDBModel>('variables', 'entityId', entityId)
+      .pipe(map(() => void 0));
+  }
+
+  private deleteAllVariableValuesByVariableId$(
+    variableId: string
+  ): Observable<void> {
+    return this.dbService
+      .deleteAllByIndex<VariableValueDBModel>(
+        'variableValues',
+        'variableId',
+        variableId
+      )
+      .pipe(map(() => void 0));
   }
 
   private deleteAllFindingByClassifierId$(
@@ -588,26 +1548,22 @@ export class ReportDBService extends ReportBaseService {
       );
   }
 
-  private generateFindingsForClone$(
-    scope: ScopeDataDto,
-    scopeDBModel: ScopeDBModel
-  ): FindingDBModel[] {
-    return scope.findings.map(
-      (finding: FindingDto): FindingDBModel => ({
-        ...this.mapFindingBaseDtoToDBModel(finding),
-        id: this.generateId(),
-        scopeId: scopeDBModel.id,
-        groupId: finding.groupId,
-        classifierId: finding.classifierId,
-      })
-    );
-  }
-
   private createScopeInDb$(dbModel: ScopeDBModel): Observable<ScopeDto> {
     return this.dbService
       .add<ScopeDBModel>('scopes', dbModel)
       .pipe(
         map((data: ScopeDBModel): ScopeDto => this.mapScopeDBModelToDto(data))
+      );
+  }
+
+  private createFindingInDb$(dbModel: FindingDBModel): Observable<FindingDto> {
+    return this.dbService
+      .add<FindingDBModel>('findings', dbModel)
+      .pipe(
+        map(
+          (data: FindingDBModel): FindingDto =>
+            this.mapFindingDBModelToDto(data)
+        )
       );
   }
 
@@ -637,6 +1593,32 @@ export class ReportDBService extends ReportBaseService {
       );
   }
 
+  private createVariableInDb$(
+    dbModel: VariableDBModel
+  ): Observable<VariableDto> {
+    return this.dbService
+      .add<VariableDBModel>('variables', dbModel)
+      .pipe(
+        map(
+          (data: VariableDBModel): VariableDto =>
+            this.mapVariableDBModelToDto(data)
+        )
+      );
+  }
+
+  private createVariableValueInDb$(
+    dbModel: VariableValueDBModel
+  ): Observable<VariableValueDto> {
+    return this.dbService
+      .add<VariableValueDBModel>('variableValues', dbModel)
+      .pipe(
+        map(
+          (data: VariableValueDBModel): VariableValueDto =>
+            this.mapVariableValueDBModelToDto(data)
+        )
+      );
+  }
+
   private generateScopeIdsMap(
     template: TemplateImportDto
   ): Record<string, ScopeImportDto> {
@@ -652,22 +1634,14 @@ export class ReportDBService extends ReportBaseService {
     );
   }
 
-  private generateFindingsForImport(
-    scopeIdsMap: Record<string, ScopeImportDto>
-  ): FindingDBModel[] {
-    return Object.entries(scopeIdsMap)
-      .map(([scopeId, scope]: [string, ScopeImportDto]): FindingDBModel[] =>
-        scope.findings.map(
-          (finding: FindingBaseDto): FindingDBModel => ({
-            ...this.mapFindingBaseDtoToDBModel(finding),
-            id: this.generateId(),
-            scopeId: scopeId,
-            groupId: this.generateId(),
-            classifierId: this.generateId(),
-          })
-        )
-      )
-      .flat();
+  private generateIdsMap<T>(entities: T[]): Record<string, T> {
+    return entities.reduce(
+      (accumulator: Record<string, T>, current: T) => {
+        accumulator[this.generateId()] = current;
+        return accumulator;
+      },
+      {} as Record<string, T>
+    );
   }
 
   private generateScopesForImport(
@@ -692,101 +1666,6 @@ export class ReportDBService extends ReportBaseService {
         map(
           (data: TemplateDBModel): TemplateDto =>
             this.mapTemplateDBModelToDto(data)
-        )
-      );
-  }
-
-  private getScopesForTemplate$(
-    template: TemplateDBModel
-  ): Observable<TemplateDataDto> {
-    return this.dbService
-      .getAllByIndex<ScopeDBModel>(
-        'scopes',
-        'templateId',
-        IDBKeyRange.only(template.id)
-      )
-      .pipe(
-        concatMap(
-          (scopes: ScopeDBModel[]): Observable<TemplateDataDto> =>
-            this.mapTemplateScopesToTemplateDataDto(scopes, template)
-        )
-      );
-  }
-
-  private mapTemplateScopesToTemplateDataDto(
-    scopes: ScopeDBModel[],
-    template: TemplateDBModel
-  ): Observable<TemplateDataDto> {
-    if (!scopes?.length) {
-      return of<TemplateDataDto>({
-        ...this.mapTemplateDBModelToBaseDto(template),
-        id: template.id,
-        scopes: [],
-      });
-    }
-
-    return this.getFindingsForScopes$(scopes, template);
-  }
-
-  private getFindingsForScopes$(
-    scopes: ScopeDBModel[],
-    template: TemplateDBModel
-  ): Observable<TemplateDataDto> {
-    const scopes$: Observable<ScopeDataDto>[] = scopes.map(
-      (scope: ScopeDBModel): Observable<ScopeDataDto> =>
-        this.fetchFindingsForScope$(scope)
-    );
-
-    return forkJoin(scopes$).pipe(
-      map(
-        (scopes: ScopeDataDto[]): TemplateDataDto => ({
-          ...this.mapTemplateDBModelToBaseDto(template),
-          id: template.id,
-          scopes: scopes,
-        })
-      )
-    );
-  }
-
-  private fetchFindingsForScope$(
-    scope: ScopeDBModel
-  ): Observable<ScopeDataDto> {
-    return this.dbService
-      .getAllByIndex<FindingDBModel>(
-        'findings',
-        'scopeId',
-        IDBKeyRange.only(scope.id)
-      )
-      .pipe(
-        map(
-          (findings: FindingDBModel[]): ScopeDataDto =>
-            this.mapScopeFindingsToDto(scope, findings)
-        )
-      );
-  }
-
-  private mapScopeFindingsToDto(
-    scope: ScopeDBModel,
-    findings: FindingDBModel[]
-  ): ScopeDataDto {
-    return {
-      ...this.mapScopeDBModelToBaseDto(scope),
-      id: scope.id,
-      templateId: scope.templateId,
-      findings: findings.map(
-        (finding: FindingDBModel): FindingDto =>
-          this.mapFindingDBModelToDto(finding)
-      ),
-    };
-  }
-
-  private fetchScopesData$(scopeId: string): Observable<ScopeDataDto> {
-    return this.dbService
-      .getByID<ScopeDBModel>('scopes', scopeId)
-      .pipe(
-        mergeMap(
-          (scope: ScopeDBModel): Observable<ScopeDataDto> =>
-            this.fetchFindingsForScope$(scope)
         )
       );
   }
@@ -899,6 +1778,50 @@ export class ReportDBService extends ReportBaseService {
     );
   }
 
+  private getUpdatedVariablesSortOrder(
+    entities: VariableDBModel[],
+    sortOrderUpdateRequest: SortOrderUpdateDto
+  ): VariableDBModel[] {
+    return entities.map((entity: VariableDBModel): VariableDBModel => {
+      const sortOrderItem: SortOrderItemDto | undefined =
+        sortOrderUpdateRequest.sortOrdersMap.find(
+          (sortOrder: SortOrderItemDto): boolean => sortOrder.id === entity.id
+        );
+
+      if (!sortOrderItem) {
+        return entity;
+      }
+
+      return {
+        ...entity,
+        sortOrder: sortOrderItem.sortOrder,
+      };
+    });
+  }
+
+  private getUpdatedVariableValuesSortOrder(
+    entities: VariableValueDBModel[],
+    sortOrderUpdateRequest: SortOrderUpdateDto
+  ): VariableValueDBModel[] {
+    return entities.map(
+      (entity: VariableValueDBModel): VariableValueDBModel => {
+        const sortOrderItem: SortOrderItemDto | undefined =
+          sortOrderUpdateRequest.sortOrdersMap.find(
+            (sortOrder: SortOrderItemDto): boolean => sortOrder.id === entity.id
+          );
+
+        if (!sortOrderItem) {
+          return entity;
+        }
+
+        return {
+          ...entity,
+          sortOrder: sortOrderItem.sortOrder,
+        };
+      }
+    );
+  }
+
   private mapTemplateUpdateDtoToDBModel(
     template: TemplateUpdateDto
   ): TemplateDBModel {
@@ -946,6 +1869,26 @@ export class ReportDBService extends ReportBaseService {
       id: classifier.id,
       scopeId: classifier.scopeId,
       groupId: classifier.groupId,
+    };
+  }
+
+  private mapVariableUpdateDtoToDBModel(
+    variable: VariableUpdateDto
+  ): VariableDBModel {
+    return {
+      ...this.mapVariableBaseDtoToDBModel(variable),
+      id: variable.id,
+      entityId: variable.entityId,
+    };
+  }
+
+  private mapVariableValueUpdateDtoToDBModel(
+    variableValue: VariableValueUpdateDto
+  ): VariableValueDBModel {
+    return {
+      ...this.mapVariableValueBaseDtoToDBModel(variableValue),
+      id: variableValue.id,
+      variableId: variableValue.variableId,
     };
   }
 
@@ -1027,6 +1970,26 @@ export class ReportDBService extends ReportBaseService {
     };
   }
 
+  private mapVariableBaseDtoToDBModel(
+    variable: VariableBaseDto
+  ): Omit<VariableDBModel, 'id' | 'entityId'> {
+    return {
+      name: variable.name,
+      sortOrder: variable.sortOrder,
+      source: variable.source,
+      type: variable.type,
+    };
+  }
+
+  private mapVariableValueBaseDtoToDBModel(
+    variableValue: VariableValueBaseDto
+  ): Omit<VariableValueDBModel, 'id' | 'variableId'> {
+    return {
+      name: variableValue.name,
+      sortOrder: variableValue.sortOrder,
+    };
+  }
+
   private mapScopeCreateDtoToDBModel(scope: ScopeCreateDto): ScopeDBModel {
     return {
       ...this.mapScopeBaseDtoToDBModel(scope),
@@ -1053,6 +2016,26 @@ export class ReportDBService extends ReportBaseService {
       id: this.generateId(),
       scopeId: classifier.scopeId,
       groupId: classifier.groupId,
+    };
+  }
+
+  private mapVariableCreateDtoToDBModel(
+    variable: VariableCreateDto
+  ): VariableDBModel {
+    return {
+      ...this.mapVariableBaseDtoToDBModel(variable),
+      id: this.generateId(),
+      entityId: variable.entityId,
+    };
+  }
+
+  private mapVariableValueCreateDtoToDBModel(
+    variableValue: VariableValueCreateDto
+  ): VariableValueDBModel {
+    return {
+      ...this.mapVariableValueBaseDtoToDBModel(variableValue),
+      id: this.generateId(),
+      variableId: variableValue.variableId,
     };
   }
 
@@ -1100,6 +2083,24 @@ export class ReportDBService extends ReportBaseService {
       id: classifier.id,
       scopeId: classifier.scopeId,
       groupId: classifier.groupId,
+    };
+  }
+
+  private mapVariableDBModelToDto(variable: VariableDBModel): VariableDto {
+    return {
+      ...this.mapVariableBaseDtoToDBModel(variable),
+      id: variable.id,
+      entityId: variable.entityId,
+    };
+  }
+
+  private mapVariableValueDBModelToDto(
+    variableValue: VariableValueDBModel
+  ): VariableValueDto {
+    return {
+      ...this.mapVariableValueBaseDtoToDBModel(variableValue),
+      id: variableValue.id,
+      variableId: variableValue.variableId,
     };
   }
 

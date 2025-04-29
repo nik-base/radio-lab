@@ -1,6 +1,3 @@
-import { FindingBaseDto } from './finding-base-dto.interface';
+import { FindingDto } from './finding-dto.interface';
 
-export interface FindingDataDto extends FindingBaseDto {
-  readonly group?: string;
-  readonly classifier?: string;
-}
+export type FindingDataDto = FindingDto;

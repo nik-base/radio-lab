@@ -1,8 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 
 import {
-  FindingBaseDto,
-  FindingDto,
   ScopeBaseDto,
   ScopeCreateDto,
   ScopeDataDto,
@@ -11,8 +9,6 @@ import {
   ScopeUpdateDto,
 } from '@app/models/data';
 import {
-  Finding,
-  FindingBase,
   Scope,
   ScopeBase,
   ScopeCreate,
@@ -67,9 +63,10 @@ export class ScopeMapperService {
       name: scope.name,
       sortOrder: scope.sortOrder,
       templateId: scope.templateId,
-      findings: scope.findings.map(
-        (finding: FindingDto): Finding => this.findingMapper.mapFromDto(finding)
-      ),
+      groups: [],
+      // findings: scope.findings.map(
+      //   (finding: FindingDto): Finding => this.findingMapper.mapFromDto(finding)
+      // ),
     };
   }
 
@@ -106,20 +103,22 @@ export class ScopeMapperService {
   mapToImportDto(scope: ScopeImport): ScopeImportDto {
     return {
       ...this.mapToBaseDto(scope),
-      findings: scope.findings.map(
-        (finding: FindingBase): FindingBaseDto =>
-          this.findingMapper.mapToBaseDto(finding)
-      ),
+      groups: [],
+      // findings: scope.findings.map(
+      //   (finding: FindingBase): FindingBaseDto =>
+      //     this.findingMapper.mapToBaseDto(finding)
+      // ),
     };
   }
 
   mapFromImportDto(scope: ScopeImportDto): ScopeImport {
     return {
       ...this.mapFromBaseDto(scope),
-      findings: scope.findings.map(
-        (finding: FindingBaseDto): FindingBase =>
-          this.findingMapper.mapFromBaseDto(finding)
-      ),
+      groups: [],
+      // findings: scope.findings.map(
+      //   (finding: FindingBaseDto): FindingBase =>
+      //     this.findingMapper.mapFromBaseDto(finding)
+      // ),
     };
   }
 }

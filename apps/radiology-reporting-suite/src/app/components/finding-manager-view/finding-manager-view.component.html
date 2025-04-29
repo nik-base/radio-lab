@@ -1,13 +1,23 @@
 <div class="flex flex-col gap-2 w-full">
   <div class="flex gap-2 self-end">
     <p-button
+      icon="pi pi-code"
+      [outlined]="true"
+      size="large"
+      pTooltip="Variables"
+      tooltipPosition="bottom"
+      (onClick)="onCancel()" />
+
+    <p-button
       label="Cancel"
+      icon="pi pi-times"
       severity="secondary"
       pTooltip="Cancel"
       tooltipPosition="bottom"
       (onClick)="onCancel()" />
 
     <p-button
+      icon="pi pi-save"
       [label]="
         mode() === ChangeModes.Update ? 'Update Finding' : ' Create Finding'
       "

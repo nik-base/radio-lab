@@ -1,7 +1,7 @@
-import { FindingDto } from '../finding/finding-dto.interface';
+import { FindingGroupDataDto } from '../finding-group/finding-group-data-dto.interface';
 
 import { ScopeDto } from './scope-dto.interface';
 
 export interface ScopeDataDto extends ScopeDto {
-  readonly findings: ReadonlyArray<FindingDto>;
+  readonly groups: ReadonlyArray<FindingGroupDataDto>;
 }

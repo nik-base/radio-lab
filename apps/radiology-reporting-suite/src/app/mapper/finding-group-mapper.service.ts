@@ -1,8 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 
 import {
-  FindingClassifierBaseDto,
-  FindingClassifierDto,
   FindingGroupBaseDto,
   FindingGroupCreateDto,
   FindingGroupDataDto,
@@ -11,8 +9,6 @@ import {
   FindingGroupUpdateDto,
 } from '@app/models/data';
 import {
-  FindingClassifier,
-  FindingClassifierBase,
   FindingGroup,
   FindingGroupBase,
   FindingGroupCreate,
@@ -70,10 +66,11 @@ export class FindingGroupMapperService {
       name: group.name,
       sortOrder: group.sortOrder,
       scopeId: group.scopeId,
-      classifiers: group.classifiers.map(
-        (classifier: FindingClassifierDto): FindingClassifier =>
-          this.classifierMapper.mapFromDto(classifier)
-      ),
+      classifiers: [],
+      // classifiers: group.classifiers.map(
+      //   (classifier: FindingClassifierDto): FindingClassifier =>
+      //     this.classifierMapper.mapFromDto(classifier)
+      // ),
     };
   }
 
@@ -110,20 +107,22 @@ export class FindingGroupMapperService {
   mapToImportDto(group: FindingGroupImport): FindingGroupImportDto {
     return {
       ...this.mapToBaseDto(group),
-      classifiers: group.classifiers.map(
-        (classifier: FindingClassifierBase): FindingClassifierBaseDto =>
-          this.classifierMapper.mapToBaseDto(classifier)
-      ),
+      classifiers: [],
+      // classifiers: group.classifiers.map(
+      //   (classifier: FindingClassifierBase): FindingClassifierBaseDto =>
+      //     this.classifierMapper.mapToBaseDto(classifier)
+      // ),
     };
   }
 
   mapFromImportDto(group: FindingGroupImportDto): FindingGroupImport {
     return {
       ...this.mapFromBaseDto(group),
-      classifiers: group.classifiers.map(
-        (classifier: FindingClassifierBaseDto): FindingClassifierBase =>
-          this.classifierMapper.mapFromBaseDto(classifier)
-      ),
+      classifiers: [],
+      // classifiers: group.classifiers.map(
+      //   (classifier: FindingClassifierBaseDto): FindingClassifierBase =>
+      //     this.classifierMapper.mapFromBaseDto(classifier)
+      // ),
     };
   }
 }

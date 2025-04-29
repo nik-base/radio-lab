@@ -103,11 +103,6 @@ export const ScopeStore = signalStore(
                 if (input.scope.templateId === input.templateId) {
                   patchState(store, addEntity(result));
                 }
-
-                groupStore.createWithClassifer({
-                  ...defaultGroup,
-                  scopeId: result.id,
-                });
               }),
 
               store.handleStatus({

@@ -1,7 +1,7 @@
-import { FindingBaseDto } from '../finding/finding-base-dto.interface';
+import { FindingGroupImportDto } from '../finding-group/finding-group-import-dto.interface';
 
 import { ScopeBaseDto } from './scope-base-dto.interface';
 
 export interface ScopeImportDto extends ScopeBaseDto {
-  readonly findings: ReadonlyArray<FindingBaseDto>;
+  readonly groups: ReadonlyArray<FindingGroupImportDto>;
 }

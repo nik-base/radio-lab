@@ -53,3 +53,19 @@ export interface FindingDBModel {
   readonly groupId: string;
   readonly classifierId: string;
 }
+
+export interface VariableDBModel {
+  readonly id: string;
+  readonly name: string;
+  readonly type: string;
+  readonly source: string;
+  readonly entityId: string;
+  readonly sortOrder: number;
+}
+
+export interface VariableValueDBModel {
+  readonly id: string;
+  readonly name: string;
+  readonly variableId: string;
+  readonly sortOrder: number;
+}

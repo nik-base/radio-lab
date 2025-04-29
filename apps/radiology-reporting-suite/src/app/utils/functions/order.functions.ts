@@ -9,7 +9,7 @@ import {
 } from '@app/models/domain';
 
 export function orderBySortOrder<T extends { sortOrder: number }>(
-  items: T[]
+  items: T[] | ReadonlyArray<T>
 ): T[] {
   return orderBy(items, (item: T): number => item.sortOrder, 'asc');
 }
@@ -66,4 +66,21 @@ export function findNextSortOrder(
     )?.sortOrder ?? null;
 
   return isNil(lastSortOrder) ? 0 : lastSortOrder + 1;
+}
+
+export function findNextSortOrderWhenOptional(
+  sortOrderItems: { sortOrder?: number }[] | null | undefined
+): number {
+  if (isNil(sortOrderItems) || !sortOrderItems.length) {
+    return 0;
+  }
+
+  const sortOrderItemsWithDefaultSortOrder: { sortOrder: number }[] =
+    sortOrderItems.map(
+      (item: { sortOrder?: number }): { sortOrder: number } => ({
+        sortOrder: item.sortOrder ?? 0,
+      })
+    );
+
+  return findNextSortOrder(sortOrderItemsWithDefaultSortOrder);
 }

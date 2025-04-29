@@ -1,7 +1,7 @@
-import { Finding } from '../finding/finding.interface';
+import { FindingData } from '../finding/finding-data.interface';
 
 import { FindingClassifier } from './finding-classifier.interface';
 
 export interface FindingClassifierData extends FindingClassifier {
-  readonly findings: ReadonlyArray<Finding>;
+  readonly findings: ReadonlyArray<FindingData>;
 }

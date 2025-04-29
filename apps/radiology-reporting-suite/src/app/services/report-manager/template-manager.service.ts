@@ -45,6 +45,6 @@ export class TemplateManagerService
   }
 
   export$(id: string): Observable<TemplateDataDto> {
-    return this.reportService.fetchTemplate$(id);
+    return this.reportService.exportTemplate$(id);
   }
 }

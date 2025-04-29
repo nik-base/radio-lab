@@ -1,6 +1,7 @@
-import { FindingDto } from './finding-dto.interface';
+import { VariableImportDto } from '../variable/variable-import-dto.interface';
 
-export interface FindingDataDto extends FindingDto {
-  readonly group: string;
-  readonly classifier: string;
+import { FindingBaseDto } from './finding-base-dto.interface';
+
+export interface FindingImportDto extends FindingBaseDto {
+  readonly variables: ReadonlyArray<VariableImportDto>;
 }

@@ -3,7 +3,7 @@ import { DBConfig, NgxIndexedDBModule } from 'ngx-indexed-db';
 
 const reportDBConfig: DBConfig = {
   name: 'RadioReportDataDB',
-  version: 1,
+  version: 2,
   objectStoresMeta: [
     {
       store: 'templates',
@@ -154,6 +154,30 @@ const reportDBConfig: DBConfig = {
         {
           name: 'isNormal',
           keypath: 'isNormal',
+          options: { unique: false },
+        },
+      ],
+    },
+    {
+      store: 'variables',
+      storeConfig: { keyPath: 'id', autoIncrement: false },
+      storeSchema: [
+        { name: 'name', keypath: 'name', options: { unique: false } },
+        { name: 'type', keypath: 'type', options: { unique: false } },
+        { name: 'source', keypath: 'source', options: { unique: false } },
+        { name: 'entityId', keypath: 'entityId', options: { unique: false } },
+        { name: 'sortOrder', keypath: 'sortOrder', options: { unique: false } },
+      ],
+    },
+    {
+      store: 'variableValues',
+      storeConfig: { keyPath: 'id', autoIncrement: false },
+      storeSchema: [
+        { name: 'name', keypath: 'name', options: { unique: false } },
+        { name: 'sortOrder', keypath: 'sortOrder', options: { unique: false } },
+        {
+          name: 'variableId',
+          keypath: 'variableId',
           options: { unique: false },
         },
       ],

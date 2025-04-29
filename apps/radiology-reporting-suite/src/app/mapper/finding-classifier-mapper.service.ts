@@ -1,18 +1,14 @@
 import { inject, Injectable } from '@angular/core';
 
 import {
-  FindingBaseDto,
   FindingClassifierBaseDto,
   FindingClassifierCreateDto,
   FindingClassifierDataDto,
   FindingClassifierDto,
   FindingClassifierImportDto,
   FindingClassifierUpdateDto,
-  FindingDto,
 } from '@app/models/data';
 import {
-  Finding,
-  FindingBase,
   FindingClassifier,
   FindingClassifierBase,
   FindingClassifierCreate,
@@ -72,9 +68,10 @@ export class FindingClassifierMapperService {
       sortOrder: classifier.sortOrder,
       scopeId: classifier.scopeId,
       groupId: classifier.groupId,
-      findings: classifier.findings.map(
-        (finding: FindingDto): Finding => this.findingMapper.mapFromDto(finding)
-      ),
+      findings: [],
+      // findings: classifier.findings.map(
+      //   (finding: FindingDto): Finding => this.findingMapper.mapFromDto(finding)
+      // ),
     };
   }
 
@@ -125,10 +122,11 @@ export class FindingClassifierMapperService {
   ): FindingClassifierImportDto {
     return {
       ...this.mapToBaseDto(classifier),
-      findings: classifier.findings.map(
-        (finding: FindingBase): FindingBaseDto =>
-          this.findingMapper.mapToBaseDto(finding)
-      ),
+      findings: [],
+      // findings: classifier.findings.map(
+      //   (finding: FindingBase): FindingBaseDto =>
+      //     this.findingMapper.mapToBaseDto(finding)
+      // ),
     };
   }
 
@@ -137,10 +135,11 @@ export class FindingClassifierMapperService {
   ): FindingClassifierImport {
     return {
       ...this.mapFromBaseDto(classifier),
-      findings: classifier.findings.map(
-        (finding: FindingBaseDto): FindingBase =>
-          this.findingMapper.mapFromBaseDto(finding)
-      ),
+      findings: [],
+      // findings: classifier.findings.map(
+      //   (finding: FindingBaseDto): FindingBase =>
+      //     this.findingMapper.mapFromBaseDto(finding)
+      // ),
     };
   }
 }

@@ -2,7 +2,7 @@ import { inject } from '@angular/core';
 import { patchState, signalStore, withMethods } from '@ngrx/signals';
 import { addEntity } from '@ngrx/signals/entities';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { exhaustMap, map, pipe, tap } from 'rxjs';
+import { map, mergeMap, pipe, tap } from 'rxjs';
 
 import { GenericEntityMapperService } from '@app/mapper/generic-entity-mapper.service';
 import {
@@ -55,7 +55,7 @@ export const FindingStore = signalStore(
         pipe(
           store.setLoading('clone'),
 
-          exhaustMap((input: Finding) =>
+          mergeMap((input: Finding) =>
             findingManagerService.clone$(input.id).pipe(
               map(
                 (dto: FindingDto): Finding =>
