@@ -1,5 +1,6 @@
-import { inject } from '@angular/core';
-import { patchState, signalStore, withMethods } from '@ngrx/signals';
+import { DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { patchState, signalStore, withHooks, withMethods } from '@ngrx/signals';
 import { addEntity } from '@ngrx/signals/entities';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { exhaustMap, map, pipe, switchMap, tap } from 'rxjs';
@@ -134,5 +135,20 @@ export const TemplateStore = signalStore(
         scopeStore.resetState();
       },
     })
-  )
+  ),
+
+  withHooks({
+    // eslint-disable-next-line @typescript-eslint/typedef
+    onInit(store, destroyRef: DestroyRef = inject(DestroyRef)) {
+      store
+        .deleteSuccess$()
+        .pipe(
+          tap(() => {
+            store.reset();
+          }),
+          takeUntilDestroyed(destroyRef)
+        )
+        .subscribe();
+    },
+  })
 );

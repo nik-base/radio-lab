@@ -1,8 +1,9 @@
 import { inject, Injectable } from '@angular/core';
 import { NgxIndexedDBService } from 'ngx-indexed-db';
-import { forkJoin, map, mergeMap, Observable, of, switchMap } from 'rxjs';
+import { forkJoin, map, mergeMap, Observable, of, switchMap, take } from 'rxjs';
 
 import { VARIABLE_SOURCE } from '@app/constants';
+import { findNextSortOrderWhenOptional } from '@app/utils/functions/order.functions';
 
 import {
   EditorContentDto,
@@ -58,7 +59,6 @@ import {
 } from '../models/data';
 import { ReportBaseService } from '../services/report-base.service';
 
-import { findNextSortOrderWhenOptional } from '@app/utils/functions/order.functions';
 import {
   FindingClassifierDBModel,
   FindingDBModel,
@@ -969,6 +969,7 @@ export class ReportDBService extends ReportBaseService {
     return this.dbService
       .getByID<TemplateDBModel>('templates', templateId)
       .pipe(
+        take(1),
         mergeMap((templateDb: TemplateDBModel) => {
           const templateDto: TemplateDto =
             this.mapTemplateDBModelToDto(templateDb);
@@ -985,6 +986,7 @@ export class ReportDBService extends ReportBaseService {
 
   private cloneFindingById$(findingId: string): Observable<FindingDto> {
     return this.dbService.getByID<FindingDBModel>('findings', findingId).pipe(
+      take(1),
       switchMap((originalFinding: FindingDBModel) =>
         this.dbService
           .getAllByIndex<FindingDBModel>(
@@ -1089,6 +1091,7 @@ export class ReportDBService extends ReportBaseService {
     return this.dbService
       .getByID<VariableDBModel>('variables', variableId)
       .pipe(
+        take(1),
         switchMap((originalVariable: VariableDBModel) =>
           this.dbService
             .getAllByIndex<VariableDBModel>(
@@ -1122,108 +1125,12 @@ export class ReportDBService extends ReportBaseService {
       );
   }
 
-  // private cloneFindings$(
-  //   cloneClassifierId: string,
-  //   classifierId: string,
-  //   groupId: string,
-  //   scopeId: string
-  // ): Observable<FindingDto[]> {
-  //   return this.dbService
-  //     .getAllByIndex<FindingDBModel>(
-  //       'findings',
-  //       'classifierId',
-  //       cloneClassifierId
-  //     )
-  //     .pipe(
-  //       mergeMap((entities: FindingDBModel[]) =>
-  //         forkJoin(
-  //           entities.map((entity: FindingDBModel) =>
-  //             this.createFindingInDb$({
-  //               ...entity,
-  //               id: this.generateId(),
-  //               classifierId,
-  //               groupId,
-  //               scopeId,
-  //             }).pipe(
-  //               mergeMap((dto: FindingDto) =>
-  //                 this.cloneVariables$(entity.id, dto.id).pipe(map(() => dto))
-  //               )
-  //             )
-  //           )
-  //         )
-  //       )
-  //     );
-  // }
-
-  // private cloneClassifiers$(
-  //   cloneGroupId: string,
-  //   groupId: string,
-  //   scopeId: string
-  // ): Observable<FindingClassifierDto[]> {
-  //   return this.dbService
-  //     .getAllByIndex<FindingClassifierDBModel>(
-  //       'findingClassifiers',
-  //       'groupId',
-  //       cloneGroupId
-  //     )
-  //     .pipe(
-  //       mergeMap((entities: FindingClassifierDBModel[]) =>
-  //         forkJoin(
-  //           entities.map((entity: FindingClassifierDBModel) =>
-  //             this.createFindingClassifierInDb$({
-  //               ...entity,
-  //               id: this.generateId(),
-  //               groupId,
-  //               scopeId,
-  //             }).pipe(
-  //               mergeMap((dto: FindingClassifierDto) =>
-  //                 this.cloneFindings$(entity.id, dto.id, groupId, scopeId).pipe(
-  //                   map(() => dto)
-  //                 )
-  //               )
-  //             )
-  //           )
-  //         )
-  //       )
-  //     );
-  // }
-
-  // private cloneGroups$(
-  //   cloneScopeId: string,
-  //   scopeId: string
-  // ): Observable<FindingGroupDto[]> {
-  //   return this.dbService
-  //     .getAllByIndex<FindingGroupDBModel>(
-  //       'findingGroups',
-  //       'scopeId',
-  //       cloneScopeId
-  //     )
-  //     .pipe(
-  //       mergeMap((entities: FindingGroupDBModel[]) =>
-  //         forkJoin(
-  //           entities.map((entity: FindingGroupDBModel) =>
-  //             this.createFindingGroupInDb$({
-  //               ...entity,
-  //               id: this.generateId(),
-  //               scopeId,
-  //             }).pipe(
-  //               mergeMap((dto: FindingGroupDto) =>
-  //                 this.cloneClassifiers$(entity.id, dto.id, scopeId).pipe(
-  //                   map(() => dto)
-  //                 )
-  //               )
-  //             )
-  //           )
-  //         )
-  //       )
-  //     );
-  // }
-
   private cloneScopeByIdIntoTemplate$(
     scopeId: string,
     templateId: string
   ): Observable<ScopeDto> {
     return this.dbService.getByID<ScopeDBModel>('scopes', scopeId).pipe(
+      take(1),
       switchMap((originalScope: ScopeDBModel) =>
         this.dbService
           .getAllByIndex<ScopeDBModel>(
@@ -1232,7 +1139,7 @@ export class ReportDBService extends ReportBaseService {
             IDBKeyRange.only(templateId)
           )
           .pipe(
-            mergeMap((siblingScopes: ScopeDBModel[]) => {
+            switchMap((siblingScopes: ScopeDBModel[]) => {
               const newSortOrder: number =
                 findNextSortOrderWhenOptional(siblingScopes);
 
@@ -1393,6 +1300,7 @@ export class ReportDBService extends ReportBaseService {
     return this.dbService
       .getByID<VariableValueDBModel>('variableValues', variableValueId)
       .pipe(
+        take(1),
         mergeMap((variableValue: VariableValueDBModel) =>
           this.createVariableValueInDb$({
             ...variableValue,

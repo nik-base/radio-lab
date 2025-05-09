@@ -1,4 +1,4 @@
-import { computed, inject, Injector, Type } from '@angular/core';
+import { computed, inject, Type } from '@angular/core';
 import {
   patchState,
   signalStoreFeature,
@@ -14,7 +14,15 @@ import {
   withEntities,
 } from '@ngrx/signals/entities';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { exhaustMap, map, pipe, switchMap, tap } from 'rxjs';
+import {
+  exhaustMap,
+  map,
+  Observable,
+  pipe,
+  Subject,
+  switchMap,
+  tap,
+} from 'rxjs';
 
 import { GenericEntityMapperService } from '@app/mapper/generic-entity-mapper.service';
 import { SortOrderUpdateDto } from '@app/models/data';
@@ -24,10 +32,6 @@ import { AppEntityState } from '@app/store/report-manager/entity-state.interface
 import { orderBySortOrder } from '@app/utils/functions/order.functions';
 
 import { withRequestStatus } from './with-request-status.store-feature';
-
-export interface WithCrudOptions<TEntity> {
-  onCreateSuccess?: (injector: Injector, entity: TEntity) => void;
-}
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function withCRUD<
@@ -52,8 +56,7 @@ export function withCRUD<
   initialState: AppEntityState<TEntity>,
   entityManagerServiceType: Type<TService>,
   entityNameSingular: string,
-  entityNamePlural: string,
-  options?: WithCrudOptions<TEntity>
+  entityNamePlural: string
 ) {
   return signalStoreFeature(
     withEntities<TEntity>(),
@@ -70,7 +73,7 @@ export function withCRUD<
         genericEntityMapper: GenericEntityMapperService = inject(
           GenericEntityMapperService
         ),
-        injector: Injector = inject(Injector)
+        deleteSuccessSubject: Subject<TEntity> = new Subject<TEntity>()
       ) => ({
         fetchAll: rxMethod<TFetchAll>(
           pipe(
@@ -93,11 +96,11 @@ export function withCRUD<
           )
         ),
 
-        create: rxMethod<TCreate>(
+        create: rxMethod<TCreate & { readonly noPatch?: boolean }>(
           pipe(
             store.setLoading('create'),
 
-            exhaustMap((input: TCreate) =>
+            exhaustMap((input: TCreate & { readonly noPatch?: boolean }) =>
               entityManagerService
                 .create$(
                   genericEntityMapper.mapToDto<TCreate, TCreateDto>(input)
@@ -108,9 +111,9 @@ export function withCRUD<
                       genericEntityMapper.mapFromDto<TEntity, TDto>(dto)
                   ),
                   tap((result: TEntity): void => {
-                    patchState(store, addEntity(result));
-
-                    options?.onCreateSuccess?.(injector, result);
+                    if (!input.noPatch) {
+                      patchState(store, addEntity(result));
+                    }
                   }),
 
                   store.handleStatus({
@@ -164,6 +167,8 @@ export function withCRUD<
               entityManagerService.delete$(input.id).pipe(
                 tap(() => {
                   patchState(store, removeEntity(input.id));
+
+                  deleteSuccessSubject.next(input);
                 }),
 
                 store.handleStatus({
@@ -223,6 +228,10 @@ export function withCRUD<
 
         resetState(): void {
           patchState(store, initialState);
+        },
+
+        deleteSuccess$(): Observable<TEntity> {
+          return deleteSuccessSubject.asObservable();
         },
       })
     )

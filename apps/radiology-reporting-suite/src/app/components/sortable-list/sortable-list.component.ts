@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { MenuItem, MenuItemCommandEvent, TooltipOptions } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
-import { ListboxChangeEvent, ListboxModule } from 'primeng/listbox';
+import { ListboxModule } from 'primeng/listbox';
 import { Menu, MenuModule } from 'primeng/menu';
 import { OrderListModule } from 'primeng/orderlist';
 import { TooltipModule } from 'primeng/tooltip';
@@ -70,10 +70,6 @@ export class SortableListComponent<T> {
     this.dynamicMenuItems.set(menuItems);
   }
 
-  onChange($event: ListboxChangeEvent): void {
-    this.changed.emit($event.value as SortableListItem<T> | null);
-  }
-
   onSelect(item: SortableListItem<T>): void {
     this.changed.emit(item);
   }
@@ -83,8 +79,6 @@ export class SortableListComponent<T> {
   }
 
   onMore(event: Event, menu: Menu): void {
-    event.stopPropagation();
-
     this.currentMenuEvent = event;
 
     menu.toggle(event);

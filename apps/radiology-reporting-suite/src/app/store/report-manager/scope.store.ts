@@ -1,8 +1,9 @@
-import { inject } from '@angular/core';
-import { patchState, signalStore, withMethods } from '@ngrx/signals';
+import { DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { patchState, signalStore, withHooks, withMethods } from '@ngrx/signals';
 import { addEntity } from '@ngrx/signals/entities';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { exhaustMap, map, pipe, tap } from 'rxjs';
+import { catchError, EMPTY, exhaustMap, finalize, map, pipe, tap } from 'rxjs';
 
 import { GenericEntityMapperService } from '@app/mapper/generic-entity-mapper.service';
 import { ScopeCreateDto, ScopeDto, ScopeUpdateDto } from '@app/models/data';
@@ -75,6 +76,7 @@ export const ScopeStore = signalStore(
                   groupStore.createWithClassifer({
                     ...defaultGroup,
                     scopeId: result.id,
+                    noPatch: !(store.current()?.id === result.id),
                   });
                 }),
 
@@ -91,14 +93,26 @@ export const ScopeStore = signalStore(
 
       clone: rxMethod<{ readonly scope: Scope; templateId: string }>(
         pipe(
+          tap(() => console.log('[ScopeStore] clone: Triggered')), // Log trigger
           store.setLoading('clone'),
 
           exhaustMap((input: { readonly scope: Scope; templateId: string }) =>
             scopeManagerService.clone$(input.scope.id, input.templateId).pipe(
+              finalize(() =>
+                console.log(
+                  '[ScopeStore] clone: scopeManagerService.clone$ FINISHED'
+                )
+              ), // <-- Add this
+              tap((dto: ScopeDto) =>
+                console.log('[ScopeStore] clone: Service call successful', dto)
+              ), // Log service success
               map(
                 (dto: ScopeDto): Scope =>
                   genericEntityMapper.mapFromDto<Scope, ScopeDto>(dto)
               ),
+              tap((result: Scope) =>
+                console.log('[ScopeStore] clone: Mapped result', result)
+              ), // Log mapping
               tap((result: Scope): void => {
                 if (input.scope.templateId === input.templateId) {
                   patchState(store, addEntity(result));
@@ -112,6 +126,19 @@ export const ScopeStore = signalStore(
                 errorMessage: `Failed to clone scope "${input.scope.name}"`,
               })
             )
+          ),
+
+          catchError((err: Error) => {
+            // Explicitly catch errors within the inner pipe
+            console.error(
+              '[ScopeStore] clone: Error during clone operation',
+              err
+            );
+
+            return EMPTY;
+          }),
+          finalize(() =>
+            console.log('[ScopeStore] clone: Inner observable finalized')
           )
         )
       ),
@@ -132,5 +159,20 @@ export const ScopeStore = signalStore(
         groupStore.resetState();
       },
     })
-  )
+  ),
+
+  withHooks({
+    // eslint-disable-next-line @typescript-eslint/typedef
+    onInit(store, destroyRef: DestroyRef = inject(DestroyRef)) {
+      store
+        .deleteSuccess$()
+        .pipe(
+          tap(() => {
+            store.reset();
+          }),
+          takeUntilDestroyed(destroyRef)
+        )
+        .subscribe();
+    },
+  })
 );

@@ -19,26 +19,26 @@
 
   <ng-template #item let-listItem>
     <div
-      (click)="onSelect(listItem)"
       class="flex flex-row gap-2 w-full items-center cursor-pointer sortable-item"
       [ngClass]="
         selectedItem()?.id === listItem.id ? 'sortable-item-active' : ''
       ">
-      <span
-        (click)="$event.stopPropagation()"
-        pTooltip="Reorder"
-        tooltipPosition="bottom"
-        [tooltipOptions]="tooltipOptions"
-        class="pi pi-bars cursor-move"></span>
+      <div style="display: contents" (click)="onSelect(listItem)">
+        <span
+          (click)="$event.stopPropagation()"
+          pTooltip="Reorder"
+          tooltipPosition="bottom"
+          [tooltipOptions]="tooltipOptions"
+          class="pi pi-bars cursor-move"></span>
 
-      <div
-        class="w-full text-ellipsis overflow-hidden whitespace-nowrap"
-        [pTooltip]="listItem.label"
-        tooltipPosition="bottom"
-        [tooltipOptions]="tooltipOptions">
-        {{ listItem.label }}
+        <div
+          class="w-full text-ellipsis overflow-hidden whitespace-nowrap"
+          [pTooltip]="listItem.label"
+          tooltipPosition="bottom"
+          [tooltipOptions]="tooltipOptions">
+          {{ listItem.label }}
+        </div>
       </div>
-
       @if (!listItem.disableMore) {
         <div class="flex flex-row gap-2">
           <p-button
