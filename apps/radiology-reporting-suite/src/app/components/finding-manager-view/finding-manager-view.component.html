@@ -1,12 +1,16 @@
 <div class="flex flex-col gap-2 w-full">
+  @let isUpdateMode = mode() === ChangeModes.Update;
+
   <div class="flex gap-2 self-end">
-    <p-button
-      icon="pi pi-code"
-      [outlined]="true"
-      size="large"
-      pTooltip="Variables"
-      tooltipPosition="bottom"
-      (onClick)="onCancel()" />
+    @if (isUpdateMode) {
+      <p-button
+        icon="pi pi-code"
+        [outlined]="true"
+        size="large"
+        pTooltip="Variables"
+        tooltipPosition="bottom"
+        (onClick)="onCancel()" />
+    }
 
     <p-button
       label="Cancel"
@@ -18,13 +22,9 @@
 
     <p-button
       icon="pi pi-save"
-      [label]="
-        mode() === ChangeModes.Update ? 'Update Finding' : ' Create Finding'
-      "
+      [label]="isUpdateMode ? 'Update Finding' : ' Create Finding'"
       [disabled]="formGroup.invalid"
-      [pTooltip]="
-        mode() === ChangeModes.Update ? 'Update Finding' : ' Create Finding'
-      "
+      [pTooltip]="isUpdateMode ? 'Update Finding' : ' Create Finding'"
       tooltipPosition="bottom"
       (onClick)="onSave()" />
   </div>

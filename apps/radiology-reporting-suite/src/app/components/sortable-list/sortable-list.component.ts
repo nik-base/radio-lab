@@ -70,7 +70,18 @@ export class SortableListComponent<T> {
     this.dynamicMenuItems.set(menuItems);
   }
 
-  onSelect(item: SortableListItem<T>): void {
+  onSelect(item: SortableListItem<T>, event: MouseEvent): void {
+    const element: HTMLElement | undefined = event?.target as HTMLElement;
+
+    const classList: DOMTokenList = element?.classList ?? [];
+
+    if (
+      classList.contains('list-item-menu-button') ||
+      classList.contains('pi-ellipsis-v')
+    ) {
+      return;
+    }
+
     this.changed.emit(item);
   }
 
