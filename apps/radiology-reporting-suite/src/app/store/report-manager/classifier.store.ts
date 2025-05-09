@@ -63,7 +63,7 @@ export const ClassifierStore = signalStore(
       reset(): void {
         store.resetState();
 
-        findingStore.resetState();
+        findingStore.reset();
       },
     })
   ),

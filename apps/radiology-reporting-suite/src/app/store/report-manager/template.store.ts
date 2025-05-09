@@ -132,7 +132,7 @@ export const TemplateStore = signalStore(
       reset(): void {
         store.resetState();
 
-        scopeStore.resetState();
+        scopeStore.reset();
       },
     })
   ),

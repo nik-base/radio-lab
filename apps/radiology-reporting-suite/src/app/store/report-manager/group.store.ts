@@ -123,7 +123,7 @@ export const GroupStore = signalStore(
       reset(): void {
         store.resetState();
 
-        classifierStore.resetState();
+        classifierStore.reset();
       },
     })
   ),
