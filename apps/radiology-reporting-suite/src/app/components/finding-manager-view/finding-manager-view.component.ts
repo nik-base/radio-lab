@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import {
   Component,
   effect,
+  inject,
   input,
   InputSignal,
   output,
@@ -14,8 +15,10 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { isNil } from 'lodash-es';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
@@ -27,7 +30,10 @@ import { CHANGE_MODE } from '@app/constants';
 import { EditorComponent } from '@app/editor/editor.component';
 import { EditorValidators } from '@app/editor/validators/editor-validator';
 import { EditorContent, Finding, FindingBase } from '@app/models/domain';
+import { VariablesManagerDialogData } from '@app/models/ui';
 import { ChangeModes, FormGroupModel } from '@app/types';
+
+import { VariablesManagerDialogComponent } from '../variables-manager-dialog/variables-manager-dialog.component';
 
 @Component({
   selector: 'radio-finding-manager-view',
@@ -45,9 +51,12 @@ import { ChangeModes, FormGroupModel } from '@app/types';
     MessageModule,
     EditorComponent,
   ],
+  providers: [DialogService],
   templateUrl: './finding-manager-view.component.html',
 })
 export class FindingManagerViewComponent {
+  private readonly dialogService: DialogService = inject(DialogService);
+
   readonly finding: InputSignal<Finding | null> = input<Finding | null>(null);
 
   readonly mode: InputSignal<ChangeModes> = input<ChangeModes>(
@@ -64,6 +73,18 @@ export class FindingManagerViewComponent {
 
   constructor() {
     this.createSetFormValuesEffect();
+  }
+
+  onManageVariables(): void {
+    const finding: Finding | null = this.finding();
+
+    if (isNil(finding)) {
+      return;
+    }
+
+    this.openManageVariablesDialog('Manage Variables', {
+      finding,
+    });
   }
 
   onSave(): void {
@@ -129,5 +150,21 @@ export class FindingManagerViewComponent {
     });
 
     return formGroup as FormGroupModel<FindingBase>;
+  }
+
+  private openManageVariablesDialog(
+    header: string,
+    data: VariablesManagerDialogData
+  ): DynamicDialogRef {
+    return this.dialogService.open(VariablesManagerDialogComponent, {
+      header,
+      modal: true,
+      closable: true,
+      width: '80%',
+      contentStyle: { overflow: 'auto' },
+      baseZIndex: 3000,
+      position: 'top',
+      data,
+    });
   }
 }

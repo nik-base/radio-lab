@@ -15,6 +15,7 @@ import { Menu, MenuModule } from 'primeng/menu';
 import { OrderListModule } from 'primeng/orderlist';
 import { TooltipModule } from 'primeng/tooltip';
 
+import { APP_TOOLTIP_OPTIONS } from '@app/constants';
 import { SortableListItem } from '@app/models/ui/sortable-list-item.interface';
 import { SortableListMenuItem } from '@app/models/ui/sortable-list-menu-item.interface';
 
@@ -56,10 +57,7 @@ export class SortableListComponent<T> {
 
   currentMenuEvent: Event | null = null;
 
-  readonly tooltipOptions: TooltipOptions = {
-    showDelay: 300,
-    hideDelay: 50,
-  };
+  protected readonly tooltipOptions: TooltipOptions = APP_TOOLTIP_OPTIONS;
 
   showMoreMenu(item: SortableListItem<T>): void {
     const menuItems: MenuItem[] = this.menuItems().map(

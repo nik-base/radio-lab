@@ -209,6 +209,29 @@ export class ReportDBService extends ReportBaseService {
       );
   }
 
+  override fetchAllFindingVariablesExcept$(
+    findingId: string
+  ): Observable<VariableDto[]> {
+    return this.dbService
+      .getAllByIndex<VariableDBModel>(
+        'variables',
+        'source',
+        IDBKeyRange.only(VARIABLE_SOURCE.Finding)
+      )
+      .pipe(
+        map((variables: VariableDBModel[]) =>
+          variables
+            .filter(
+              (item: VariableDBModel): boolean => item.entityId !== findingId
+            )
+            .map(
+              (item: VariableDBModel): VariableDto =>
+                this.mapVariableDBModelToDto(item)
+            )
+        )
+      );
+  }
+
   override fetchVariableValues$(
     variableId: string
   ): Observable<VariableValueDto[]> {

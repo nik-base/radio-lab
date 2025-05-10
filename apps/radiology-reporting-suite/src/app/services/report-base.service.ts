@@ -48,6 +48,10 @@ export abstract class ReportBaseService {
 
   abstract fetchAllFindingVariables$(): Observable<VariableDto[]>;
 
+  abstract fetchAllFindingVariablesExcept$(
+    findingId: string
+  ): Observable<VariableDto[]>;
+
   abstract fetchFindingVariables$(findingId: string): Observable<VariableDto[]>;
 
   abstract fetchVariableValues$(

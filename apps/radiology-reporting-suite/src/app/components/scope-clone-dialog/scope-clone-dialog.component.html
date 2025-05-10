@@ -7,7 +7,7 @@
     <radio-template-selector
       id="template"
       formControlName="template"
-      [templates]="(templates$ | ngrxPush) ?? []"></radio-template-selector>
+      [templates]="templateStore$.orderedList()"></radio-template-selector>
   </div>
 
   <ng-container class="flex justify-end" dialog-actions>

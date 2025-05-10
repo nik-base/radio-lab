@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { patchState, signalStore, withHooks, withMethods } from '@ngrx/signals';
 import { addEntity } from '@ngrx/signals/entities';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { map, mergeMap, pipe, tap } from 'rxjs';
+import { exhaustMap, map, pipe, tap } from 'rxjs';
 
 import { GenericEntityMapperService } from '@app/mapper/generic-entity-mapper.service';
 import {
@@ -17,6 +17,7 @@ import { FindingManagerService } from '@app/services/report-manager/finding-mana
 import { withCRUD } from '../utils/signal-store-features/with-crud.store-feature';
 
 import { AppEntityState } from './entity-state.interface';
+import { VariableStore } from './variable-store';
 
 const initialState: AppEntityState<Finding> = {
   current: null,
@@ -50,13 +51,14 @@ export const FindingStore = signalStore(
       ),
       genericEntityMapper: GenericEntityMapperService = inject(
         GenericEntityMapperService
-      )
+      ),
+      variableStore: InstanceType<typeof VariableStore> = inject(VariableStore)
     ) => ({
       clone: rxMethod<Finding>(
         pipe(
           store.setLoading('clone'),
 
-          mergeMap((input: Finding) =>
+          exhaustMap((input: Finding) =>
             findingManagerService.clone$(input.id).pipe(
               map(
                 (dto: FindingDto): Finding =>
@@ -79,10 +81,14 @@ export const FindingStore = signalStore(
 
       change(entity: Finding | null): void {
         store.select(entity);
+
+        variableStore.reset();
       },
 
       reset(): void {
         store.resetState();
+
+        variableStore.reset();
       },
     })
   ),

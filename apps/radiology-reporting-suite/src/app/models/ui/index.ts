@@ -15,4 +15,8 @@ export { FindingGrouped } from './finding-grouped.interface';
 export { SortableListItem } from './sortable-list-item.interface';
 export { SortableListMenuItem } from './sortable-list-menu-item.interface';
 
+export { TableCRUDRow } from './table-crud-row.interface';
+
 export { CommonDialogData } from './common-dialog-data.interface';
+
+export { VariablesManagerDialogData } from './variables-manager-dialog-data.interface';

@@ -14,6 +14,8 @@ import { FindingStore } from '@app/store/report-manager/finding.store';
 import { GroupStore } from '@app/store/report-manager/group.store';
 import { ScopeStore } from '@app/store/report-manager/scope.store';
 import { TemplateStore } from '@app/store/report-manager/template.store';
+import { VariableStore } from '@app/store/report-manager/variable-store';
+import { VariableValueStore } from '@app/store/report-manager/variable-value.store';
 
 import { ClassifierManagerComponent } from '../components/classifier-manager/classifier-manager.component';
 import { GroupManagerComponent } from '../components/group-manager/group-manager.component';
@@ -38,6 +40,8 @@ import { GroupManagerComponent } from '../components/group-manager/group-manager
     GroupStore,
     ClassifierStore,
     FindingStore,
+    VariableStore,
+    VariableValueStore,
   ],
 })
 export class ReportManagerComponent implements OnInit {

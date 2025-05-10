@@ -1,0 +1,115 @@
+<p-table
+  #tableElement
+  [value]="rows()"
+  dataKey="id"
+  editMode="row"
+  selectionMode="single"
+  (onRowSelect)="onRowSelect($event)"
+  (onRowUnSelect)="onRowUnSelect()"
+  (onRowReorder)="onRowReorder()"
+  [metaKeySelection]="true"
+  [tableStyle]="{ 'min-width': '50rem' }">
+  <ng-template #caption>
+    <div class="flex justify-content-end">
+      <p-button
+        icon="pi pi-plus"
+        pTooltip="Create {{ entityName() }}"
+        tooltipPosition="bottom"
+        [tooltipOptions]="tooltipOptions"
+        [outlined]="true"
+        (onClick)="addNew($event)" />
+    </div>
+  </ng-template>
+
+  <ng-template #header>
+    <tr>
+      <th style="width: 3rem"></th>
+
+      <th style="width: 20%">{{ entityNamePlural() }}</th>
+
+      <th style="width: 20%"></th>
+    </tr>
+  </ng-template>
+
+  <ng-template #body let-row let-editing="editing" let-index="rowIndex">
+    <tr
+      [pSelectableRow]="row"
+      [pEditableRow]="row"
+      [pReorderableRow]="index"
+      data-row="items">
+      <td>
+        <span class="pi pi-bars" pReorderableRowHandle></span>
+      </td>
+
+      <td>
+        <p-cellEditor data-cell="item">
+          <ng-template #input>
+            <input
+              pInputText
+              type="text"
+              [(ngModel)]="row.label"
+              [placeholder]="'Enter ' + entityName() + ' name'"
+              required />
+          </ng-template>
+
+          <ng-template #output>
+            {{ row.label }}
+          </ng-template>
+        </p-cellEditor>
+      </td>
+
+      <td>
+        <div class="flex items-center justify-center gap-2">
+          @if (editing) {
+            <p-button
+              pSaveEditableRow
+              icon="pi pi-check"
+              pTooltip="Save"
+              [tooltipOptions]="tooltipOptions"
+              (click)="onRowEditSave(row)"
+              text
+              rounded
+              severity="secondary" />
+
+            <p-button
+              pCancelEditableRow
+              icon="pi pi-times"
+              pTooltip="Cancel"
+              [tooltipOptions]="tooltipOptions"
+              (click)="onRowEditCancel(row, index)"
+              text
+              rounded
+              severity="secondary" />
+          } @else {
+            <p-button
+              pInitEditableRow
+              icon="pi pi-pencil"
+              pTooltip="Edit"
+              [tooltipOptions]="tooltipOptions"
+              (click)="onRowEditInit(row)"
+              text
+              rounded
+              severity="secondary" />
+
+            <p-button
+              icon="pi pi-trash"
+              pTooltip="Delete {{ entityName() }}"
+              tooltipPosition="bottom"
+              class="p-button-rounded p-button-text p-button-danger"
+              (click)="deleteRow($event, row)" />
+          }
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template #emptymessage>
+    <tr>
+      <td>
+        {{ emptyMessage() }}
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-confirmPopup />

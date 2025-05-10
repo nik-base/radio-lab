@@ -1,0 +1,18 @@
+<radio-dialog-layout>
+  <div class="flex flex-col gap-2" dialog-content>
+    <radio-table-crud
+      [rows]="variables()"
+      (rowCreate)="onCreate($event)"
+      (rowUpdate)="onUpdate($event)"
+      (rowDelete)="onDelete($event)"
+      (rowReorder)="onReorder($event)"></radio-table-crud>
+  </div>
+
+  <ng-container class="flex justify-end" dialog-actions>
+    <p-button
+      label="Cancel"
+      [text]="true"
+      severity="secondary"
+      (onClick)="close()" />
+  </ng-container>
+</radio-dialog-layout>
