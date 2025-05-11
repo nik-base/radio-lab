@@ -1,0 +1,11 @@
+<radio-table-crud
+  [rows]="variables()"
+  entityName="Variable"
+  entityNamePlural="Variables"
+  emptyMessage="No variables found"
+  (rowCreate)="onCreate($event)"
+  (rowUpdate)="onUpdate($event)"
+  (rowDelete)="onDelete($event)"
+  (rowReorder)="onReorder($event)"
+  (rowSelect)="onChange($event)">
+</radio-table-crud>

@@ -1,11 +1,9 @@
 <radio-dialog-layout>
   <div class="flex flex-col gap-2" dialog-content>
-    <radio-table-crud
-      [rows]="variables()"
-      (rowCreate)="onCreate($event)"
-      (rowUpdate)="onUpdate($event)"
-      (rowDelete)="onDelete($event)"
-      (rowReorder)="onReorder($event)"></radio-table-crud>
+    @if (dialogData.finding) {
+      <radio-variables-manager [finding]="dialogData.finding">
+      </radio-variables-manager>
+    }
   </div>
 
   <ng-container class="flex justify-end" dialog-actions>

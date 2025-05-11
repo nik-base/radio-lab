@@ -62,7 +62,7 @@ export const VariableStore = signalStore(
         )
     ),
     exceptVariables: computed(
-      () => () => (entityId: string) =>
+      () => (entityId: string) =>
         computed(() => {
           const exceptVariables: Variable[] =
             entities()?.filter(

@@ -1,0 +1,15 @@
+<div class="flex flex-column gap-8">
+  <radio-variable-manager class="w-full" [finding]="finding()">
+  </radio-variable-manager>
+
+  @let variable = variableStore$.current();
+
+  @if (variable) {
+    <radio-variable-value-manager class="w-full" [variable]="variable">
+    </radio-variable-value-manager>
+  }
+
+  <radio-variables-list
+    class="w-full"
+    [finding]="finding()"></radio-variables-list>
+</div>

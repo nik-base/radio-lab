@@ -26,4 +26,5 @@ export const VARIABLE_TYPE = {
 export const APP_TOOLTIP_OPTIONS = {
   showDelay: 300,
   hideDelay: 50,
+  tooltipPosition: 'bottom',
 } as TooltipOptions;
