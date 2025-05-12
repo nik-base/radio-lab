@@ -1,12 +1,14 @@
 import { CommonModule } from '@angular/common';
 import {
   Component,
+  computed,
   effect,
   inject,
   input,
   InputSignal,
   output,
   OutputEmitterRef,
+  Signal,
   untracked,
 } from '@angular/core';
 import {
@@ -29,8 +31,14 @@ import { TooltipModule } from 'primeng/tooltip';
 import { CHANGE_MODE } from '@app/constants';
 import { EditorComponent } from '@app/editor/editor.component';
 import { EditorValidators } from '@app/editor/validators/editor-validator';
-import { EditorContent, Finding, FindingBase } from '@app/models/domain';
+import {
+  EditorContent,
+  Finding,
+  FindingBase,
+  Variable,
+} from '@app/models/domain';
 import { VariablesManagerDialogData } from '@app/models/ui';
+import { VariableStore } from '@app/store/report-manager/variable-store';
 import { ChangeModes, FormGroupModel } from '@app/types';
 
 import { VariablesManagerDialogComponent } from '../variables-manager-dialog/variables-manager-dialog.component';
@@ -57,6 +65,9 @@ import { VariablesManagerDialogComponent } from '../variables-manager-dialog/var
 export class FindingManagerViewComponent {
   private readonly dialogService: DialogService = inject(DialogService);
 
+  private readonly variableStore$: InstanceType<typeof VariableStore> =
+    inject(VariableStore);
+
   readonly finding: InputSignal<Finding | null> = input<Finding | null>(null);
 
   readonly mode: InputSignal<ChangeModes> = input<ChangeModes>(
@@ -67,12 +78,36 @@ export class FindingManagerViewComponent {
 
   readonly canceled: OutputEmitterRef<void> = output<void>();
 
+  protected readonly variables: Signal<Variable[]> = computed(() => {
+    const finding: Finding | null = this.finding();
+
+    if (isNil(finding)) {
+      return [];
+    }
+
+    return this.variableStore$.variables()(finding.id)();
+  });
+
   readonly formGroup: FormGroupModel<FindingBase> = this.createFormGroup();
 
   readonly ChangeModes: typeof CHANGE_MODE = CHANGE_MODE;
 
   constructor() {
     this.createSetFormValuesEffect();
+
+    effect((): void => {
+      const finding: Finding | null = this.finding();
+
+      if (isNil(finding)) {
+        return;
+      }
+
+      untracked(() => {
+        this.variableStore$.fetchAll({
+          id: finding.id,
+        });
+      });
+    });
   }
 
   onManageVariables(): void {

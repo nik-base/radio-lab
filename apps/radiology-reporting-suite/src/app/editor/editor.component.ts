@@ -4,19 +4,21 @@ import {
   effect,
   HostBinding,
   inject,
+  Injector,
   input,
   InputSignal,
   OnInit,
 } from '@angular/core';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Editor, EditorEvents } from '@tiptap/core';
+import { Editor, EditorEvents, Extensions } from '@tiptap/core';
 import { FontFamily } from '@tiptap/extension-font-family';
+import Mention from '@tiptap/extension-mention';
 import TextStyle from '@tiptap/extension-text-style';
 import { Underline } from '@tiptap/extension-underline';
 import { EditorState } from '@tiptap/pm/state';
 import { StarterKit } from '@tiptap/starter-kit';
 import { TiptapEditorDirective } from 'ngx-tiptap';
-import { Subscription, tap } from 'rxjs';
+import { Observable, of, Subscription, tap } from 'rxjs';
 
 import { HostControlDirective } from '@app/directives/host-control.directive';
 import { EditorContent } from '@app/models/domain';
@@ -25,6 +27,7 @@ import { isNilOrEmpty } from '@app/utils/functions/common.functions';
 import { EditorBold } from './extensions/editor-bold.extension';
 import { EditorBulletedList } from './extensions/editor-bulleted-list.extension';
 import { EditorFontSize } from './extensions/editor-font-size.extension';
+import { generateEditorMentionConfig } from './extensions/editor-mention.extension';
 import { EditorNodeAlign } from './extensions/editor-node-align.extension';
 import { EditorOrderedList } from './extensions/editor-ordered-list.extension';
 import { EditorTextAlign } from './extensions/editor-text-align.extensin';
@@ -39,31 +42,52 @@ import { EditorToolbarComponent } from './toolbar/editor-toolbar.component';
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.scss'],
 })
-export class EditorComponent implements OnInit {
+export class EditorComponent<
+  T extends { readonly id: string; readonly name: string },
+> implements OnInit
+{
+  private readonly injector: Injector = inject(Injector);
+
   readonly maxHeight: InputSignal<string | undefined> = input<string>();
+
+  readonly suggestions: InputSignal<T[]> = input<T[]>([]);
 
   @HostBinding('style.--editor-max-height')
   private _maxHeight: string | undefined;
 
+  private readonly editorExtensions: Extensions = [
+    StarterKit.configure({
+      bold: false,
+      bulletList: false,
+      orderedList: false,
+    }),
+    EditorBold,
+    Underline,
+    EditorTextAlign,
+    EditorNodeAlign,
+    EditorBulletedList,
+    EditorOrderedList,
+    TextStyle,
+    FontFamily.configure({
+      types: ['textStyle'],
+    }),
+    EditorFontSize,
+    Mention.configure({
+      ...generateEditorMentionConfig<T>(
+        'radio-mention',
+        (query: string): Observable<T[]> =>
+          of(
+            this.suggestions().filter((item: T): boolean =>
+              item.name.toLowerCase().includes(query.toLowerCase())
+            )
+          ),
+        this.injector
+      ),
+    }),
+  ];
+
   readonly editor: Editor = new Editor({
-    extensions: [
-      StarterKit.configure({
-        bold: false,
-        bulletList: false,
-        orderedList: false,
-      }),
-      EditorBold,
-      Underline,
-      EditorTextAlign,
-      EditorNodeAlign,
-      EditorBulletedList,
-      EditorOrderedList,
-      TextStyle,
-      FontFamily.configure({
-        types: ['textStyle'],
-      }),
-      EditorFontSize,
-    ],
+    extensions: this.editorExtensions,
     content: null,
     onCreate: (ctx: EditorEvents['create']) => {
       const html: string | null | undefined =
