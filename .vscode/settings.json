@@ -16,5 +16,6 @@
     "files.associations": {
         "*.css": "tailwindcss",
         "*.scss": "tailwindcss"
-    }
+    },
+    "nxConsole.generateAiAgentRules": true
 }
