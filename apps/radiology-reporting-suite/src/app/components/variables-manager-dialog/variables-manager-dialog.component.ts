@@ -1,10 +1,10 @@
 import { Component, inject } from '@angular/core';
+import { isNil } from 'lodash-es';
 import { ButtonModule } from 'primeng/button';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 
 import { VariablesManagerDialogData } from '@app/models/ui';
 import { VariableStore } from '@app/store/report-manager/variable-store';
-import { isNotNil } from '@app/utils/functions/common.functions';
 
 import { DialogLayoutComponent } from '../dialog-layout/dialog-layout.component';
 import { VariablesManagerComponent } from '../variables-manager/variables-manager.component';
@@ -30,14 +30,20 @@ export class VariablesManagerDialogComponent {
   protected dialogData!: VariablesManagerDialogData;
 
   constructor() {
-    if (isNotNil(this.dynamicDialogConfig.data)) {
-      this.dialogData = this.dynamicDialogConfig.data;
-    }
+    this.setDialogData();
   }
 
   close(): void {
     this.variableStore$.reset();
 
     this.dynamicDialogRef.close();
+  }
+
+  private setDialogData(): void {
+    if (isNil(this.dynamicDialogConfig.data)) {
+      return;
+    }
+
+    this.dialogData = this.dynamicDialogConfig.data;
   }
 }

@@ -12,7 +12,7 @@ import {
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Editor, EditorEvents, Extensions } from '@tiptap/core';
 import { FontFamily } from '@tiptap/extension-font-family';
-import Mention from '@tiptap/extension-mention';
+import { MentionOptions } from '@tiptap/extension-mention';
 import TextStyle from '@tiptap/extension-text-style';
 import { Underline } from '@tiptap/extension-underline';
 import { EditorState } from '@tiptap/pm/state';
@@ -21,17 +21,19 @@ import { TiptapEditorDirective } from 'ngx-tiptap';
 import { Observable, of, Subscription, tap } from 'rxjs';
 
 import { HostControlDirective } from '@app/directives/host-control.directive';
-import { EditorContent } from '@app/models/domain';
+import { EditorContent, Variable } from '@app/models/domain';
 import { isNilOrEmpty } from '@app/utils/functions/common.functions';
 
 import { EditorBold } from './extensions/editor-bold.extension';
 import { EditorBulletedList } from './extensions/editor-bulleted-list.extension';
 import { EditorFontSize } from './extensions/editor-font-size.extension';
-import { generateEditorMentionConfig } from './extensions/editor-mention.extension';
+import { EditorMentionVariable } from './extensions/editor-mention-variable.extension';
 import { EditorNodeAlign } from './extensions/editor-node-align.extension';
 import { EditorOrderedList } from './extensions/editor-ordered-list.extension';
 import { EditorTextAlign } from './extensions/editor-text-align.extensin';
+import { EditorMentionVariableNodeAttributes } from './models';
 import { EditorToolbarComponent } from './toolbar/editor-toolbar.component';
+import { generateEditorMentionVariableConfig } from './utils/editor-extension.functions';
 
 @UntilDestroy()
 @Component({
@@ -42,18 +44,30 @@ import { EditorToolbarComponent } from './toolbar/editor-toolbar.component';
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.scss'],
 })
-export class EditorComponent<
-  T extends { readonly id: string; readonly name: string },
-> implements OnInit
-{
+export class EditorComponent implements OnInit {
   private readonly injector: Injector = inject(Injector);
 
   readonly maxHeight: InputSignal<string | undefined> = input<string>();
 
-  readonly suggestions: InputSignal<T[]> = input<T[]>([]);
+  readonly suggestions: InputSignal<Variable[]> = input<Variable[]>([]);
+
+  readonly metadataAttributesMap: InputSignal<Map<string, string>> = input<
+    Map<string, string>
+  >(new Map<string, string>());
 
   @HostBinding('style.--editor-max-height')
   private _maxHeight: string | undefined;
+
+  private readonly mentionVariableConfig: Partial<
+    MentionOptions<Variable, EditorMentionVariableNodeAttributes>
+  > = {
+    ...generateEditorMentionVariableConfig(
+      'radio-mention',
+      (query: string): Observable<Variable[]> =>
+        of(this.filterSuggestions(query)),
+      this.injector
+    ),
+  };
 
   private readonly editorExtensions: Extensions = [
     StarterKit.configure({
@@ -72,48 +86,20 @@ export class EditorComponent<
       types: ['textStyle'],
     }),
     EditorFontSize,
-    Mention.configure({
-      ...generateEditorMentionConfig<T>(
-        'radio-mention',
-        (query: string): Observable<T[]> =>
-          of(
-            this.suggestions().filter((item: T): boolean =>
-              item.name.toLowerCase().includes(query.toLowerCase())
-            )
-          ),
-        this.injector
-      ),
-    }),
+    EditorMentionVariable.configure(this.mentionVariableConfig),
   ];
 
   readonly editor: Editor = new Editor({
     extensions: this.editorExtensions,
     content: null,
     onCreate: (ctx: EditorEvents['create']) => {
-      const html: string | null | undefined =
-        this.hostControlDirective?.control?.getRawValue()?.html;
-
-      if (isNilOrEmpty(html)) {
-        return;
-      }
-
-      this.setEditorContent(ctx.editor, html);
-
-      const newEditorState: EditorState = EditorState.create({
-        doc: ctx.editor.state.doc,
-        plugins: ctx.editor.state.plugins,
-        schema: ctx.editor.state.schema,
-      });
-
-      ctx.editor.view.updateState(newEditorState);
+      this.onEditorCreate(ctx);
     },
     onUpdate: (ctx: EditorEvents['update']): void => {
-      this.setHostControl(ctx.editor);
-
-      this.markEditorDirty();
+      this.onEditorUpdate(ctx);
     },
     onFocus: (): void => {
-      this.markEditorTouched();
+      this.onEditorFocus();
     },
     editorProps: {
       attributes: {
@@ -139,6 +125,41 @@ export class EditorComponent<
 
   ngOnInit(): void {
     this.handleHostControlChanges();
+  }
+
+  private onEditorFocus(): void {
+    this.markEditorTouched();
+  }
+
+  private onEditorUpdate(ctx: EditorEvents['update']): void {
+    this.setHostControl(ctx.editor);
+
+    this.markEditorDirty();
+  }
+
+  private onEditorCreate(ctx: EditorEvents['create']): void {
+    const html: string | null | undefined =
+      this.hostControlDirective?.control?.getRawValue()?.html;
+
+    if (isNilOrEmpty(html)) {
+      return;
+    }
+
+    this.setEditorContent(ctx.editor, html);
+
+    const newEditorState: EditorState = EditorState.create({
+      doc: ctx.editor.state.doc,
+      plugins: ctx.editor.state.plugins,
+      schema: ctx.editor.state.schema,
+    });
+
+    ctx.editor.view.updateState(newEditorState);
+  }
+
+  private filterSuggestions(query: string): Variable[] {
+    return this.suggestions().filter((item: Variable): boolean =>
+      item.name.toLowerCase().includes(query.toLowerCase())
+    );
   }
 
   private handleHostControlChanges(): void {

@@ -4,4 +4,4 @@ export { EditorToolbarItemContext } from './editor-toolbar-item-context.interfac
 export { EditorFontFamilyOptions } from './editor-font-family-options.interface';
 export { EditorFontSizeOptions } from './editor-font-size-options.interface';
 
-export { EditorMentionNodeAttributes } from './editor-mention-node-attributes.interface';
+export { EditorMentionVariableNodeAttributes } from './editor-mention-variable-node-attributes.interface';

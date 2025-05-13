@@ -19,7 +19,7 @@ export const VARIABLE_SOURCE = {
 
 // eslint-disable-next-line @typescript-eslint/typedef
 export const VARIABLE_TYPE = {
-  MultiSelect: 'multiSelect',
+  MultiSelect: 'multiselect',
 } as const;
 
 // eslint-disable-next-line @typescript-eslint/typedef

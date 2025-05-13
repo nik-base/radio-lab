@@ -5,6 +5,11 @@
     .editor-input-container {
       max-height: var(--editor-max-height, 'unset');
     }
+
+    .radio-mention {
+      cursor: pointer;
+      color: var(--p-primary-color);
+    }
   }
 }
 

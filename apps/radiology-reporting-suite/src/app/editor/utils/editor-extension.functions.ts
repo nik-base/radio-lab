@@ -1,31 +1,21 @@
 import { Injector } from '@angular/core';
-import { Editor, mergeAttributes, Node } from '@tiptap/core';
-import { Mention, MentionOptions } from '@tiptap/extension-mention';
+import { Editor, mergeAttributes } from '@tiptap/core';
+import { MentionOptions } from '@tiptap/extension-mention';
 import { SuggestionKeyDownProps, SuggestionProps } from '@tiptap/suggestion';
 import { AngularRenderer } from 'ngx-tiptap';
-import { lastValueFrom, Observable } from 'rxjs';
+import { Observable, lastValueFrom } from 'rxjs';
 import tippy, { GetReferenceClientRect, Instance, Props } from 'tippy.js';
 
-import { EditorMentionSuggestionsComponent } from '../components/editor-mention-suggestions/editor-mention-suggestions.component';
-import { EditorMentionNodeAttributes } from '../models';
+import { Variable } from '@app/models/domain';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export interface EditorSuggestionItem<T = any> {
-  readonly id?: string;
-  readonly name?: string;
-  readonly data?: T;
-}
+import { EditorMentionVariableSuggestionsComponent } from '../components/editor-mention-variable-suggestions/editor-mention-variable-suggestions.component';
+import { EditorMentionVariableNodeAttributes } from '../models';
 
-export const EditorMention: Node<MentionOptions, unknown> =
-  Mention.extend<MentionOptions>({});
-
-export const generateEditorMentionConfig = <
-  T extends { readonly id: string; readonly name: string },
->(
+export const generateEditorMentionVariableConfig = (
   className: string,
-  suggestions$: (query: string, editor: Editor) => Observable<T[]>,
+  suggestions$: (query: string, editor: Editor) => Observable<Variable[]>,
   injector: Injector
-): Partial<MentionOptions<T, EditorMentionNodeAttributes<T>>> => {
+): Partial<MentionOptions<Variable, EditorMentionVariableNodeAttributes>> => {
   return {
     HTMLAttributes: {
       class: className,
@@ -51,25 +41,28 @@ export const generateEditorMentionConfig = <
       }: {
         query: string;
         editor: Editor;
-      }): T[] | Promise<T[]> => {
-        const obs$: Observable<T[]> = suggestions$(query, editor);
+      }): Variable[] | Promise<Variable[]> => {
+        const obs$: Observable<Variable[]> = suggestions$(query, editor);
 
         return lastValueFrom(obs$);
       },
       render: () => {
         let renderer: AngularRenderer<
-          EditorMentionSuggestionsComponent<T>,
-          EditorMentionSuggestionsComponent<T>
+          EditorMentionVariableSuggestionsComponent,
+          EditorMentionVariableSuggestionsComponent
         >;
 
         let popup: Instance<Props>[];
 
         return {
           onStart: (
-            props: SuggestionProps<T, EditorMentionNodeAttributes<T>>
+            props: SuggestionProps<
+              Variable,
+              EditorMentionVariableNodeAttributes
+            >
           ) => {
             renderer = new AngularRenderer(
-              EditorMentionSuggestionsComponent<T>,
+              EditorMentionVariableSuggestionsComponent,
               injector,
               {
                 props,
@@ -90,8 +83,17 @@ export const generateEditorMentionConfig = <
               zIndex: 99999,
             });
           },
-          onUpdate(props: SuggestionProps<T, EditorMentionNodeAttributes<T>>) {
+          onUpdate(
+            props: SuggestionProps<
+              Variable,
+              EditorMentionVariableNodeAttributes
+            >
+          ) {
             renderer.updateProps({ props });
+
+            if (!popup?.length) {
+              return;
+            }
 
             popup[0].setProps({
               getReferenceClientRect:
@@ -102,6 +104,10 @@ export const generateEditorMentionConfig = <
             return renderer.instance.onKeyDown(props);
           },
           onExit() {
+            if (!popup?.length) {
+              return;
+            }
+
             popup[0].destroy();
 
             renderer.destroy();

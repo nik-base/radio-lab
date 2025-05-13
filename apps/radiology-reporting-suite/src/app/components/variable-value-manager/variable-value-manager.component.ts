@@ -48,15 +48,7 @@ export class VariableValueManagerComponent {
   );
 
   constructor() {
-    effect((): void => {
-      const variable: Variable = this.variable();
-
-      untracked(() => {
-        this.variableValueStore$.fetchAll({
-          id: variable.id,
-        });
-      });
-    });
+    this.effectVariableValueFetchAll();
   }
 
   onChange(row: TableCRUDRow<VariableValue> | null): void {
@@ -94,5 +86,17 @@ export class VariableValueManagerComponent {
         this.tableCRUDRowMapperService.mapFromTableCRUDRows(rows)
       )
     );
+  }
+
+  private effectVariableValueFetchAll(): void {
+    effect((): void => {
+      const variable: Variable = this.variable();
+
+      untracked(() => {
+        this.variableValueStore$.fetchAll({
+          id: variable.id,
+        });
+      });
+    });
   }
 }

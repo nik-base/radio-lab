@@ -68,6 +68,12 @@ export class FindingManagerViewComponent {
   private readonly variableStore$: InstanceType<typeof VariableStore> =
     inject(VariableStore);
 
+  protected readonly variablesMentionAttributesMap: Map<string, string> =
+    new Map<string, string>([
+      ['source', 'data-varsource'],
+      ['type', 'data-vartype'],
+    ]);
+
   readonly finding: InputSignal<Finding | null> = input<Finding | null>(null);
 
   readonly mode: InputSignal<ChangeModes> = input<ChangeModes>(
@@ -95,19 +101,7 @@ export class FindingManagerViewComponent {
   constructor() {
     this.createSetFormValuesEffect();
 
-    effect((): void => {
-      const finding: Finding | null = this.finding();
-
-      if (isNil(finding)) {
-        return;
-      }
-
-      untracked(() => {
-        this.variableStore$.fetchAll({
-          id: finding.id,
-        });
-      });
-    });
+    this.effectVariableFetchAll();
   }
 
   onManageVariables(): void {
@@ -132,6 +126,22 @@ export class FindingManagerViewComponent {
 
   onCancel(): void {
     this.canceled.emit();
+  }
+
+  private effectVariableFetchAll(): void {
+    effect((): void => {
+      const finding: Finding | null = this.finding();
+
+      if (isNil(finding)) {
+        return;
+      }
+
+      untracked(() => {
+        this.variableStore$.fetchAll({
+          id: finding.id,
+        });
+      });
+    });
   }
 
   private createSetFormValuesEffect(): void {

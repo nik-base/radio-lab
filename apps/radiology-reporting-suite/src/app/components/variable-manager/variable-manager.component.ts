@@ -46,15 +46,7 @@ export class VariableManagerComponent {
   );
 
   constructor() {
-    effect((): void => {
-      const finding: Finding = this.finding();
-
-      untracked(() => {
-        this.variableStore$.fetchAll({
-          id: finding.id,
-        });
-      });
-    });
+    this.effectVariableFetchAll();
   }
 
   onChange(row: TableCRUDRow<Variable> | null): void {
@@ -94,5 +86,17 @@ export class VariableManagerComponent {
         this.tableCRUDRowMapperService.mapFromTableCRUDRows(rows)
       )
     );
+  }
+
+  private effectVariableFetchAll(): void {
+    effect((): void => {
+      const finding: Finding = this.finding();
+
+      untracked(() => {
+        this.variableStore$.fetchAll({
+          id: finding.id,
+        });
+      });
+    });
   }
 }
