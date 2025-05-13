@@ -8,6 +8,8 @@ import {
   input,
   InputSignal,
   OnInit,
+  output,
+  OutputEmitterRef,
 } from '@angular/core';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Editor, EditorEvents, Extensions } from '@tiptap/core';
@@ -15,7 +17,9 @@ import { FontFamily } from '@tiptap/extension-font-family';
 import { MentionOptions } from '@tiptap/extension-mention';
 import TextStyle from '@tiptap/extension-text-style';
 import { Underline } from '@tiptap/extension-underline';
+import { Node } from '@tiptap/pm/model';
 import { EditorState } from '@tiptap/pm/state';
+import { EditorView } from '@tiptap/pm/view';
 import { StarterKit } from '@tiptap/starter-kit';
 import { TiptapEditorDirective } from 'ngx-tiptap';
 import { Observable, of, Subscription, tap } from 'rxjs';
@@ -31,7 +35,10 @@ import { EditorMentionVariable } from './extensions/editor-mention-variable.exte
 import { EditorNodeAlign } from './extensions/editor-node-align.extension';
 import { EditorOrderedList } from './extensions/editor-ordered-list.extension';
 import { EditorTextAlign } from './extensions/editor-text-align.extensin';
-import { EditorMentionVariableNodeAttributes } from './models';
+import {
+  EditorMentionVariableClickEventData,
+  EditorMentionVariableNodeAttributes,
+} from './models';
 import { EditorToolbarComponent } from './toolbar/editor-toolbar.component';
 import { generateEditorMentionVariableConfig } from './utils/editor-extension.functions';
 
@@ -54,6 +61,9 @@ export class EditorComponent implements OnInit {
   readonly metadataAttributesMap: InputSignal<Map<string, string>> = input<
     Map<string, string>
   >(new Map<string, string>());
+
+  readonly variableClick: OutputEmitterRef<EditorMentionVariableClickEventData> =
+    output<EditorMentionVariableClickEventData>();
 
   @HostBinding('style.--editor-max-height')
   private _maxHeight: string | undefined;
@@ -107,6 +117,15 @@ export class EditorComponent implements OnInit {
           'tiptap-container tiptap ProseMirror p-2 bg-white outline-0 border border-surface border-solid rounded-b-lg h-full overflow-auto editor-input-container',
         spellCheck: 'false',
       },
+      handleClickOn: (
+        _: EditorView,
+        __: number,
+        node: Node,
+        nodePos: number,
+        event: MouseEvent
+      ): boolean | void => {
+        return this.onEditorClick(node, nodePos, event);
+      },
     },
   });
 
@@ -125,6 +144,27 @@ export class EditorComponent implements OnInit {
 
   ngOnInit(): void {
     this.handleHostControlChanges();
+  }
+
+  private onEditorClick(
+    node: Node,
+    nodePos: number,
+    event: MouseEvent
+  ): boolean | void {
+    if (node.type.name !== 'mention' || !node.attrs['id']) {
+      return;
+    }
+
+    const variableClickEventData: EditorMentionVariableClickEventData = {
+      id: node.attrs['id'] as string,
+      name: node.attrs['label'] as string,
+      source: node.attrs['varsource'] as string,
+      type: node.attrs['vartype'] as string,
+      event,
+      nodePos,
+    };
+
+    this.variableClick.emit(variableClickEventData);
   }
 
   private onEditorFocus(): void {
