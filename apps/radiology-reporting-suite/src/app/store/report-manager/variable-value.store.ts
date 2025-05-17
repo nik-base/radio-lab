@@ -1,6 +1,6 @@
 import { DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { signalStore, withHooks, withMethods } from '@ngrx/signals';
+import { patchState, signalStore, withHooks, withMethods } from '@ngrx/signals';
 import { tap } from 'rxjs';
 
 import {
@@ -19,11 +19,18 @@ import { withCRUD } from '../utils/signal-store-features/with-crud.store-feature
 
 import { AppEntityState } from './entity-state.interface';
 
-const initialState: AppEntityState<VariableValue> = {
+interface VariableValueStateAddon {
+  readonly inProgressFetchVariableId: string | null;
+}
+
+const initialState: AppEntityState<VariableValue, VariableValueStateAddon> = {
   current: null,
   isLoading: false,
   error: null,
   currentOperation: null,
+  additionalData: {
+    inProgressFetchVariableId: null,
+  },
 };
 
 // eslint-disable-next-line @typescript-eslint/typedef
@@ -38,7 +45,8 @@ export const VariableValueStore = signalStore(
     {
       readonly id: string;
     },
-    VariableValueManagerService
+    VariableValueManagerService,
+    VariableValueStateAddon
   >(
     initialState,
     VariableValueManagerService,
@@ -54,8 +62,12 @@ export const VariableValueStore = signalStore(
         store.select(entity);
       },
 
-      reset(): void {
-        store.resetState();
+      reset(partialReset?: boolean): void {
+        store.resetState(partialReset);
+      },
+
+      resetSelf(): void {
+        store.resetStatusState();
       },
     })
   ),
@@ -67,7 +79,22 @@ export const VariableValueStore = signalStore(
         .deleteSuccess$()
         .pipe(
           tap(() => {
-            store.reset();
+            store.resetSelf();
+          }),
+          takeUntilDestroyed(destroyRef)
+        )
+        .subscribe();
+
+      store
+        .fetchInit$()
+        .pipe(
+          tap(({ id }: { readonly id: string }) => {
+            patchState(store, {
+              additionalData: {
+                ...store.additionalData,
+                inProgressFetchVariableId: id,
+              },
+            });
           }),
           takeUntilDestroyed(destroyRef)
         )

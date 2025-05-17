@@ -67,7 +67,7 @@
           id="findingDescription"
           maxHeight="15rem"
           [suggestions]="variables()"
-          [metadataAttributesMap]="variablesMentionAttributesMap"
+          (variableClick)="onVariableClick($event)"
           formControlName="description">
         </radio-editor>
 
@@ -88,6 +88,8 @@
         <radio-editor
           id="findingImpression"
           maxHeight="10rem"
+          [suggestions]="variables()"
+          (variableClick)="onVariableClick($event)"
           formControlName="impression">
         </radio-editor>
       </div>
@@ -98,9 +100,19 @@
         <radio-editor
           id="findingRecommendation"
           maxHeight="10rem"
+          [suggestions]="variables()"
+          (variableClick)="onVariableClick($event)"
           formControlName="recommendation">
         </radio-editor>
       </div>
     </div>
   </div>
 </div>
+
+<p-popover #variableValueViewerPopover (onHide)="onVariablePopoverHide()">
+  <radio-variable-values-viewer
+    class="block max-w-sm"
+    [isLoading]="isVariableValuesLoading()"
+    [values]="variableValues()">
+  </radio-variable-values-viewer>
+</p-popover>

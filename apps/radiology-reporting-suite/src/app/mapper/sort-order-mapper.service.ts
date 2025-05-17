@@ -20,21 +20,15 @@ export class SortOrderMapperService {
     };
   }
 
-  mapEntityToSortOrderItem<
-    T extends { readonly id: string; readonly sortOrder: number },
-  >(item: T): SortOrderItem {
-    return {
-      id: item.id,
-      sortOrder: item.sortOrder,
-    };
-  }
-
   mapEntitiesToSortOrderUpdate<
     T extends { readonly id: string; readonly sortOrder: number },
   >(item: T[] | ReadonlyArray<T>): SortOrderUpdate {
     return {
       sortOrdersMap: item.map(
-        (item: T): SortOrderItem => this.mapEntityToSortOrderItem(item)
+        (item: T, index: number): SortOrderItem => ({
+          id: item.id,
+          sortOrder: index,
+        })
       ),
     };
   }

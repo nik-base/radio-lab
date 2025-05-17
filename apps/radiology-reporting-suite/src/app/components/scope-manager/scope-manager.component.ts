@@ -47,7 +47,8 @@ import { SortableListManagerLayoutComponent } from '../sortable-list-manager-lay
   templateUrl: './scope-manager.component.html',
 })
 export class ScopeManagerComponent {
-  readonly scopeStore$: InstanceType<typeof ScopeStore> = inject(ScopeStore);
+  protected readonly scopeStore$: InstanceType<typeof ScopeStore> =
+    inject(ScopeStore);
 
   private readonly dialogService: DialogService = inject(DialogService);
 

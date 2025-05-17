@@ -8,8 +8,11 @@ import {
   InputSignal,
   output,
   OutputEmitterRef,
+  signal,
   Signal,
   untracked,
+  viewChild,
+  WritableSignal,
 } from '@angular/core';
 import {
   FormControl,
@@ -24,23 +27,29 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
+import { Popover, PopoverModule } from 'primeng/popover';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { ToggleSwitch } from 'primeng/toggleswitch';
 import { TooltipModule } from 'primeng/tooltip';
 
 import { CHANGE_MODE } from '@app/constants';
 import { EditorComponent } from '@app/editor/editor.component';
+import { EditorMentionVariableClickEventData } from '@app/editor/models';
 import { EditorValidators } from '@app/editor/validators/editor-validator';
 import {
   EditorContent,
   Finding,
   FindingBase,
   Variable,
+  VariableValue,
 } from '@app/models/domain';
 import { VariablesManagerDialogData } from '@app/models/ui';
 import { VariableStore } from '@app/store/report-manager/variable-store';
+import { VariableValueStore } from '@app/store/report-manager/variable-value.store';
 import { ChangeModes, FormGroupModel } from '@app/types';
+import { isNotNil } from '@app/utils/functions/common.functions';
 
+import { VariableValuesViewerComponent } from '../variable-values-viewer/variable-values-viewer.component';
 import { VariablesManagerDialogComponent } from '../variables-manager-dialog/variables-manager-dialog.component';
 
 @Component({
@@ -54,10 +63,12 @@ import { VariablesManagerDialogComponent } from '../variables-manager-dialog/var
     InputTextModule,
     ToggleSwitch,
     ScrollPanelModule,
+    PopoverModule,
     DividerModule,
     FloatLabelModule,
     MessageModule,
     EditorComponent,
+    VariableValuesViewerComponent,
   ],
   providers: [DialogService],
   templateUrl: './finding-manager-view.component.html',
@@ -68,11 +79,9 @@ export class FindingManagerViewComponent {
   private readonly variableStore$: InstanceType<typeof VariableStore> =
     inject(VariableStore);
 
-  protected readonly variablesMentionAttributesMap: Map<string, string> =
-    new Map<string, string>([
-      ['source', 'data-varsource'],
-      ['type', 'data-vartype'],
-    ]);
+  protected readonly variableValueStore$: InstanceType<
+    typeof VariableValueStore
+  > = inject(VariableValueStore);
 
   readonly finding: InputSignal<Finding | null> = input<Finding | null>(null);
 
@@ -84,6 +93,9 @@ export class FindingManagerViewComponent {
 
   readonly canceled: OutputEmitterRef<void> = output<void>();
 
+  readonly variableValueViewerPopover: Signal<Popover> =
+    viewChild.required<Popover>('variableValueViewerPopover');
+
   protected readonly variables: Signal<Variable[]> = computed(() => {
     const finding: Finding | null = this.finding();
 
@@ -94,14 +106,52 @@ export class FindingManagerViewComponent {
     return this.variableStore$.variables()(finding.id)();
   });
 
+  protected readonly variableValues: Signal<VariableValue[]> = computed(() => {
+    if (this.isVariableValuesLoading()) {
+      return [];
+    }
+
+    return this.variableValueStore$.orderedList();
+  });
+
+  protected readonly isVariableValuesLoading: Signal<boolean> = computed(() => {
+    return (
+      this.variableValueStore$.isLoading() ||
+      isNil(this.currentVariableId()) ||
+      this.currentVariableId() !==
+        this.variableValueStore$.additionalData?.()?.inProgressFetchVariableId
+    );
+  });
+
   readonly formGroup: FormGroupModel<FindingBase> = this.createFormGroup();
 
   readonly ChangeModes: typeof CHANGE_MODE = CHANGE_MODE;
+
+  private readonly currentVariableId: WritableSignal<string | null> = signal<
+    string | null
+  >(null);
 
   constructor() {
     this.createSetFormValuesEffect();
 
     this.effectVariableFetchAll();
+
+    this.effectFetchVariableValue();
+  }
+
+  onVariableClick(eventData: EditorMentionVariableClickEventData): void {
+    if (!this.variableValueViewerPopover().overlayVisible) {
+      this.currentVariableId.set(eventData.id);
+    }
+
+    this.variableValueViewerPopover().toggle(
+      eventData.event,
+      eventData.event.target
+    );
+  }
+
+  onVariablePopoverHide(): void {
+    this.currentVariableId.set(null);
   }
 
   onManageVariables(): void {
@@ -126,6 +176,18 @@ export class FindingManagerViewComponent {
 
   onCancel(): void {
     this.canceled.emit();
+  }
+
+  private effectFetchVariableValue(): void {
+    effect(() => {
+      const variableId: string | null = this.currentVariableId();
+
+      if (isNotNil(variableId)) {
+        this.variableValueStore$.fetchAll({ id: variableId });
+      } else {
+        this.variableValueStore$.reset();
+      }
+    });
   }
 
   private effectVariableFetchAll(): void {

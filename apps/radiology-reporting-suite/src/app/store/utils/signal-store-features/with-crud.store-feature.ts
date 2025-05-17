@@ -7,6 +7,7 @@ import {
 } from '@ngrx/signals';
 import {
   addEntity,
+  removeAllEntities,
   removeEntity,
   setAllEntities,
   updateEntities,
@@ -52,15 +53,16 @@ export function withCRUD<
     TUpdateDto,
     TFetchAll
   >,
+  TAddon extends object = object,
 >(
-  initialState: AppEntityState<TEntity>,
+  initialState: AppEntityState<TEntity, TAddon>,
   entityManagerServiceType: Type<TService>,
   entityNameSingular: string,
   entityNamePlural: string
 ) {
   return signalStoreFeature(
     withEntities<TEntity>(),
-    withRequestStatus<TEntity>(initialState),
+    withRequestStatus<TEntity, TAddon>(initialState),
     // eslint-disable-next-line @typescript-eslint/typedef
     withComputed(({ entities }) => ({
       orderedList: computed(() => orderBySortOrder(entities())),
@@ -73,25 +75,34 @@ export function withCRUD<
         genericEntityMapper: GenericEntityMapperService = inject(
           GenericEntityMapperService
         ),
+        fetchInitSubject: Subject<TFetchAll> = new Subject<TFetchAll>(),
+        fetchSuccessSubject: Subject<TEntity[]> = new Subject<TEntity[]>(),
         deleteSuccessSubject: Subject<TEntity> = new Subject<TEntity>()
       ) => ({
         fetchAll: rxMethod<TFetchAll>(
           pipe(
             store.setLoading('fetchAll'),
 
-            switchMap((input: TFetchAll) =>
-              entityManagerService.fetchAll$(input)
-            ),
-            map((dto: TDto[]): TEntity[] =>
-              genericEntityMapper.mapFromDtoList<TEntity, TDto>(dto)
-            ),
-            tap((result: TEntity[]): void => {
-              patchState(store, setAllEntities(result));
-            }),
+            switchMap((input: TFetchAll) => {
+              fetchInitSubject.next(input);
 
-            store.handleStatus({
-              showError: true,
-              errorMessage: `Failed to fetch ${entityNamePlural}`,
+              patchState(store, removeAllEntities());
+
+              return entityManagerService.fetchAll$(input).pipe(
+                map((dto: TDto[]): TEntity[] =>
+                  genericEntityMapper.mapFromDtoList<TEntity, TDto>(dto)
+                ),
+                tap((result: TEntity[]): void => {
+                  fetchSuccessSubject.next(result);
+
+                  patchState(store, setAllEntities(result));
+                }),
+
+                store.handleStatus({
+                  showError: true,
+                  errorMessage: `Failed to fetch ${entityNamePlural}`,
+                })
+              );
             })
           )
         ),
@@ -194,31 +205,33 @@ export function withCRUD<
                 >(entity)
             ),
             switchMap((entity: SortOrderUpdate) =>
-              entityManagerService.reorder$(entity).pipe(map(() => entity))
-            ),
-            tap((result: SortOrderUpdate): void => {
-              patchState(
-                store,
-                updateEntities({
-                  predicate: ({ id }: TEntity) =>
-                    result.sortOrdersMap.some(
-                      (item: SortOrderItem): boolean => item.id === id
-                    ),
-                  changes: ({ id }: TEntity) =>
-                    ({
-                      sortOrder: result.sortOrdersMap.find(
-                        (sortOrderItem: SortOrderItem) =>
-                          sortOrderItem.id === id
-                      )?.sortOrder,
-                    }) as Partial<TEntity>,
-                })
-              );
-            }),
+              entityManagerService.reorder$(entity).pipe(
+                map(() => entity),
+                tap((result: SortOrderUpdate): void => {
+                  patchState(
+                    store,
+                    updateEntities({
+                      predicate: ({ id }: TEntity) =>
+                        result.sortOrdersMap.some(
+                          (item: SortOrderItem): boolean => item.id === id
+                        ),
+                      changes: ({ id }: TEntity) =>
+                        ({
+                          sortOrder: result.sortOrdersMap.find(
+                            (sortOrderItem: SortOrderItem) =>
+                              sortOrderItem.id === id
+                          )?.sortOrder,
+                        }) as Partial<TEntity>,
+                    })
+                  );
+                }),
 
-            store.handleStatus({
-              showError: true,
-              errorMessage: `Failed to reorder ${entityNamePlural}`,
-            })
+                store.handleStatus({
+                  showError: true,
+                  errorMessage: `Failed to reorder ${entityNamePlural}`,
+                })
+              )
+            )
           )
         ),
 
@@ -226,8 +239,22 @@ export function withCRUD<
           patchState(store, { current: entity });
         },
 
-        resetState(): void {
-          patchState(store, initialState);
+        resetEntities(): void {
+          patchState(store, removeAllEntities());
+        },
+
+        resetState(partialReset?: boolean): void {
+          store.resetStatusState(partialReset);
+
+          patchState(store, removeAllEntities());
+        },
+
+        fetchInit$(): Observable<TFetchAll> {
+          return fetchInitSubject.asObservable();
+        },
+
+        fetchSuccess$(): Observable<TEntity[]> {
+          return fetchSuccessSubject.asObservable();
         },
 
         deleteSuccess$(): Observable<TEntity> {

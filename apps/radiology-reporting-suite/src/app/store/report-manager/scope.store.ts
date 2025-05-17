@@ -121,15 +121,21 @@ export const ScopeStore = signalStore(
       change(entity: Scope | null): void {
         store.select(entity);
 
+        groupStore.reset(true);
+
         if (isNotNil(entity)) {
           groupStore.fetchAll({ id: entity.id });
         }
+      },
+
+      reset(partialReset?: boolean): void {
+        store.resetState(partialReset);
 
         groupStore.reset();
       },
 
-      reset(): void {
-        store.resetState();
+      resetSelf(): void {
+        store.resetStatusState();
 
         groupStore.reset();
       },
@@ -143,7 +149,7 @@ export const ScopeStore = signalStore(
         .deleteSuccess$()
         .pipe(
           tap(() => {
-            store.reset();
+            store.resetSelf();
           }),
           takeUntilDestroyed(destroyRef)
         )

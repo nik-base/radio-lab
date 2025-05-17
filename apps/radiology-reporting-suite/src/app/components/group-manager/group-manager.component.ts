@@ -40,7 +40,8 @@ import { SortableListManagerLayoutComponent } from '../sortable-list-manager-lay
   templateUrl: './group-manager.component.html',
 })
 export class GroupManagerComponent {
-  readonly groupStore$: InstanceType<typeof GroupStore> = inject(GroupStore);
+  protected readonly groupStore$: InstanceType<typeof GroupStore> =
+    inject(GroupStore);
 
   private readonly dialogService: DialogService = inject(DialogService);
 

@@ -1,0 +1,7 @@
+:host {
+  ::ng-deep {
+    .p-datatable .p-datatable-tbody > tr:last-child > td {
+      border-bottom: none;
+    }
+  }
+}

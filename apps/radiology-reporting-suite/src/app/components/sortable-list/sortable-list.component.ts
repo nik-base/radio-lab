@@ -5,6 +5,7 @@ import {
   InputSignal,
   output,
   OutputEmitterRef,
+  Signal,
   signal,
   WritableSignal,
 } from '@angular/core';
@@ -13,6 +14,7 @@ import { ButtonModule } from 'primeng/button';
 import { ListboxModule } from 'primeng/listbox';
 import { Menu, MenuModule } from 'primeng/menu';
 import { OrderListModule } from 'primeng/orderlist';
+import { SkeletonModule } from 'primeng/skeleton';
 import { TooltipModule } from 'primeng/tooltip';
 
 import { APP_TOOLTIP_OPTIONS } from '@app/constants';
@@ -29,6 +31,7 @@ import { SortableListMenuItem } from '@app/models/ui/sortable-list-menu-item.int
     ButtonModule,
     MenuModule,
     OrderListModule,
+    SkeletonModule,
   ],
   templateUrl: './sortable-list.component.html',
   styleUrls: ['./sortable-list.component.scss'],
@@ -47,11 +50,17 @@ export class SortableListComponent<T> {
 
   readonly headerLabel: InputSignal<string | undefined> = input<string>();
 
+  readonly isLoading: InputSignal<boolean> = input<boolean>(true);
+
   readonly changed: OutputEmitterRef<SortableListItem<T> | null> =
     output<SortableListItem<T> | null>();
 
   readonly reorder: OutputEmitterRef<ReadonlyArray<SortableListItem<T>>> =
     output<ReadonlyArray<SortableListItem<T>>>();
+
+  protected readonly mockItems: Signal<number[]> = signal(
+    Array(5).fill({ label: '', id: '', disableMore: true })
+  );
 
   dynamicMenuItems: WritableSignal<MenuItem[]> = signal([]);
 

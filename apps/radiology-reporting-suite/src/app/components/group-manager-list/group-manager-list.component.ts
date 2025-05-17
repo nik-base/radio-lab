@@ -48,6 +48,8 @@ export class GroupManagerListComponent {
   readonly selectedGroup: InputSignal<FindingGroup | null> =
     input<FindingGroup | null>(null);
 
+  readonly isLoading: InputSignal<boolean> = input<boolean>(true);
+
   readonly changed: OutputEmitterRef<FindingGroup | null> =
     output<FindingGroup | null>();
 

@@ -57,7 +57,7 @@ import { TemplateManagerListComponent } from '../template-manager-list/template-
   styleUrls: ['./template-manager.component.scss'],
 })
 export class TemplateManagerComponent {
-  readonly templateStore$: InstanceType<typeof TemplateStore> =
+  protected readonly templateStore$: InstanceType<typeof TemplateStore> =
     inject(TemplateStore);
 
   private readonly jsonService: JsonService = inject(JsonService);

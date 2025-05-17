@@ -58,10 +58,6 @@ export class EditorComponent implements OnInit {
 
   readonly suggestions: InputSignal<Variable[]> = input<Variable[]>([]);
 
-  readonly metadataAttributesMap: InputSignal<Map<string, string>> = input<
-    Map<string, string>
-  >(new Map<string, string>());
-
   readonly variableClick: OutputEmitterRef<EditorMentionVariableClickEventData> =
     output<EditorMentionVariableClickEventData>();
 

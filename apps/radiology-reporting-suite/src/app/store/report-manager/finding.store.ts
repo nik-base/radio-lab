@@ -82,11 +82,17 @@ export const FindingStore = signalStore(
       change(entity: Finding | null): void {
         store.select(entity);
 
+        variableStore.reset(true);
+      },
+
+      reset(partialReset?: boolean): void {
+        store.resetState(partialReset);
+
         variableStore.reset();
       },
 
-      reset(): void {
-        store.resetState();
+      resetSelf(): void {
+        store.resetStatusState();
 
         variableStore.reset();
       },
@@ -100,7 +106,7 @@ export const FindingStore = signalStore(
         .deleteSuccess$()
         .pipe(
           tap(() => {
-            store.reset();
+            store.resetSelf();
           }),
           takeUntilDestroyed(destroyRef)
         )

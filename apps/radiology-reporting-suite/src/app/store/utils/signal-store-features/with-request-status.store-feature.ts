@@ -1,23 +1,32 @@
-import { inject } from '@angular/core';
+import { computed, inject } from '@angular/core';
 import {
   patchState,
   signalStoreFeature,
+  withComputed,
   withMethods,
   withState,
 } from '@ngrx/signals';
 import { MessageService } from 'primeng/api';
-import { finalize, Observable, OperatorFunction, tap } from 'rxjs';
+import { Observable, OperatorFunction, tap } from 'rxjs';
 
 import { LoggerService } from '@app/utils/services/logger.service';
 
 import { AppEntityState } from '../../report-manager/entity-state.interface';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function withRequestStatus<TStatus extends { id: string }>(
-  initialState: AppEntityState<TStatus>
-) {
+export function withRequestStatus<
+  TStatus extends { id: string },
+  TAddon extends object = object,
+>(initialState: AppEntityState<TStatus, TAddon>) {
   return signalStoreFeature(
     withState(initialState),
+
+    // eslint-disable-next-line @typescript-eslint/typedef
+    withComputed(({ isLoading, currentOperation }) => ({
+      isFetching: computed(
+        () => currentOperation() === 'fetchAll' && isLoading()
+      ),
+    })),
 
     withMethods(
       (
@@ -26,6 +35,18 @@ export function withRequestStatus<TStatus extends { id: string }>(
         uiMessageService: MessageService = inject(MessageService),
         logger: LoggerService = inject(LoggerService)
       ) => ({
+        resetStatusState(partialReset?: boolean): void {
+          if (partialReset) {
+            patchState(store, {
+              ...initialState,
+              currentOperation: store.currentOperation(),
+              isLoading: store.isLoading(),
+            });
+          } else {
+            patchState(store, initialState);
+          }
+        },
+
         setLoading<TEntity>(
           currentOperation?: string
         ): OperatorFunction<TEntity, TEntity> {
@@ -64,6 +85,11 @@ export function withRequestStatus<TStatus extends { id: string }>(
             source$.pipe(
               tap({
                 next: (response: TEntity) => {
+                  patchState(store, {
+                    isLoading: false,
+                    currentOperation: null,
+                  });
+
                   if (showSuccess) {
                     const successMessageToShow: string =
                       successMessageFn?.(response) ||
@@ -88,6 +114,8 @@ export function withRequestStatus<TStatus extends { id: string }>(
 
                   patchState(store, {
                     error: errorMessageToShow,
+                    isLoading: false,
+                    currentOperation: null,
                   });
 
                   if (showError) {
@@ -99,9 +127,6 @@ export function withRequestStatus<TStatus extends { id: string }>(
                     });
                   }
                 },
-              }),
-              finalize(() => {
-                patchState(store, { isLoading: false, currentOperation: null });
               })
             );
         },

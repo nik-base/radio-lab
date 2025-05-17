@@ -15,6 +15,7 @@
       list
       class="w-full"
       [findings]="findings()"
+      [isLoading]="findingStore$.isFetching()"
       [selectedFinding]="selectedFinding"
       (delete)="onDelete($event)"
       (clone)="onClone($event)"

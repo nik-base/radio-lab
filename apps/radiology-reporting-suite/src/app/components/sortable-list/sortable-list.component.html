@@ -1,8 +1,10 @@
 <!-- eslint-disable @angular-eslint/template/interactive-supports-focus -->
 <!-- eslint-disable @angular-eslint/template/click-events-have-key-events -->
 
+@let _isLoading = isLoading();
+
 <p-orderlist
-  [value]="items()"
+  [value]="_isLoading ? mockItems() : items()"
   [metaKeySelection]="false"
   [responsive]="true"
   [listStyle]="{ maxHeight: '100%' }"
@@ -18,49 +20,57 @@
   }
 
   <ng-template #item let-listItem>
-    <div
-      class="flex flex-row gap-2 w-full items-center cursor-pointer sortable-item"
-      (click)="onSelect(listItem, $event)"
-      [ngClass]="
-        selectedItem()?.id === listItem.id ? 'sortable-item-active' : ''
-      ">
-      <div style="display: contents">
-        <span
-          (click)="$event.stopPropagation()"
-          pTooltip="Reorder"
-          tooltipPosition="bottom"
-          [tooltipOptions]="tooltipOptions"
-          class="pi pi-bars cursor-move"></span>
-
-        <div
-          class="w-full text-ellipsis overflow-hidden whitespace-nowrap"
-          [pTooltip]="listItem.label"
-          tooltipPosition="bottom"
-          [tooltipOptions]="tooltipOptions">
-          {{ listItem.label }}
+    @if (_isLoading) {
+      <div class="flex flex-row gap-2 w-full items-center">
+        <div class="flex-1">
+          <p-skeleton width="100%" height="2.5rem"></p-skeleton>
         </div>
       </div>
-      @if (!listItem.disableMore) {
-        <div class="flex flex-row gap-2">
-          <p-button
-            icon="pi pi-ellipsis-v"
-            styleClass="list-item-menu-button"
-            pTooltip="More"
+    } @else {
+      <div
+        class="flex flex-row gap-2 w-full items-center cursor-pointer sortable-item"
+        (click)="onSelect(listItem, $event)"
+        [ngClass]="
+          selectedItem()?.id === listItem.id ? 'sortable-item-active' : ''
+        ">
+        <div style="display: contents">
+          <span
+            (click)="$event.stopPropagation()"
+            pTooltip="Reorder"
             tooltipPosition="bottom"
             [tooltipOptions]="tooltipOptions"
-            [text]="true"
-            (onClick)="onMore($event, menu)" />
+            class="pi pi-bars cursor-move"></span>
 
-          <p-menu
-            #menu
-            [model]="dynamicMenuItems()"
-            [popup]="true"
-            appendTo="body"
-            (onShow)="showMoreMenu(listItem)">
-          </p-menu>
+          <div
+            class="w-full text-ellipsis overflow-hidden whitespace-nowrap"
+            [pTooltip]="listItem.label"
+            tooltipPosition="bottom"
+            [tooltipOptions]="tooltipOptions">
+            {{ listItem.label }}
+          </div>
         </div>
-      }
-    </div>
+        @if (!listItem.disableMore) {
+          <div class="flex flex-row gap-2">
+            <p-button
+              icon="pi pi-ellipsis-v"
+              styleClass="list-item-menu-button"
+              pTooltip="More"
+              tooltipPosition="bottom"
+              [tooltipOptions]="tooltipOptions"
+              [text]="true"
+              (onClick)="onMore($event, menu)" />
+
+            <p-menu
+              #menu
+              [model]="dynamicMenuItems()"
+              [popup]="true"
+              appendTo="body"
+              (onShow)="showMoreMenu(listItem)">
+            </p-menu>
+          </div>
+        }
+      </div>
+    }
   </ng-template>
 
   <ng-template #empty>{{ emptyMessage() }}</ng-template>

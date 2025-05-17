@@ -49,6 +49,8 @@ export const ClassifierStore = signalStore(
       change(entity: FindingClassifier | null): void {
         store.select(entity);
 
+        findingStore.reset(true);
+
         if (isNotNil(entity)) {
           findingStore.fetchAll({
             id: entity.scopeId,
@@ -56,12 +58,16 @@ export const ClassifierStore = signalStore(
             classifierId: entity.id,
           });
         }
+      },
+
+      reset(partialReset?: boolean): void {
+        store.resetState(partialReset);
 
         findingStore.reset();
       },
 
-      reset(): void {
-        store.resetState();
+      resetSelf(): void {
+        store.resetStatusState();
 
         findingStore.reset();
       },
@@ -75,7 +81,7 @@ export const ClassifierStore = signalStore(
         .deleteSuccess$()
         .pipe(
           tap(() => {
-            store.reset();
+            store.resetSelf();
           }),
           takeUntilDestroyed(destroyRef)
         )

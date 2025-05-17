@@ -122,15 +122,21 @@ export const TemplateStore = signalStore(
       change(entity: Template | null): void {
         store.select(entity);
 
+        scopeStore.reset(true);
+
         if (isNotNil(entity)) {
           scopeStore.fetchAll({ id: entity.id });
         }
+      },
+
+      reset(partialReset?: boolean): void {
+        store.resetState(partialReset);
 
         scopeStore.reset();
       },
 
-      reset(): void {
-        store.resetState();
+      resetSelf(): void {
+        store.resetStatusState();
 
         scopeStore.reset();
       },
@@ -144,7 +150,7 @@ export const TemplateStore = signalStore(
         .deleteSuccess$()
         .pipe(
           tap(() => {
-            store.reset();
+            store.resetSelf();
           }),
           takeUntilDestroyed(destroyRef)
         )

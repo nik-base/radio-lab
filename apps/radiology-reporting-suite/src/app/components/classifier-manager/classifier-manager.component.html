@@ -12,6 +12,7 @@
     list
     class="w-full"
     [classifiers]="classifiers()"
+    [isLoading]="classifierStore$.isFetching()"
     [selectedClassifier]="classifierStore$.current()"
     (edit)="onEdit($event)"
     (delete)="onDelete($event)"

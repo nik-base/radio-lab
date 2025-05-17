@@ -56,7 +56,7 @@ import { SortableListManagerLayoutComponent } from '../sortable-list-manager-lay
   styleUrls: ['./finding-manager.component.scss'],
 })
 export class FindingManagerComponent {
-  readonly findingStore$: InstanceType<typeof FindingStore> =
+  protected readonly findingStore$: InstanceType<typeof FindingStore> =
     inject(FindingStore);
 
   private readonly confirmationService: ConfirmationService =

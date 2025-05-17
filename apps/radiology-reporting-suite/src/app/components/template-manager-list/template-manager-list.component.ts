@@ -47,6 +47,8 @@ export class TemplateManagerListComponent {
   readonly selectedTemplate: InputSignal<Template | null> =
     input<Template | null>(null);
 
+  readonly isLoading: InputSignal<boolean> = input<boolean>(true);
+
   readonly changed: OutputEmitterRef<Template | null> =
     output<Template | null>();
 

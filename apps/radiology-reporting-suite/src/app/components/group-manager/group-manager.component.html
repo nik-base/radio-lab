@@ -12,6 +12,7 @@
     list
     class="w-full"
     [groups]="groups()"
+    [isLoading]="groupStore$.isFetching()"
     [selectedGroup]="groupStore$.current()"
     (edit)="onEdit($event)"
     (delete)="onDelete($event)"

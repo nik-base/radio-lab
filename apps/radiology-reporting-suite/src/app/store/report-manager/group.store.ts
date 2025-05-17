@@ -113,15 +113,21 @@ export const GroupStore = signalStore(
       change(entity: FindingGroup | null): void {
         store.select(entity);
 
+        classifierStore.reset(true);
+
         if (isNotNil(entity)) {
           classifierStore.fetchAll({ id: entity.scopeId, groupId: entity.id });
         }
+      },
+
+      reset(partialReset?: boolean): void {
+        store.resetState(partialReset);
 
         classifierStore.reset();
       },
 
-      reset(): void {
-        store.resetState();
+      resetSelf(): void {
+        store.resetStatusState();
 
         classifierStore.reset();
       },
@@ -135,7 +141,7 @@ export const GroupStore = signalStore(
         .deleteSuccess$()
         .pipe(
           tap(() => {
-            store.reset();
+            store.resetSelf();
           }),
           takeUntilDestroyed(destroyRef)
         )

@@ -128,15 +128,21 @@ export const VariableStore = signalStore(
       change(entity: Variable | null): void {
         store.select(entity);
 
+        variableValueStore.reset(true);
+
         if (isNotNil(entity)) {
           variableValueStore.fetchAll({ id: entity.id });
         }
+      },
+
+      reset(partialReset?: boolean): void {
+        store.resetState(partialReset);
 
         variableValueStore.reset();
       },
 
-      reset(): void {
-        store.resetState();
+      resetSelf(): void {
+        store.resetStatusState();
 
         variableValueStore.reset();
       },
@@ -150,7 +156,7 @@ export const VariableStore = signalStore(
         .deleteSuccess$()
         .pipe(
           tap(() => {
-            store.reset();
+            store.resetSelf();
           }),
           takeUntilDestroyed(destroyRef)
         )

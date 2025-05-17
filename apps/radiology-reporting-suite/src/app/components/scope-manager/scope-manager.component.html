@@ -12,6 +12,7 @@
     list
     class="w-full"
     [scopes]="scopes()"
+    [isLoading]="scopeStore$.isFetching()"
     [selectedScope]="scopeStore$.current()"
     (edit)="onEdit($event)"
     (delete)="onDelete($event)"

@@ -40,7 +40,7 @@ import { SortableListManagerLayoutComponent } from '../sortable-list-manager-lay
   templateUrl: './classifier-manager.component.html',
 })
 export class ClassifierManagerComponent {
-  readonly classifierStore$: InstanceType<typeof ClassifierStore> =
+  protected readonly classifierStore$: InstanceType<typeof ClassifierStore> =
     inject(ClassifierStore);
 
   private readonly dialogService: DialogService = inject(DialogService);

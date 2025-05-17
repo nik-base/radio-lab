@@ -47,6 +47,8 @@ export class ScopeManagerListComponent {
 
   readonly selectedScope: InputSignal<Scope | null> = input<Scope | null>(null);
 
+  readonly isLoading: InputSignal<boolean> = input<boolean>(true);
+
   readonly changed: OutputEmitterRef<Scope | null> = output<Scope | null>();
 
   readonly edit: OutputEmitterRef<Scope> = output<Scope>();

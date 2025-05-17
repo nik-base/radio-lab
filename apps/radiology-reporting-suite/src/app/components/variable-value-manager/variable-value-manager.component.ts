@@ -11,7 +11,7 @@ import {
 
 import { SortOrderMapperService } from '@app/mapper/sort-order-mapper.service';
 import { TableCRUDRowMapperService } from '@app/mapper/table-crud-row-mapper.service';
-import { Variable, VariableValue } from '@app/models/domain';
+import { SortOrderUpdate, Variable, VariableValue } from '@app/models/domain';
 import { TableCRUDRow } from '@app/models/ui';
 import { VariableValueStore } from '@app/store/report-manager/variable-value.store';
 import { findNextSortOrder } from '@app/utils/functions/order.functions';
@@ -81,11 +81,12 @@ export class VariableValueManagerComponent {
   }
 
   onReorder(rows: ReadonlyArray<TableCRUDRow<VariableValue>>): void {
-    this.variableValueStore$.reorder(
+    const sortOrderUpdate: SortOrderUpdate =
       this.sortOrderMapperService.mapEntitiesToSortOrderUpdate(
         this.tableCRUDRowMapperService.mapFromTableCRUDRows(rows)
-      )
-    );
+      );
+
+    this.variableValueStore$.reorder(sortOrderUpdate);
   }
 
   private effectVariableValueFetchAll(): void {

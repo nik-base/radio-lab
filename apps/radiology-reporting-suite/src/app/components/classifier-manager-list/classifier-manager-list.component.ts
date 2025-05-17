@@ -48,6 +48,8 @@ export class ClassifierManagerListComponent {
   readonly selectedClassifier: InputSignal<FindingClassifier | null> =
     input<FindingClassifier | null>(null);
 
+  readonly isLoading: InputSignal<boolean> = input<boolean>(true);
+
   readonly changed: OutputEmitterRef<FindingClassifier | null> =
     output<FindingClassifier | null>();
 

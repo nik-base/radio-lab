@@ -49,6 +49,8 @@ export class FindingManagerListComponent {
     null
   );
 
+  readonly isLoading: InputSignal<boolean> = input<boolean>(true);
+
   readonly changed: OutputEmitterRef<Finding | null> = output<Finding | null>();
 
   readonly delete: OutputEmitterRef<EventData<Finding>> =
