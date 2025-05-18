@@ -99,7 +99,6 @@ export const FindingStore = signalStore(
               tap((result: Finding[]): void => {
                 patchState(store, {
                   additionalData: {
-                    ...(store.additionalData?.() ?? {}),
                     findingsByScopeId: result,
                   },
                 });

@@ -91,7 +91,6 @@ export const VariableValueStore = signalStore(
           tap(({ id }: { readonly id: string }) => {
             patchState(store, {
               additionalData: {
-                ...(store.additionalData?.() ?? {}),
                 inProgressFetchVariableId: id,
               },
             });
