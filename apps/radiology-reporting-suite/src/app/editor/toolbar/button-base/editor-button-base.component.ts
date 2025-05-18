@@ -37,9 +37,9 @@ export class EditorButtonBaseComponent {
     transform: booleanAttribute,
   });
 
-  readonly clicked: OutputEmitterRef<void> = output<void>();
+  readonly clicked: OutputEmitterRef<Event> = output<Event>();
 
-  onClick(): void {
-    this.clicked.emit();
+  onClick(event: Event): void {
+    this.clicked.emit(event);
   }
 }

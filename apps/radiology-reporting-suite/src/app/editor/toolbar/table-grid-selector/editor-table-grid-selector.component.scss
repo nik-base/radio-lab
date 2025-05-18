@@ -1,0 +1,15 @@
+.table-insert-cell {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #ccc;
+  background: var(--p-button-secondary-background);
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    border 0.2s;
+}
+
+.table-insert-cell.selected {
+  background: var(--p-primary-color);
+  border-color: var(--p-primary-color);
+}

@@ -1,0 +1,13 @@
+<radio-editor-button-base
+  name="Table"
+  icon="format_italic"
+  (clicked)="onClick($event)">
+</radio-editor-button-base>
+
+<p-popover #popOver [dismissable]="true" (onHide)="onHide()">
+  <radio-editor-table-grid-selector
+    [rows]="rows"
+    [columns]="columns"
+    (selected)="onSelected($event)">
+  </radio-editor-table-grid-selector>
+</p-popover>

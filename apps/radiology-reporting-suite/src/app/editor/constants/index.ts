@@ -10,6 +10,7 @@ export const EDITOR_TOOLBAR_ITEM_TYPE = {
   OrderedList: 'ordered-list',
   FontFamily: 'font-family',
   FontSize: 'font-size',
+  Table: 'table',
   Undo: 'undo',
   Redo: 'redo',
   Separator: '|',

@@ -6,7 +6,7 @@
   style="height: 100%"
   [disabled]="disabled()"
   [severity]="isActive() ? 'primary' : 'secondary'"
-  (click)="onClick()">
+  (click)="onClick($event)">
   <span class="material-icons-outlined" style="font-size: 18px">
     {{ icon() }}
   </span>

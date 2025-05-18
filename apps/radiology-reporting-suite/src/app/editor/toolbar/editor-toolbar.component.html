@@ -45,6 +45,10 @@
             <radio-editor-input-font-size [context]="{ editor: editor()! }">
             </radio-editor-input-font-size>
           }
+          @case (ToolbarItemType.Table) {
+            <radio-editor-button-table [context]="{ editor: editor()! }">
+            </radio-editor-button-table>
+          }
           @case (ToolbarItemType.Undo) {
             <radio-editor-button-undo [context]="{ editor: editor()! }">
             </radio-editor-button-undo>

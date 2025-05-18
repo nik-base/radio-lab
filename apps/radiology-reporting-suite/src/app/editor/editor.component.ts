@@ -15,7 +15,10 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Editor, EditorEvents, Extensions } from '@tiptap/core';
 import { FontFamily } from '@tiptap/extension-font-family';
 import { MentionOptions } from '@tiptap/extension-mention';
-import TextStyle from '@tiptap/extension-text-style';
+import { TableCell } from '@tiptap/extension-table-cell';
+import { TableHeader } from '@tiptap/extension-table-header';
+import { TableRow } from '@tiptap/extension-table-row';
+import { TextStyle } from '@tiptap/extension-text-style';
 import { Underline } from '@tiptap/extension-underline';
 import { Node } from '@tiptap/pm/model';
 import { EditorState } from '@tiptap/pm/state';
@@ -34,6 +37,7 @@ import { EditorFontSize } from './extensions/editor-font-size.extension';
 import { EditorMentionVariable } from './extensions/editor-mention-variable.extension';
 import { EditorNodeAlign } from './extensions/editor-node-align.extension';
 import { EditorOrderedList } from './extensions/editor-ordered-list.extension';
+import { EditorTable } from './extensions/editor-table.extension';
 import { EditorTextAlign } from './extensions/editor-text-align.extensin';
 import {
   EditorMentionVariableClickEventData,
@@ -81,6 +85,13 @@ export class EditorComponent implements OnInit {
     ),
   };
 
+  private readonly editorTableExtensions: Extensions = [
+    TableRow,
+    TableHeader,
+    TableCell,
+    EditorTable.configure({ allowTableNodeSelection: true, resizable: true }),
+  ];
+
   private readonly editorExtensions: Extensions = [
     StarterKit.configure({
       bold: false,
@@ -98,6 +109,7 @@ export class EditorComponent implements OnInit {
       types: ['textStyle'],
     }),
     EditorFontSize,
+    ...this.editorTableExtensions,
     EditorMentionVariable.configure(this.mentionVariableConfig),
   ];
 
