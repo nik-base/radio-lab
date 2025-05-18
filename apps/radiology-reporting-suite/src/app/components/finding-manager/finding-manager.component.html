@@ -8,6 +8,7 @@
         pTooltip="Create Finding"
         tooltipPosition="bottom"
         [outlined]="true"
+        [disabled]="findingStore$.isFetching()"
         (onClick)="onCreate()" />
     </ng-container>
 

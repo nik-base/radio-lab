@@ -25,7 +25,7 @@ import { TiptapEditorDirective } from 'ngx-tiptap';
 import { Observable, of, Subscription, tap } from 'rxjs';
 
 import { HostControlDirective } from '@app/directives/host-control.directive';
-import { EditorContent, Variable } from '@app/models/domain';
+import { EditorContent } from '@app/models/domain';
 import { isNilOrEmpty } from '@app/utils/functions/common.functions';
 
 import { EditorBold } from './extensions/editor-bold.extension';
@@ -37,6 +37,7 @@ import { EditorOrderedList } from './extensions/editor-ordered-list.extension';
 import { EditorTextAlign } from './extensions/editor-text-align.extensin';
 import {
   EditorMentionVariableClickEventData,
+  EditorMentionVariableItem,
   EditorMentionVariableNodeAttributes,
 } from './models';
 import { EditorToolbarComponent } from './toolbar/editor-toolbar.component';
@@ -56,7 +57,9 @@ export class EditorComponent implements OnInit {
 
   readonly maxHeight: InputSignal<string | undefined> = input<string>();
 
-  readonly suggestions: InputSignal<Variable[]> = input<Variable[]>([]);
+  readonly suggestions: InputSignal<EditorMentionVariableItem[]> = input<
+    EditorMentionVariableItem[]
+  >([]);
 
   readonly variableClick: OutputEmitterRef<EditorMentionVariableClickEventData> =
     output<EditorMentionVariableClickEventData>();
@@ -65,12 +68,15 @@ export class EditorComponent implements OnInit {
   private _maxHeight: string | undefined;
 
   private readonly mentionVariableConfig: Partial<
-    MentionOptions<Variable, EditorMentionVariableNodeAttributes>
+    MentionOptions<
+      EditorMentionVariableItem,
+      EditorMentionVariableNodeAttributes
+    >
   > = {
     ...generateEditorMentionVariableConfig(
       'radio-mention',
-      (query: string): Observable<Variable[]> =>
-        of(this.filterSuggestions(query)),
+      (query: string): Observable<EditorMentionVariableItem[]> =>
+        of(this.filterSuggestions(query, this.suggestions())),
       this.injector
     ),
   };
@@ -192,8 +198,11 @@ export class EditorComponent implements OnInit {
     ctx.editor.view.updateState(newEditorState);
   }
 
-  private filterSuggestions(query: string): Variable[] {
-    return this.suggestions().filter((item: Variable): boolean =>
+  private filterSuggestions(
+    query: string,
+    suggestions: EditorMentionVariableItem[]
+  ): EditorMentionVariableItem[] {
+    return suggestions.filter((item: EditorMentionVariableItem): boolean =>
       item.name.toLowerCase().includes(query.toLowerCase())
     );
   }

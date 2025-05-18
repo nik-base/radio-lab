@@ -1,12 +1,10 @@
 import {
   Component,
   computed,
-  effect,
   inject,
   input,
   InputSignal,
   Signal,
-  untracked,
 } from '@angular/core';
 
 import { VARIABLE_SOURCE, VARIABLE_TYPE } from '@app/constants';
@@ -45,10 +43,6 @@ export class VariableManagerComponent {
       )
   );
 
-  constructor() {
-    this.effectVariableFetchAll();
-  }
-
   onChange(row: TableCRUDRow<Variable> | null): void {
     this.variableStore$.change(row?.value ?? null);
   }
@@ -86,17 +80,5 @@ export class VariableManagerComponent {
         this.tableCRUDRowMapperService.mapFromTableCRUDRows(rows)
       )
     );
-  }
-
-  private effectVariableFetchAll(): void {
-    effect((): void => {
-      const finding: Finding = this.finding();
-
-      untracked(() => {
-        this.variableStore$.fetchAll({
-          id: finding.id,
-        });
-      });
-    });
   }
 }

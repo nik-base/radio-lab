@@ -5,6 +5,7 @@
       pTooltip="Create Group"
       tooltipPosition="bottom"
       [outlined]="true"
+      [disabled]="groupStore$.isFetching()"
       (onClick)="onCreate()" />
   </ng-container>
 

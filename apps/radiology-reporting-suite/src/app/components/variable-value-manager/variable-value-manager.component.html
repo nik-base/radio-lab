@@ -1,5 +1,6 @@
 <radio-table-crud
   [rows]="variableValues()"
+  [isLoading]="variableValueStore$.isFetching()"
   entityName="Variable Value"
   entityNamePlural="Variable Values"
   emptyMessage="No variable values found"

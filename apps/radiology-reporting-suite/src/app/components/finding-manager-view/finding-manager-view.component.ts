@@ -34,7 +34,11 @@ import { TooltipModule } from 'primeng/tooltip';
 
 import { CHANGE_MODE } from '@app/constants';
 import { EditorComponent } from '@app/editor/editor.component';
-import { EditorMentionVariableClickEventData } from '@app/editor/models';
+import {
+  EditorMentionVariableClickEventData,
+  EditorMentionVariableItem,
+} from '@app/editor/models';
+import { EditorMentionVariableService } from '@app/editor/services/editor-mention-variable.service';
 import { EditorValidators } from '@app/editor/validators/editor-validator';
 import {
   EditorContent,
@@ -76,6 +80,10 @@ import { VariablesManagerDialogComponent } from '../variables-manager-dialog/var
 export class FindingManagerViewComponent {
   private readonly dialogService: DialogService = inject(DialogService);
 
+  private readonly mentionService: EditorMentionVariableService = inject(
+    EditorMentionVariableService
+  );
+
   private readonly variableStore$: InstanceType<typeof VariableStore> =
     inject(VariableStore);
 
@@ -96,15 +104,23 @@ export class FindingManagerViewComponent {
   readonly variableValueViewerPopover: Signal<Popover> =
     viewChild.required<Popover>('variableValueViewerPopover');
 
-  protected readonly variables: Signal<Variable[]> = computed(() => {
-    const finding: Finding | null = this.finding();
+  protected readonly variables: Signal<EditorMentionVariableItem[]> = computed(
+    () => {
+      const finding: Finding | null = this.finding();
 
-    if (isNil(finding)) {
-      return [];
+      if (isNil(finding?.id)) {
+        return [];
+      }
+
+      return this.variableStore$
+        .variables()(finding.id)()
+        .map(
+          (variable: Variable): EditorMentionVariableItem => ({
+            ...variable,
+          })
+        );
     }
-
-    return this.variableStore$.variables()(finding.id)();
-  });
+  );
 
   protected readonly variableValues: Signal<VariableValue[]> = computed(() => {
     if (this.isVariableValuesLoading()) {
@@ -137,6 +153,10 @@ export class FindingManagerViewComponent {
     this.effectVariableFetchAll();
 
     this.effectFetchVariableValue();
+
+    this.effectVariableIsFetching();
+
+    this.effectSetMentionVariable();
   }
 
   onVariableClick(eventData: EditorMentionVariableClickEventData): void {
@@ -176,6 +196,18 @@ export class FindingManagerViewComponent {
 
   onCancel(): void {
     this.canceled.emit();
+  }
+
+  private effectSetMentionVariable(): void {
+    effect(() => {
+      this.mentionService.variables = this.variables();
+    });
+  }
+
+  private effectVariableIsFetching(): void {
+    effect(() => {
+      this.mentionService.isLoading = this.variableStore$.isFetching();
+    });
   }
 
   private effectFetchVariableValue(): void {

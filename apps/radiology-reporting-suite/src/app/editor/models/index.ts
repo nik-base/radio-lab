@@ -4,6 +4,6 @@ export { EditorToolbarItemContext } from './editor-toolbar-item-context.interfac
 export { EditorFontFamilyOptions } from './editor-font-family-options.interface';
 export { EditorFontSizeOptions } from './editor-font-size-options.interface';
 
-export { EditorMentionVariableNodeAttributes } from './editor-mention-variable-node-attributes.interface';
-
 export { EditorMentionVariableClickEventData } from './editor-mention-variable-click-event-data.interface';
+export { EditorMentionVariableNodeAttributes } from './editor-mention-variable-node-attributes.interface';
+export { EditorMentionVariableItem } from './editor-mention-variable.interface';

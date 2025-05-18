@@ -13,6 +13,7 @@ import { ConfirmationService, TooltipOptions } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { InputTextModule } from 'primeng/inputtext';
+import { SkeletonModule } from 'primeng/skeleton';
 import { Table, TableModule, TableRowSelectEvent } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 
@@ -29,6 +30,7 @@ import { TableCRUDRow } from '@app/models/ui';
     TooltipModule,
     InputTextModule,
     ConfirmPopupModule,
+    SkeletonModule,
   ],
   providers: [ConfirmationService],
   templateUrl: './table-crud.component.html',
@@ -50,6 +52,8 @@ export class TableCRUDComponent<T> {
 
   readonly entityNamePlural: InputSignal<string> = input<string>('Items');
 
+  readonly isLoading: InputSignal<boolean> = input<boolean>(true);
+
   readonly rowCreate: OutputEmitterRef<TableCRUDRow<T>> =
     output<TableCRUDRow<T>>();
 
@@ -66,6 +70,14 @@ export class TableCRUDComponent<T> {
     output<ReadonlyArray<TableCRUDRow<T>>>();
 
   protected readonly clonedRows: { [s: string]: TableCRUDRow<T> } = {};
+
+  protected readonly mockRows: TableCRUDRow<T>[] = Array<TableCRUDRow<T>>(
+    3
+  ).fill({
+    id: '',
+    label: '',
+    value: {} as T,
+  });
 
   onRowSelect(event: TableRowSelectEvent): void {
     this.rowSelect.emit(event.data as TableCRUDRow<T>);

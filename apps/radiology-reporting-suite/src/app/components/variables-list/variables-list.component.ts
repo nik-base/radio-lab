@@ -10,6 +10,7 @@ import { ConfirmationService, TooltipOptions } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { ListboxModule } from 'primeng/listbox';
+import { SkeletonModule } from 'primeng/skeleton';
 import { TooltipModule } from 'primeng/tooltip';
 
 import { APP_TOOLTIP_OPTIONS } from '@app/constants';
@@ -19,7 +20,13 @@ import { VariableStore } from '@app/store/report-manager/variable-store';
 @Component({
   selector: 'radio-variables-list',
   standalone: true,
-  imports: [ListboxModule, ButtonModule, TooltipModule, ConfirmPopupModule],
+  imports: [
+    ListboxModule,
+    ButtonModule,
+    TooltipModule,
+    ConfirmPopupModule,
+    SkeletonModule,
+  ],
   providers: [ConfirmationService],
   templateUrl: './variables-list.component.html',
 })
@@ -37,6 +44,15 @@ export class VariablesListComponent {
   protected readonly variables: Signal<Variable[]> = computed(() =>
     this.variableStore$.exceptVariables()(this.finding().id)()
   );
+
+  protected readonly mockVariables: Variable[] = Array<Variable>(3).fill({
+    id: '',
+    name: '',
+    type: '',
+    source: '',
+    sortOrder: 0,
+    entityId: '',
+  });
 
   onCopy(variable: Variable): void {
     this.variableStore$.clone({ variable, entityId: this.finding().id });

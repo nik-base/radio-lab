@@ -1,5 +1,14 @@
 import { inject, Injectable } from '@angular/core';
-import { forkJoin, map, mergeMap, Observable, of, switchMap, take } from 'rxjs';
+import {
+  delay,
+  forkJoin,
+  map,
+  mergeMap,
+  Observable,
+  of,
+  switchMap,
+  take,
+} from 'rxjs';
 
 import { VARIABLE_SOURCE } from '@app/constants';
 import { findNextSortOrderWhenOptional } from '@app/utils/functions/order.functions';
@@ -178,6 +187,7 @@ export class ReportDBService extends ReportBaseService {
         IDBKeyRange.only(VARIABLE_SOURCE.Finding)
       )
       .pipe(
+        delay(5000),
         map((variables: VariableDBModel[]) =>
           variables.map(
             (item: VariableDBModel): VariableDto =>
@@ -1529,14 +1539,13 @@ export class ReportDBService extends ReportBaseService {
   private createVariableInDb$(
     dbModel: VariableDBModel
   ): Observable<VariableDto> {
-    return this.dbService
-      .add<VariableDBModel>('variables', dbModel)
-      .pipe(
-        map(
-          (data: VariableDBModel): VariableDto =>
-            this.mapVariableDBModelToDto(data)
-        )
-      );
+    return this.dbService.add<VariableDBModel>('variables', dbModel).pipe(
+      delay(5000),
+      map(
+        (data: VariableDBModel): VariableDto =>
+          this.mapVariableDBModelToDto(data)
+      )
+    );
   }
 
   private createVariableValueInDb$(

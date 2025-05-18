@@ -5,6 +5,7 @@
       pTooltip="Create Classifier"
       tooltipPosition="bottom"
       [outlined]="true"
+      [disabled]="classifierStore$.isFetching()"
       (onClick)="onCreate()" />
   </ng-container>
 

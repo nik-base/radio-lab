@@ -6,16 +6,22 @@ import { AngularRenderer } from 'ngx-tiptap';
 import { Observable, lastValueFrom } from 'rxjs';
 import tippy, { GetReferenceClientRect, Instance, Props } from 'tippy.js';
 
-import { Variable } from '@app/models/domain';
-
 import { EditorMentionVariableSuggestionsComponent } from '../components/editor-mention-variable-suggestions/editor-mention-variable-suggestions.component';
-import { EditorMentionVariableNodeAttributes } from '../models';
+import {
+  EditorMentionVariableItem,
+  EditorMentionVariableNodeAttributes,
+} from '../models';
 
 export const generateEditorMentionVariableConfig = (
   className: string,
-  suggestions$: (query: string, editor: Editor) => Observable<Variable[]>,
+  suggestions$: (
+    query: string,
+    editor: Editor
+  ) => Observable<EditorMentionVariableItem[]>,
   injector: Injector
-): Partial<MentionOptions<Variable, EditorMentionVariableNodeAttributes>> => {
+): Partial<
+  MentionOptions<EditorMentionVariableItem, EditorMentionVariableNodeAttributes>
+> => {
   return {
     HTMLAttributes: {
       class: className,
@@ -41,8 +47,13 @@ export const generateEditorMentionVariableConfig = (
       }: {
         query: string;
         editor: Editor;
-      }): Variable[] | Promise<Variable[]> => {
-        const obs$: Observable<Variable[]> = suggestions$(query, editor);
+      }):
+        | EditorMentionVariableItem[]
+        | Promise<EditorMentionVariableItem[]> => {
+        const obs$: Observable<EditorMentionVariableItem[]> = suggestions$(
+          query,
+          editor
+        );
 
         return lastValueFrom(obs$);
       },
@@ -57,7 +68,7 @@ export const generateEditorMentionVariableConfig = (
         return {
           onStart: (
             props: SuggestionProps<
-              Variable,
+              EditorMentionVariableItem,
               EditorMentionVariableNodeAttributes
             >
           ) => {
@@ -83,34 +94,30 @@ export const generateEditorMentionVariableConfig = (
               zIndex: 99999,
             });
           },
-          onUpdate(
+          onUpdate: (
             props: SuggestionProps<
-              Variable,
+              EditorMentionVariableItem,
               EditorMentionVariableNodeAttributes
             >
-          ) {
+          ) => {
             renderer.updateProps({ props });
 
-            if (!popup?.length) {
-              return;
+            if (popup?.length) {
+              popup[0]?.setProps({
+                getReferenceClientRect:
+                  props.clientRect as GetReferenceClientRect,
+              });
             }
-
-            popup[0].setProps({
-              getReferenceClientRect:
-                props.clientRect as GetReferenceClientRect,
-            });
           },
           onKeyDown(props: SuggestionKeyDownProps) {
-            return renderer.instance.onKeyDown(props);
+            return renderer?.instance?.onKeyDown(props);
           },
           onExit() {
-            if (!popup?.length) {
-              return;
+            if (popup?.length) {
+              popup[0]?.destroy();
             }
 
-            popup[0].destroy();
-
-            renderer.destroy();
+            renderer?.destroy();
           },
         };
       },

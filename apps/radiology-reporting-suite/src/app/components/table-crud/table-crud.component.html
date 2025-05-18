@@ -1,6 +1,8 @@
+@let _isLoading = isLoading();
+
 <p-table
   #tableElement
-  [value]="rows()"
+  [value]="_isLoading ? mockRows : rows()"
   dataKey="id"
   editMode="row"
   selectionMode="single"
@@ -17,6 +19,7 @@
         tooltipPosition="bottom"
         [tooltipOptions]="tooltipOptions"
         [outlined]="true"
+        [disabled]="_isLoading"
         (onClick)="addNew($event)" />
     </div>
   </ng-template>
@@ -30,77 +33,88 @@
   </ng-template>
 
   <ng-template #body let-row let-editing="editing" let-index="rowIndex">
-    <tr
-      [pSelectableRow]="row"
-      [pEditableRow]="row"
-      [pReorderableRow]="index"
-      data-row="items">
-      <td>
-        <span class="pi pi-bars" pReorderableRowHandle></span>
-      </td>
+    @if (_isLoading) {
+      <tr>
+        <td>
+          <p-skeleton width="2rem" height="2rem" />
+        </td>
+        <td>
+          <p-skeleton height="2rem" />
+        </td>
+      </tr>
+    } @else {
+      <tr
+        [pSelectableRow]="row"
+        [pEditableRow]="row"
+        [pReorderableRow]="index"
+        data-row="items">
+        <td>
+          <span class="pi pi-bars" pReorderableRowHandle></span>
+        </td>
 
-      <td>
-        <p-cellEditor data-cell="item">
-          <ng-template #input>
-            <input
-              pInputText
-              type="text"
-              [(ngModel)]="row.label"
-              [placeholder]="'Enter ' + entityName() + ' name'"
-              required />
-          </ng-template>
+        <td>
+          <p-cellEditor data-cell="item">
+            <ng-template #input>
+              <input
+                pInputText
+                type="text"
+                [(ngModel)]="row.label"
+                [placeholder]="'Enter ' + entityName() + ' name'"
+                required />
+            </ng-template>
 
-          <ng-template #output>
-            {{ row.label }}
-          </ng-template>
-        </p-cellEditor>
-      </td>
+            <ng-template #output>
+              {{ row.label }}
+            </ng-template>
+          </p-cellEditor>
+        </td>
 
-      <td>
-        <div class="flex items-center justify-center gap-2">
-          @if (editing) {
-            <p-button
-              pSaveEditableRow
-              icon="pi pi-check"
-              pTooltip="Save"
-              [tooltipOptions]="tooltipOptions"
-              (click)="onRowEditSave(row)"
-              text
-              rounded
-              severity="success" />
+        <td>
+          <div class="flex items-center justify-center gap-2">
+            @if (editing) {
+              <p-button
+                pSaveEditableRow
+                icon="pi pi-check"
+                pTooltip="Save"
+                [tooltipOptions]="tooltipOptions"
+                (click)="onRowEditSave(row)"
+                text
+                rounded
+                severity="success" />
 
-            <p-button
-              pCancelEditableRow
-              icon="pi pi-times"
-              pTooltip="Cancel"
-              [tooltipOptions]="tooltipOptions"
-              (click)="onRowEditCancel(row, index)"
-              text
-              rounded
-              severity="danger" />
-          } @else {
-            <p-button
-              pInitEditableRow
-              icon="pi pi-pencil"
-              pTooltip="Edit"
-              [tooltipOptions]="tooltipOptions"
-              (click)="onRowEditInit(row)"
-              text
-              rounded
-              severity="primary" />
+              <p-button
+                pCancelEditableRow
+                icon="pi pi-times"
+                pTooltip="Cancel"
+                [tooltipOptions]="tooltipOptions"
+                (click)="onRowEditCancel(row, index)"
+                text
+                rounded
+                severity="danger" />
+            } @else {
+              <p-button
+                pInitEditableRow
+                icon="pi pi-pencil"
+                pTooltip="Edit"
+                [tooltipOptions]="tooltipOptions"
+                (click)="onRowEditInit(row)"
+                text
+                rounded
+                severity="primary" />
 
-            <p-button
-              icon="pi pi-trash"
-              pTooltip="Delete {{ entityName() }}"
-              [tooltipOptions]="tooltipOptions"
-              text
-              rounded
-              severity="danger"
-              (click)="deleteRow($event, row)" />
-          }
-        </div>
-      </td>
-    </tr>
+              <p-button
+                icon="pi pi-trash"
+                pTooltip="Delete {{ entityName() }}"
+                [tooltipOptions]="tooltipOptions"
+                text
+                rounded
+                severity="danger"
+                (click)="deleteRow($event, row)" />
+            }
+          </div>
+        </td>
+      </tr>
+    }
   </ng-template>
 
   <ng-template #emptymessage>

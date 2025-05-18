@@ -5,6 +5,7 @@
       pTooltip="Create Scope"
       tooltipPosition="bottom"
       [outlined]="true"
+      [disabled]="scopeStore$.isFetching()"
       (onClick)="onCreate()" />
   </ng-container>
 

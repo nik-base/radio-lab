@@ -1,6 +1,8 @@
+@let _isLoading = mentionService.isLoading();
+
 <p-listbox
   #listBox
-  [options]="suggestions()"
+  [options]="_isLoading ? mockSuggestions : suggestions()"
   (onChange)="onSelect($event)"
   optionLabel="name"
   [autoOptionFocus]="true"
@@ -8,10 +10,16 @@
   emptyMessage="No variables"
   class="w-full">
   <ng-template #item let-suggestion>
-    <div
-      class="w-full text-ellipsis overflow-hidden whitespace-nowrap"
-      title="{{ suggestion.name }}">
-      {{ suggestion.name }}
-    </div>
+    @if (_isLoading) {
+      <div class="w-40">
+        <p-skeleton height="2rem" />
+      </div>
+    } @else {
+      <div
+        class="w-full text-ellipsis overflow-hidden whitespace-nowrap"
+        title="{{ suggestion.name }}">
+        {{ suggestion.name }}
+      </div>
+    }
   </ng-template>
 </p-listbox>

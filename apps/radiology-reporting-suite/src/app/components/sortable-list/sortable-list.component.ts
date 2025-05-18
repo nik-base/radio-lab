@@ -5,7 +5,6 @@ import {
   InputSignal,
   output,
   OutputEmitterRef,
-  Signal,
   signal,
   WritableSignal,
 } from '@angular/core';
@@ -58,9 +57,14 @@ export class SortableListComponent<T> {
   readonly reorder: OutputEmitterRef<ReadonlyArray<SortableListItem<T>>> =
     output<ReadonlyArray<SortableListItem<T>>>();
 
-  protected readonly mockItems: Signal<number[]> = signal(
-    Array(5).fill({ label: '', id: '', disableMore: true })
-  );
+  protected readonly mockItems: SortableListItem<T>[] = Array<
+    SortableListItem<T>
+  >(5).fill({
+    id: '',
+    label: '',
+    value: {} as T,
+    disableMore: true,
+  });
 
   dynamicMenuItems: WritableSignal<MenuItem[]> = signal([]);
 

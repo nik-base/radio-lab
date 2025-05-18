@@ -16,4 +16,13 @@ export class VariableValuesViewerComponent {
     input.required<VariableValue[]>();
 
   readonly isLoading: InputSignal<boolean> = input<boolean>(true);
+
+  protected readonly mockValues: VariableValue[] = Array<VariableValue>(3).fill(
+    {
+      id: '',
+      name: '',
+      sortOrder: 0,
+      variableId: '',
+    }
+  );
 }

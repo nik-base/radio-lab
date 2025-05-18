@@ -34,8 +34,6 @@ export class VariablesManagerDialogComponent {
   }
 
   close(): void {
-    this.variableStore$.reset();
-
     this.dynamicDialogRef.close();
   }
 

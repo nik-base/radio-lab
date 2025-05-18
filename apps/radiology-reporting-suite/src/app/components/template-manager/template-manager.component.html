@@ -1,3 +1,5 @@
+@let _isLoading = templateStore$.isFetching();
+
 <radio-sortable-list-manager-layout>
   <ng-container actions>
     <p-fileUpload
@@ -13,7 +15,8 @@
       [auto]="true"
       [multiple]="false"
       accept="application/json"
-      [maxFileSize]="10000000">
+      [maxFileSize]="10000000"
+      [disabled]="_isLoading">
     </p-fileUpload>
 
     <p-button
@@ -21,6 +24,7 @@
       pTooltip="Create Template"
       tooltipPosition="bottom"
       [outlined]="true"
+      [disabled]="_isLoading"
       (onClick)="onCreate()" />
   </ng-container>
 
