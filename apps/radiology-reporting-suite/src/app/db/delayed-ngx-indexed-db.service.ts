@@ -3,7 +3,7 @@ import { NgxIndexedDBService } from 'ngx-indexed-db';
 import { Observable } from 'rxjs';
 import { delay } from 'rxjs/operators';
 
-const GLOBAL_DB_DELAY: number = 600;
+const GLOBAL_DB_DELAY: number = 0;
 
 @Injectable({ providedIn: 'root' })
 export class DelayedNgxIndexedDBService {

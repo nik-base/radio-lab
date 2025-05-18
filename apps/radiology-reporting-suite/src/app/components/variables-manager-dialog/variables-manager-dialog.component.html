@@ -5,12 +5,14 @@
       </radio-variables-manager>
     }
   </div>
+</radio-dialog-layout>
 
-  <ng-container class="flex justify-end" dialog-actions>
+<ng-template #footer>
+  <div class="flex justify-end gap-2">
     <p-button
       label="Cancel"
       [text]="true"
       severity="secondary"
       (onClick)="close()" />
-  </ng-container>
-</radio-dialog-layout>
+  </div>
+</ng-template>

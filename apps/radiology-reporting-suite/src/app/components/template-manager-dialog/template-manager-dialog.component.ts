@@ -1,11 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  inject,
+  Signal,
+  TemplateRef,
+  viewChild,
+} from '@angular/core';
 import {
   FormControl,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { isNil } from 'lodash-es';
 import { ButtonModule } from 'primeng/button';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { InputTextModule } from 'primeng/inputtext';
@@ -20,6 +28,7 @@ import { TemplateManagerDialogData } from '@app/models/ui';
 import { FormGroupModel } from '@app/types';
 
 import { DialogLayoutComponent } from '../dialog-layout/dialog-layout.component';
+import { DynamicTemplateRendererComponent } from '../dialog-template-renderer/dialog-template-renderer.component';
 
 @Component({
   selector: 'radio-template-manager-dialog',
@@ -36,7 +45,7 @@ import { DialogLayoutComponent } from '../dialog-layout/dialog-layout.component'
   ],
   templateUrl: './template-manager-dialog.component.html',
 })
-export class TemplateManagerDialogComponent {
+export class TemplateManagerDialogComponent implements AfterViewInit {
   private readonly dynamicDialogRef: DynamicDialogRef =
     inject(DynamicDialogRef);
 
@@ -44,6 +53,9 @@ export class TemplateManagerDialogComponent {
     inject(
       DynamicDialogConfig
     ) as DynamicDialogConfig<TemplateManagerDialogData>;
+
+  protected readonly footer: Signal<TemplateRef<unknown>> =
+    viewChild.required<TemplateRef<unknown>>('footer');
 
   formGroup: FormGroupModel<TemplateBase> = this.createFormGroup();
 
@@ -54,6 +66,24 @@ export class TemplateManagerDialogComponent {
     if (data.mode === CHANGE_MODE.Update) {
       this.formGroup = this.createFormGroup(data.template);
     }
+  }
+
+  ngAfterViewInit(): void {
+    if (isNil(this.dynamicDialogConfig.data)) {
+      return;
+    }
+
+    // Defer the assignment of 'templateToRender' to the next microtask
+    // to prevent ExpressionChangedAfterItHasBeenCheckedError.
+    queueMicrotask(() => {
+      this.dynamicDialogConfig.templates = {
+        footer: DynamicTemplateRendererComponent,
+      };
+
+      if (this.dynamicDialogConfig.data) {
+        this.dynamicDialogConfig.data.templateToRender = this.footer();
+      }
+    });
   }
 
   close(): void {
