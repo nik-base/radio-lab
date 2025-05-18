@@ -48,3 +48,17 @@
     </radio-finding-manager>
   }
 </div>
+
+@let _isLoading = isLoading();
+
+<p-blockui [blocked]="_isLoading">
+  @if (_isLoading) {
+    <div class="flex items-center justify-center w-full h-full">
+      <p-progressSpinner
+        styleClass="custom-spinner"
+        strokeWidth="4"
+        animationDuration=".8s">
+      </p-progressSpinner>
+    </div>
+  }
+</p-blockui>
