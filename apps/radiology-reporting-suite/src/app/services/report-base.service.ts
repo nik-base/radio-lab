@@ -39,6 +39,8 @@ export abstract class ReportBaseService {
     classifierId?: string
   ): Observable<FindingDto[]>;
 
+  abstract fetchFindingsByScopeId$(scopeId: string): Observable<FindingDto[]>;
+
   abstract fetchFindingGroups$(scopeId: string): Observable<FindingGroupDto[]>;
 
   abstract fetchFindingClassifiers$(

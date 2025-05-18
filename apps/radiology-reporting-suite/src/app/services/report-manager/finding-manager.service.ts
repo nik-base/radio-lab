@@ -39,6 +39,10 @@ export class FindingManagerService
     return this.reportService.fetchFindings$(id, groupId, classifierId);
   }
 
+  fetchByScopeId$(scopeId: string): Observable<FindingDto[]> {
+    return this.reportService.fetchFindingsByScopeId$(scopeId);
+  }
+
   create$(entity: FindingCreateDto): Observable<FindingDto> {
     return this.reportService.createFinding$(entity);
   }

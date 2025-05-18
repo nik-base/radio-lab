@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { patchState, signalStore, withHooks, withMethods } from '@ngrx/signals';
 import { addEntity } from '@ngrx/signals/entities';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { exhaustMap, map, pipe, tap } from 'rxjs';
+import { exhaustMap, map, pipe, switchMap, tap } from 'rxjs';
 
 import { GenericEntityMapperService } from '@app/mapper/generic-entity-mapper.service';
 import {
@@ -19,11 +19,18 @@ import { withCRUD } from '../utils/signal-store-features/with-crud.store-feature
 import { AppEntityState } from './entity-state.interface';
 import { VariableStore } from './variable-store';
 
-const initialState: AppEntityState<Finding> = {
+interface FindingStateAddon {
+  readonly findingsByScopeId: Finding[];
+}
+
+const initialState: AppEntityState<Finding, FindingStateAddon> = {
   current: null,
   isLoading: false,
   error: null,
   currentOperation: null,
+  additionalData: {
+    findingsByScopeId: [],
+  },
 };
 
 // eslint-disable-next-line @typescript-eslint/typedef
@@ -40,7 +47,8 @@ export const FindingStore = signalStore(
       readonly groupId: string;
       readonly classifierId: string;
     },
-    FindingManagerService
+    FindingManagerService,
+    FindingStateAddon
   >(initialState, FindingManagerService, 'finding', 'findings'),
   withMethods(
     (
@@ -76,6 +84,33 @@ export const FindingStore = signalStore(
               })
             )
           )
+        )
+      ),
+
+      fetchByScopeId: rxMethod<string>(
+        pipe(
+          store.setLoading('fetchByScopeId'),
+
+          switchMap((input: string) => {
+            return findingManagerService.fetchByScopeId$(input).pipe(
+              map((dto: FindingDto[]): Finding[] =>
+                genericEntityMapper.mapFromDtoList<Finding, FindingDto>(dto)
+              ),
+              tap((result: Finding[]): void => {
+                patchState(store, {
+                  additionalData: {
+                    ...(store.additionalData?.() ?? {}),
+                    findingsByScopeId: result,
+                  },
+                });
+              }),
+
+              store.handleStatus({
+                showError: true,
+                errorMessage: `Failed to fetch findings by scope "${input}"`,
+              })
+            );
+          })
         )
       ),
 
