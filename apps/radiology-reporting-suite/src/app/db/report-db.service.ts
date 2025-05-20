@@ -59,6 +59,7 @@ import {
 import { ReportBaseService } from '../services/report-base.service';
 
 import { DelayedNgxIndexedDBService } from './delayed-ngx-indexed-db.service';
+import { EditorVariableReplaceService } from './editor-variable-replace.service';
 import {
   FindingClassifierDBModel,
   FindingDBModel,
@@ -74,6 +75,9 @@ export class ReportDBService extends ReportBaseService {
   private readonly dbService: DelayedNgxIndexedDBService = inject(
     DelayedNgxIndexedDBService
   );
+
+  private readonly editorVariableReplaceService: EditorVariableReplaceService =
+    inject(EditorVariableReplaceService);
 
   override fetchTemplates$(): Observable<TemplateDto[]> {
     return this.dbService
@@ -1043,16 +1047,20 @@ export class ReportDBService extends ReportBaseService {
 
               const newFindingId: string = this.generateId();
 
-              return this.createFindingInDb$({
-                ...originalFinding,
-                id: newFindingId,
-                sortOrder: nextSortOrder,
-              }).pipe(
-                mergeMap((newFindingDto: FindingDto) =>
-                  this.cloneVariables$(findingId, newFindingDto.id).pipe(
-                    map(() => newFindingDto)
-                  )
-                )
+              return this.cloneVariables$(findingId, newFindingId).pipe(
+                mergeMap((variableIdsMap: Map<string, VariableDto>) => {
+                  const newFindingWithVariablesReplaced: FindingDBModel =
+                    this.getFindingDBModelWithVariablesReplaced(
+                      originalFinding,
+                      variableIdsMap
+                    );
+
+                  return this.createFindingInDb$({
+                    ...newFindingWithVariablesReplaced,
+                    id: newFindingId,
+                    sortOrder: nextSortOrder,
+                  });
+                })
               );
             })
           )
@@ -1060,17 +1068,79 @@ export class ReportDBService extends ReportBaseService {
     );
   }
 
+  private getFindingDBModelWithVariablesReplaced(
+    finding: FindingDBModel,
+    variableIdsMap: Map<string, VariableDto>
+  ): FindingDBModel {
+    const varIdsMap: Map<string, string> = new Map<string, string>();
+
+    variableIdsMap.forEach((value: VariableDto, key: string) => {
+      varIdsMap.set(key, value.id);
+    });
+
+    const descriptionHTML: string | undefined =
+      this.editorVariableReplaceService.replaceInHtml(
+        finding.descriptionHTML,
+        varIdsMap
+      );
+
+    const descriptionJSON: string | undefined =
+      this.editorVariableReplaceService.replaceInJson(
+        finding.descriptionJSON,
+        varIdsMap
+      );
+
+    const impressionHTML: string | undefined =
+      this.editorVariableReplaceService.replaceInHtml(
+        finding.impressionHTML,
+        varIdsMap
+      );
+
+    const impressionJSON: string | undefined =
+      this.editorVariableReplaceService.replaceInJson(
+        finding.impressionJSON,
+        varIdsMap
+      );
+
+    const recommendationHTML: string | undefined =
+      this.editorVariableReplaceService.replaceInHtml(
+        finding.recommendationHTML,
+        varIdsMap
+      );
+
+    const recommendationJSON: string | undefined =
+      this.editorVariableReplaceService.replaceInJson(
+        finding.recommendationJSON,
+        varIdsMap
+      );
+
+    return {
+      ...finding,
+      descriptionHTML,
+      descriptionJSON,
+      impressionHTML,
+      impressionJSON,
+      recommendationHTML,
+      recommendationJSON,
+    };
+  }
+
   private cloneVariables$(
     cloneEntityId: string,
     entityId: string
-  ): Observable<VariableDto[]> {
+  ): Observable<Map<string, VariableDto>> {
     return this.dbService
       .getAllByIndex<VariableDBModel>('variables', 'entityId', cloneEntityId)
       .pipe(
         mergeMap((originalVariables: VariableDBModel[]) => {
           if (!originalVariables || originalVariables.length === 0) {
-            return of([]);
+            return of(new Map<string, VariableDto>());
           }
+
+          const variablesMap: Map<string, VariableDto> = new Map<
+            string,
+            VariableDto
+          >();
 
           const cloneOps$: Observable<VariableDto>[] = originalVariables.map(
             (originalVariable: VariableDBModel) => {
@@ -1085,13 +1155,19 @@ export class ReportDBService extends ReportBaseService {
                   this.cloneVariableValues$(
                     originalVariable.id,
                     newVariableDto.id
-                  ).pipe(map(() => newVariableDto))
+                  ).pipe(
+                    map(() => {
+                      variablesMap.set(originalVariable.id, newVariableDto);
+
+                      return newVariableDto;
+                    })
+                  )
                 )
               );
             }
           );
 
-          return forkJoin(cloneOps$);
+          return forkJoin(cloneOps$).pipe(map(() => variablesMap));
         })
       );
   }
@@ -1313,19 +1389,25 @@ export class ReportDBService extends ReportBaseService {
             (originalFinding: FindingDBModel) => {
               const newFindingId: string = this.generateId();
 
-              return this.createFindingInDb$({
-                ...originalFinding,
-                id: newFindingId,
-                classifierId,
-                groupId,
-                scopeId,
-              }).pipe(
-                mergeMap((newFindingDto: FindingDto) =>
-                  this.cloneVariables$(
-                    originalFinding.id,
-                    newFindingDto.id
-                  ).pipe(map(() => newFindingDto))
-                )
+              return this.cloneVariables$(
+                originalFinding.id,
+                newFindingId
+              ).pipe(
+                mergeMap((variableIdsMap: Map<string, VariableDto>) => {
+                  const newFindingWithVariablesReplaced: FindingDBModel =
+                    this.getFindingDBModelWithVariablesReplaced(
+                      originalFinding,
+                      variableIdsMap
+                    );
+
+                  return this.createFindingInDb$({
+                    ...newFindingWithVariablesReplaced,
+                    id: newFindingId,
+                    classifierId,
+                    groupId,
+                    scopeId,
+                  });
+                })
               );
             }
           );
