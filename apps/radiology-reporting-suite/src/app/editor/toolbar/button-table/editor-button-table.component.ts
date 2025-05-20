@@ -34,6 +34,9 @@ export class EditorButtonTableComponent {
   protected readonly popOver: Signal<Popover> =
     viewChild.required<Popover>('popOver');
 
+  protected readonly tableGridSelector: Signal<EditorTableGridSelectorComponent> =
+    viewChild.required<EditorTableGridSelectorComponent>('tableGridSelector');
+
   protected readonly rows: number = 5;
 
   protected readonly columns: number = 5;
@@ -50,5 +53,7 @@ export class EditorButtonTableComponent {
 
   onHide(): void {
     this.popOver().hide();
+
+    this.tableGridSelector().resetHover();
   }
 }

@@ -12,7 +12,7 @@
     }
 
     .ProseMirror .selectedCell {
-      background: #accef7;
+      background: var(--p-highlight-focus-background);
     }
 
     .tiptap-container {
