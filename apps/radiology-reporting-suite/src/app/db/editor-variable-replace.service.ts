@@ -61,7 +61,10 @@ export class EditorVariableReplaceService {
    * @param {JSONContent} node The current Tiptap node in the JSONContent tree.
    * @param {Map<string, string>} idsMap A map of old IDs to new IDs.
    */
-  tryReplaceVariableIds(node: JSONContent, idsMap: Map<string, string>) {
+  private tryReplaceVariableIds(
+    node: JSONContent,
+    idsMap: Map<string, string>
+  ) {
     if (!node) {
       return;
     }

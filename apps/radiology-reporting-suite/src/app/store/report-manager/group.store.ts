@@ -5,6 +5,7 @@ import { addEntity } from '@ngrx/signals/entities';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { exhaustMap, map, pipe, tap } from 'rxjs';
 
+import { RADIO_DEFAULT_CLASSIFIER } from '@app/constants';
 import { GenericEntityMapperService } from '@app/mapper/generic-entity-mapper.service';
 import {
   FindingGroupCreateDto,
@@ -12,7 +13,6 @@ import {
   FindingGroupUpdateDto,
 } from '@app/models/data';
 import {
-  FindingClassifierCreate,
   FindingGroup,
   FindingGroupCreate,
   FindingGroupUpdate,
@@ -31,13 +31,6 @@ const initialState: AppEntityState<FindingGroup> = {
   error: null,
   currentOperation: null,
 };
-
-const defaultClassifier: Omit<FindingClassifierCreate, 'groupId' | 'scopeId'> =
-  {
-    name: 'Unclassified',
-    sortOrder: 0,
-    isDefault: true,
-  };
 
 // eslint-disable-next-line @typescript-eslint/typedef
 export const GroupStore = signalStore(
@@ -67,7 +60,7 @@ export const GroupStore = signalStore(
         FindingGroupCreate & { readonly noPatch?: boolean }
       >(
         pipe(
-          store.setLoading('create'),
+          store.setLoading('createWithClassifer'),
 
           exhaustMap(
             (input: FindingGroupCreate & { readonly noPatch?: boolean }) =>
@@ -92,7 +85,7 @@ export const GroupStore = signalStore(
                     }
 
                     classifierStore.create({
-                      ...defaultClassifier,
+                      ...RADIO_DEFAULT_CLASSIFIER,
                       groupId: result.id,
                       scopeId: result.scopeId,
                       noPatch: !(store.current()?.id === result.id),

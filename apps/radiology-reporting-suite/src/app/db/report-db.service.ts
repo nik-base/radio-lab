@@ -673,133 +673,169 @@ export class ReportDBService extends ReportBaseService {
     const templateDbModel: TemplateDBModel =
       this.mapTemplateCreateDtoToDBModel(template);
 
-    const scopeIdsMap: Record<string, ScopeImportDto> =
-      this.generateScopeIdsMap(template);
+    const allScopesToCreate: ScopeDBModel[] = [];
 
-    const scopes: ScopeDBModel[] = this.generateScopesForImport(
-      scopeIdsMap,
-      templateDbModel
-    );
+    const allGroupsToCreate: FindingGroupDBModel[] = [];
 
-    const observables: Observable<number[]>[] = [];
+    const allClassifiersToCreate: FindingClassifierDBModel[] = [];
 
-    Object.entries(scopeIdsMap).forEach(
-      ([scopeId, scope]: [string, ScopeImportDto]): void => {
-        const groupObs: {
-          observable: Observable<number[]>;
-          entries: [string, FindingGroupImportDto][];
-        } = this.getImportObservable$(
-          scope,
-          'groups',
-          'scopeId',
-          scopeId,
-          'findingGroups',
-          (row: FindingGroupImportDto) => ({
-            ...this.mapFindingGroupBaseDtoToDBModel(row),
-          })
-        );
+    const allFindingsToCreate: FindingDBModel[] = [];
 
-        observables.push(groupObs.observable);
+    const allVariablesToCreate: VariableDBModel[] = [];
 
-        groupObs.entries.forEach(
-          ([groupId, group]: [string, FindingGroupImportDto]): void => {
-            const classifierObs: {
-              observable: Observable<number[]>;
-              entries: [string, FindingClassifierImportDto][];
-            } = this.getImportObservable$(
-              group,
-              'classifiers',
-              'groupId',
-              groupId,
-              'findingClassifiers',
-              (row: FindingClassifierImportDto) => ({
-                ...this.mapFindingClassifierBaseDtoToDBModel(row),
-                scopeId,
-              })
-            );
+    const allVariableValuesToCreate: VariableValueDBModel[] = [];
 
-            observables.push(classifierObs.observable);
+    template.scopes.forEach((scopeImportDto: ScopeImportDto): void => {
+      const newScopeId: string = this.generateId();
 
-            classifierObs.entries.forEach(
-              ([classifierId, classifier]: [
-                string,
-                FindingClassifierImportDto,
-              ]): void => {
-                const findingObs: {
-                  observable: Observable<number[]>;
-                  entries: [string, FindingImportDto][];
-                } = this.getImportObservable$(
-                  classifier,
-                  'findings',
-                  'classifierId',
-                  classifierId,
-                  'findings',
-                  (row: FindingImportDto) => ({
-                    ...this.mapFindingBaseDtoToDBModel(row),
-                    scopeId,
-                    groupId,
-                  })
-                );
+      allScopesToCreate.push({
+        ...this.mapScopeBaseDtoToDBModel(scopeImportDto),
+        id: newScopeId,
+        templateId: templateDbModel.id,
+      });
 
-                observables.push(findingObs.observable);
+      (scopeImportDto.groups || []).forEach(
+        (groupImportDto: FindingGroupImportDto): void => {
+          const newGroupId: string = this.generateId();
 
-                findingObs.entries.forEach(
-                  ([findingId, finding]: [string, FindingImportDto]): void => {
-                    const variableObs: {
-                      observable: Observable<number[]>;
-                      entries: [string, VariableImportDto][];
-                    } = this.getImportObservable$(
-                      finding,
-                      'variables',
-                      'entityId',
-                      findingId,
-                      'variables',
-                      (row: VariableImportDto) => ({
-                        ...this.mapVariableBaseDtoToDBModel(row),
-                      })
+          allGroupsToCreate.push({
+            ...this.mapFindingGroupBaseDtoToDBModel(groupImportDto),
+            id: newGroupId,
+            scopeId: newScopeId,
+          });
+
+          (groupImportDto.classifiers || []).forEach(
+            (classifierImportDto: FindingClassifierImportDto): void => {
+              const newClassifierId: string = this.generateId();
+
+              allClassifiersToCreate.push({
+                ...this.mapFindingClassifierBaseDtoToDBModel(
+                  classifierImportDto
+                ),
+                id: newClassifierId,
+                scopeId: newScopeId,
+                groupId: newGroupId,
+              });
+
+              (classifierImportDto.findings || []).forEach(
+                (findingImportDto: FindingImportDto): void => {
+                  const newFindingId: string = this.generateId();
+
+                  const oldToNewVariableDtoMap: Map<string, VariableDBModel> =
+                    new Map<string, VariableDBModel>();
+
+                  (findingImportDto.variables || []).forEach(
+                    (variableImportDto: VariableImportDto): void => {
+                      const newVariableId: string = this.generateId();
+
+                      const variableDbModel: VariableDBModel = {
+                        ...this.mapVariableBaseDtoToDBModel(variableImportDto),
+                        id: newVariableId,
+                        entityId: newFindingId,
+                      };
+
+                      allVariablesToCreate.push(variableDbModel);
+
+                      oldToNewVariableDtoMap.set(
+                        variableImportDto.id,
+                        variableDbModel
+                      );
+
+                      (variableImportDto.variableValues || []).forEach(
+                        (
+                          variableValueImportDto: VariableValueImportDto
+                        ): void => {
+                          allVariableValuesToCreate.push({
+                            ...this.mapVariableValueBaseDtoToDBModel(
+                              variableValueImportDto
+                            ),
+                            id: this.generateId(),
+                            variableId: newVariableId,
+                          });
+                        }
+                      );
+                    }
+                  );
+
+                  const findingDbModel: FindingDBModel = {
+                    ...this.mapFindingBaseDtoToDBModel(findingImportDto),
+                    id: newFindingId,
+                    scopeId: newScopeId,
+                    groupId: newGroupId,
+                    classifierId: newClassifierId,
+                  };
+
+                  const findingWithReplacedVariables: FindingDBModel =
+                    this.getFindingDBModelWithVariablesReplaced(
+                      findingDbModel,
+                      oldToNewVariableDtoMap
                     );
 
-                    observables.push(variableObs.observable);
+                  allFindingsToCreate.push(findingWithReplacedVariables);
+                }
+              );
+            }
+          );
+        }
+      );
+    });
 
-                    variableObs.entries.forEach(
-                      ([variableId, variable]: [
-                        string,
-                        VariableImportDto,
-                      ]): void => {
-                        const variableValueObs: {
-                          observable: Observable<number[]>;
-                          entries: [string, VariableValueImportDto][];
-                        } = this.getImportObservable$(
-                          variable,
-                          'variableValues',
-                          'variableId',
-                          variableId,
-                          'variableValues',
-                          (row: VariableValueImportDto) => ({
-                            ...this.mapVariableValueBaseDtoToDBModel(row),
-                          })
-                        );
-
-                        observables.push(variableValueObs.observable);
-                      }
-                    );
-                  }
-                );
-              }
-            );
-          }
-        );
-      }
-    );
-
-    return forkJoin([
+    const allDbOperations: Observable<TemplateDto | number[]>[] = [
       this.createTemplateInDb$(templateDbModel),
-      this.dbService.bulkAdd<ScopeDBModel>('scopes', scopes),
-      ...observables,
-    ]).pipe(
+    ];
+
+    if (allScopesToCreate.length > 0) {
+      allDbOperations.push(
+        this.dbService.bulkAdd<ScopeDBModel>('scopes', allScopesToCreate)
+      );
+    }
+
+    if (allGroupsToCreate.length > 0) {
+      allDbOperations.push(
+        this.dbService.bulkAdd<FindingGroupDBModel>(
+          'findingGroups',
+          allGroupsToCreate
+        )
+      );
+    }
+
+    if (allClassifiersToCreate.length > 0) {
+      allDbOperations.push(
+        this.dbService.bulkAdd<FindingClassifierDBModel>(
+          'findingClassifiers',
+          allClassifiersToCreate
+        )
+      );
+    }
+
+    if (allFindingsToCreate.length > 0) {
+      allDbOperations.push(
+        this.dbService.bulkAdd<FindingDBModel>('findings', allFindingsToCreate)
+      );
+    }
+
+    if (allVariablesToCreate.length > 0) {
+      allDbOperations.push(
+        this.dbService.bulkAdd<VariableDBModel>(
+          'variables',
+          allVariablesToCreate
+        )
+      );
+    }
+
+    if (allVariableValuesToCreate.length > 0) {
+      allDbOperations.push(
+        this.dbService.bulkAdd<VariableValueDBModel>(
+          'variableValues',
+          allVariableValuesToCreate
+        )
+      );
+    }
+
+    return forkJoin(allDbOperations).pipe(
       map(
-        // eslint-disable-next-line @typescript-eslint/typedef
-        ([template]): TemplateDto => template
+        (results: (TemplateDto | number[])[]): TemplateDto =>
+          results[0] as TemplateDto
       )
     );
   }
@@ -1070,7 +1106,7 @@ export class ReportDBService extends ReportBaseService {
 
   private getFindingDBModelWithVariablesReplaced(
     finding: FindingDBModel,
-    variableIdsMap: Map<string, VariableDto>
+    variableIdsMap: Map<string, VariableDto | VariableDBModel>
   ): FindingDBModel {
     const varIdsMap: Map<string, string> = new Map<string, string>();
 

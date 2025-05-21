@@ -19,13 +19,101 @@ import {
   TemplateCreateDto,
   TemplateDataDto,
   TemplateDto,
+  TemplateExportDto,
   TemplateImportDto,
   TemplateUpdateDto,
+  VariableCreateDto,
+  VariableDto,
+  VariableUpdateDto,
+  VariableValueCreateDto,
+  VariableValueDto,
+  VariableValueUpdateDto,
 } from '../../models/data';
 import { ReportBaseService } from '../report-base.service';
 
 @Injectable({ providedIn: 'root' })
 export class ReportApiService extends ReportBaseService {
+  override fetchFindingsByScopeId$(scopeId: string): Observable<FindingDto[]> {
+    throw new Error('Method not implemented.');
+  }
+
+  override fetchAllFindingVariables$(): Observable<VariableDto[]> {
+    throw new Error('Method not implemented.');
+  }
+
+  override fetchAllFindingVariablesExcept$(
+    findingId: string
+  ): Observable<VariableDto[]> {
+    throw new Error('Method not implemented.');
+  }
+
+  override fetchFindingVariables$(
+    findingId: string
+  ): Observable<VariableDto[]> {
+    throw new Error('Method not implemented.');
+  }
+
+  override fetchVariableValues$(
+    variableId: string
+  ): Observable<VariableValueDto[]> {
+    throw new Error('Method not implemented.');
+  }
+
+  override createVariable$(
+    variable: VariableCreateDto
+  ): Observable<VariableDto> {
+    throw new Error('Method not implemented.');
+  }
+
+  override createVariableValue$(
+    variableValue: VariableValueCreateDto
+  ): Observable<VariableValueDto> {
+    throw new Error('Method not implemented.');
+  }
+
+  override updateVariable$(
+    variable: VariableUpdateDto
+  ): Observable<VariableDto> {
+    throw new Error('Method not implemented.');
+  }
+
+  override updateVariableValue$(
+    variableValue: VariableValueUpdateDto
+  ): Observable<VariableValueDto> {
+    throw new Error('Method not implemented.');
+  }
+
+  override deleteVariable$(variableId: string): Observable<void> {
+    throw new Error('Method not implemented.');
+  }
+
+  override deleteVariableValue$(variableValueId: string): Observable<void> {
+    throw new Error('Method not implemented.');
+  }
+
+  override reorderVariables$(
+    sortOrderUpdateRequest: SortOrderUpdateDto
+  ): Observable<void> {
+    throw new Error('Method not implemented.');
+  }
+
+  override reorderVariableValues$(
+    sortOrderUpdateRequest: SortOrderUpdateDto
+  ): Observable<void> {
+    throw new Error('Method not implemented.');
+  }
+
+  override exportTemplate$(templateId: string): Observable<TemplateExportDto> {
+    throw new Error('Method not implemented.');
+  }
+
+  override cloneVariable$(
+    variableId: string,
+    entityId: string
+  ): Observable<VariableDto> {
+    throw new Error('Method not implemented.');
+  }
+
   override fetchFindingGroups$(scopeId: string): Observable<FindingGroupDto[]> {
     throw new Error('Method not implemented.');
   }

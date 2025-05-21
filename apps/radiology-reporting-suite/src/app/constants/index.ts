@@ -1,5 +1,10 @@
 import { TooltipOptions } from 'primeng/api';
 
+import {
+  FindingClassifierCreate,
+  FindingGroupCreate,
+} from '@app/models/domain';
+
 // eslint-disable-next-line @typescript-eslint/typedef
 export const APP_NOTIFICATION_TYPE = {
   Success: 'success',
@@ -27,4 +32,18 @@ export const APP_TOOLTIP_OPTIONS = {
   showDelay: 300,
   hideDelay: 50,
   tooltipPosition: 'bottom',
-} as TooltipOptions;
+} as const as TooltipOptions;
+
+// eslint-disable-next-line @typescript-eslint/typedef
+export const RADIO_DEFAULT_GROUP = {
+  name: 'Uncategorized',
+  sortOrder: 0,
+  isDefault: true,
+} as const satisfies Omit<FindingGroupCreate, 'scopeId'>;
+
+// eslint-disable-next-line @typescript-eslint/typedef
+export const RADIO_DEFAULT_CLASSIFIER = {
+  name: 'Unclassified',
+  sortOrder: 0,
+  isDefault: true,
+} as const satisfies Omit<FindingClassifierCreate, 'groupId' | 'scopeId'>;

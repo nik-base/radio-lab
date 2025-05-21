@@ -3,5 +3,6 @@ import { VariableValueImportDto } from '../variable-value/variable-value-import-
 import { VariableBaseDto } from './variable-base-dto.interface';
 
 export interface VariableImportDto extends VariableBaseDto {
+  readonly id: string;
   readonly variableValues: ReadonlyArray<VariableValueImportDto>;
 }

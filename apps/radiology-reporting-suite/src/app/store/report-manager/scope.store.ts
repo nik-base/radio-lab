@@ -5,14 +5,10 @@ import { addEntity } from '@ngrx/signals/entities';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { exhaustMap, map, pipe, tap } from 'rxjs';
 
+import { RADIO_DEFAULT_GROUP } from '@app/constants';
 import { GenericEntityMapperService } from '@app/mapper/generic-entity-mapper.service';
 import { ScopeCreateDto, ScopeDto, ScopeUpdateDto } from '@app/models/data';
-import {
-  FindingGroupCreate,
-  Scope,
-  ScopeCreate,
-  ScopeUpdate,
-} from '@app/models/domain';
+import { Scope, ScopeCreate, ScopeUpdate } from '@app/models/domain';
 import { ScopeManagerService } from '@app/services/report-manager/scope-manager.service';
 import { isNotNil } from '@app/utils/functions/common.functions';
 
@@ -26,12 +22,6 @@ const initialState: AppEntityState<Scope> = {
   isLoading: false,
   error: null,
   currentOperation: null,
-};
-
-const defaultGroup: Omit<FindingGroupCreate, 'scopeId'> = {
-  name: 'Uncategorized',
-  sortOrder: 0,
-  isDefault: true,
 };
 
 // eslint-disable-next-line @typescript-eslint/typedef
@@ -58,7 +48,7 @@ export const ScopeStore = signalStore(
     ) => ({
       createWithGroup: rxMethod<ScopeCreate>(
         pipe(
-          store.setLoading('create'),
+          store.setLoading('createWithGroup'),
 
           exhaustMap((input: ScopeCreate) =>
             scopeManagerService
@@ -74,7 +64,7 @@ export const ScopeStore = signalStore(
                   patchState(store, addEntity(result));
 
                   groupStore.createWithClassifer({
-                    ...defaultGroup,
+                    ...RADIO_DEFAULT_GROUP,
                     scopeId: result.id,
                     noPatch: !(store.current()?.id === result.id),
                   });
