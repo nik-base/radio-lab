@@ -10,6 +10,8 @@ import {
   OnInit,
   output,
   OutputEmitterRef,
+  Signal,
+  viewChild,
 } from '@angular/core';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Editor, EditorEvents, Extensions } from '@tiptap/core';
@@ -25,6 +27,8 @@ import { EditorState } from '@tiptap/pm/state';
 import { EditorView } from '@tiptap/pm/view';
 import { StarterKit } from '@tiptap/starter-kit';
 import { TiptapEditorDirective } from 'ngx-tiptap';
+import { MenuItem } from 'primeng/api';
+import { ContextMenu } from 'primeng/contextmenu';
 import { Observable, of, Subscription, tap } from 'rxjs';
 
 import { HostControlDirective } from '@app/directives/host-control.directive';
@@ -51,7 +55,12 @@ import { generateEditorMentionVariableConfig } from './utils/editor-extension.fu
 @Component({
   selector: 'radio-editor',
   standalone: true,
-  imports: [CommonModule, TiptapEditorDirective, EditorToolbarComponent],
+  imports: [
+    CommonModule,
+    ContextMenu,
+    TiptapEditorDirective,
+    EditorToolbarComponent,
+  ],
   hostDirectives: [HostControlDirective],
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.scss'],
@@ -70,6 +79,57 @@ export class EditorComponent implements OnInit {
 
   @HostBinding('style.--editor-max-height')
   private _maxHeight: string | undefined;
+
+  protected readonly tableContextMenu: Signal<ContextMenu> =
+    viewChild.required<ContextMenu>('tableContextMenu');
+
+  readonly tableContextMenuItems: MenuItem[] = [
+    {
+      label: 'Insert column left',
+      command: () => {
+        this.onInsertColumnLeft();
+      },
+    },
+    {
+      label: 'Insert column right',
+      command: () => {
+        this.onInsertColumnRight();
+      },
+    },
+    { separator: true },
+    {
+      label: 'Insert row above',
+      command: () => {
+        this.onInsertRowAbove();
+      },
+    },
+    {
+      label: 'Insert row below',
+      command: () => {
+        this.onInsertRowBelow();
+      },
+    },
+    { separator: true },
+    {
+      label: 'Delete column',
+      command: () => {
+        this.onDeleteColumn();
+      },
+    },
+    {
+      label: 'Delete row',
+      command: () => {
+        this.onDeleteRow();
+      },
+    },
+    { separator: true },
+    {
+      label: 'Delete table',
+      command: () => {
+        this.onDeleteTable();
+      },
+    },
+  ];
 
   private readonly mentionVariableConfig: Partial<
     MentionOptions<
@@ -131,6 +191,11 @@ export class EditorComponent implements OnInit {
           'tiptap-container tiptap ProseMirror p-2 bg-white outline-0 border border-surface border-solid rounded-b-lg h-full overflow-auto editor-input-container',
         spellCheck: 'false',
       },
+      handleDOMEvents: {
+        contextmenu: (_: EditorView, event: MouseEvent): boolean | void => {
+          return this.onEditorContextMenu(event);
+        },
+      },
       handleClickOn: (
         _: EditorView,
         __: number,
@@ -158,6 +223,48 @@ export class EditorComponent implements OnInit {
 
   ngOnInit(): void {
     this.handleHostControlChanges();
+  }
+
+  private onEditorContextMenu(event: MouseEvent): boolean | void {
+    const target: HTMLElement = event.target as HTMLElement;
+
+    const table: HTMLElement | null = target.closest('table');
+
+    if (!table) {
+      return false;
+    }
+
+    this.tableContextMenu().toggle(event);
+
+    return true;
+  }
+
+  private onDeleteTable() {
+    this.editor.chain().focus().deleteTable().run();
+  }
+
+  private onDeleteRow() {
+    this.editor.chain().focus().deleteRow().run();
+  }
+
+  private onDeleteColumn() {
+    this.editor.chain().focus().deleteColumn().run();
+  }
+
+  private onInsertRowBelow() {
+    this.editor.chain().focus().addRowAfter().run();
+  }
+
+  private onInsertRowAbove() {
+    this.editor.chain().focus().addRowBefore().run();
+  }
+
+  private onInsertColumnRight() {
+    this.editor.chain().focus().addColumnAfter().run();
+  }
+
+  private onInsertColumnLeft() {
+    this.editor.chain().focus().addColumnBefore().run();
   }
 
   private onEditorClick(

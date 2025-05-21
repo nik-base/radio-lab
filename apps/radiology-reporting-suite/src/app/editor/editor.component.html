@@ -9,3 +9,8 @@
 
   <tiptap-editor class="grow" [editor]="editor"></tiptap-editor>
 </div>
+
+<p-contextMenu
+  #tableContextMenu
+  [model]="tableContextMenuItems"
+  appendTo="body" />
