@@ -80,7 +80,16 @@ export class LegacyTemplateImportMapperService {
           const legacyFindingImportList: LegacyFindingImport[] =
             legacyScope.findings ?? [];
 
-          for (const lfi of legacyFindingImportList) {
+          for (const _lfi of legacyFindingImportList) {
+            let lfi: LegacyFindingImport = _lfi;
+
+            if (!lfi.finding) {
+              lfi = {
+                finding: _lfi as unknown as typeof lfi.finding,
+                variables: [],
+              };
+            }
+
             const legacyGroupName: string | undefined = lfi.finding.group;
 
             const legacyClassifierName: string | undefined =
@@ -163,11 +172,6 @@ export class LegacyTemplateImportMapperService {
                     this.mapLegacyFindingToFindingImport(lfi)
                 );
 
-              // findingImports.sort(
-              //   (a, b) =>
-              //     a.sortOrder - b.sortOrder || a.name.localeCompare(b.name)
-              // );
-
               classifierImports.push({
                 name: classifierEntry.name,
                 sortOrder:
@@ -179,11 +183,6 @@ export class LegacyTemplateImportMapperService {
               });
             }
 
-            // classifierImports.sort(
-            //   (a, b) =>
-            //     a.sortOrder - b.sortOrder || a.name.localeCompare(b.name)
-            // );
-
             groupImports.push({
               name: groupEntry.name,
               sortOrder:
@@ -192,10 +191,6 @@ export class LegacyTemplateImportMapperService {
               classifiers: classifierImports,
             });
           }
-
-          // groupImports.sort(
-          //   (a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name)
-          // );
 
           return {
             name: legacyScope.protocol.name,
