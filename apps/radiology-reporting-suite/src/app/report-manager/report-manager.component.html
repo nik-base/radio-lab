@@ -1,48 +1,50 @@
 <div class="flex w-full h-full gap-2">
-  <radio-template-manager
-    [templates]="templateStore$.orderedList()"
-    style="width: 15%">
-  </radio-template-manager>
+  <div class="grid grid-cols-4 gap-2 basis-[40%] shrink-0">
+    <radio-template-manager
+      class="min-w-0 min-h-0"
+      [templates]="templateStore$.orderedList()">
+    </radio-template-manager>
 
-  @let scopes = scopeStore$.orderedList();
-  @let selectedTemplate = templateStore$.current();
+    @let scopes = scopeStore$.orderedList();
+    @let selectedTemplate = templateStore$.current();
 
-  @if (scopes && selectedTemplate) {
-    <radio-scope-manager
-      [scopes]="scopes"
-      [template]="selectedTemplate"
-      style="width: 15%">
-    </radio-scope-manager>
-  }
+    @if (scopes && selectedTemplate) {
+      <radio-scope-manager
+        class="min-w-0 min-h-0"
+        [scopes]="scopes"
+        [template]="selectedTemplate">
+      </radio-scope-manager>
+    }
 
-  @let groups = groupStore$.orderedList();
-  @let selectedScope = scopeStore$.current();
+    @let groups = groupStore$.orderedList();
+    @let selectedScope = scopeStore$.current();
 
-  @if (groups && selectedScope) {
-    <radio-group-manager
-      [groups]="groups"
-      [scope]="selectedScope"
-      style="width: 15%">
-    </radio-group-manager>
-  }
+    @if (groups && selectedScope) {
+      <radio-group-manager
+        class="min-w-0 min-h-0"
+        [groups]="groups"
+        [scope]="selectedScope">
+      </radio-group-manager>
+    }
 
-  @let classifiers = classifierStore$.orderedList();
-  @let selectedGroup = groupStore$.current();
+    @let classifiers = classifierStore$.orderedList();
+    @let selectedGroup = groupStore$.current();
 
-  @if (classifiers && selectedGroup) {
-    <radio-classifier-manager
-      [classifiers]="classifiers"
-      [group]="selectedGroup"
-      style="width: 15%">
-    </radio-classifier-manager>
-  }
+    @if (classifiers && selectedGroup) {
+      <radio-classifier-manager
+        class="min-w-0 min-h-0"
+        [classifiers]="classifiers"
+        [group]="selectedGroup">
+      </radio-classifier-manager>
+    }
+  </div>
 
   @let findings = findingStore$.orderedList();
   @let selectedClassifier = classifierStore$.current();
 
   @if (findings && selectedClassifier) {
     <radio-finding-manager
-      class="w-full"
+      class="flex-1 min-w-0"
       [findings]="findings"
       [classifier]="selectedClassifier">
     </radio-finding-manager>
