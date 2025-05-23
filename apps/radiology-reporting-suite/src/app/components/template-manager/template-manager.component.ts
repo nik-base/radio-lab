@@ -173,25 +173,16 @@ export class TemplateManagerComponent {
       eventTarget?.result;
 
     if (!fileContent) {
-      // this.store$.dispatch(
-      //   TemplateUIActions.importFailure({
-      //     message: 'Cannot import empty template data',
-      //   })
-      // );
+      this.templateStore$.showError('Cannot import empty template');
 
       return;
     }
 
-    const template: TemplateImport = this.parseImportedTemplate(
-      fileContent as string
-    );
+    const template: TemplateImport | { error: unknown } =
+      this.parseImportedTemplate(fileContent as string);
 
-    if (!template) {
-      // this.store$.dispatch(
-      //   TemplateUIActions.importFailure({
-      //     message: 'Cannot parse invalid template data',
-      //   })
-      // );
+    if (!template || 'error' in template) {
+      this.templateStore$.showError('Cannot parse file. Invalid template');
 
       return;
     }
@@ -199,15 +190,21 @@ export class TemplateManagerComponent {
     this.templateStore$.import(template);
   }
 
-  private parseImportedTemplate(content: string): TemplateImport {
-    const importObject: LegacyTemplateImport =
-      this.jsonService.parseSafe<LegacyTemplateImport>(content);
+  private parseImportedTemplate(
+    content: string
+  ): TemplateImport | { error: unknown } {
+    try {
+      const importObject: LegacyTemplateImport =
+        this.jsonService.parseSafe<LegacyTemplateImport>(content);
 
-    if ('template' in importObject) {
-      return this.legacyTemplateImportMapper.mapFromLegacy(importObject);
+      if ('template' in importObject) {
+        return this.legacyTemplateImportMapper.mapFromLegacy(importObject);
+      }
+
+      return this.jsonService.parseSafe<TemplateImport>(content);
+    } catch (error: unknown) {
+      return { error };
     }
-
-    return this.jsonService.parseSafe<TemplateImport>(content);
   }
 
   private openDialog(

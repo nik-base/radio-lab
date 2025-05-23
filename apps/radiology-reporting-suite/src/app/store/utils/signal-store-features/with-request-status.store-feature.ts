@@ -9,6 +9,7 @@ import {
 import { MessageService } from 'primeng/api';
 import { Observable, OperatorFunction, tap } from 'rxjs';
 
+import { ApplicationError } from '@app/models/domain';
 import { LoggerService } from '@app/utils/services/logger.service';
 
 import { AppEntityState } from '../../report-manager/entity-state.interface';
@@ -35,6 +36,29 @@ export function withRequestStatus<
         uiMessageService: MessageService = inject(MessageService),
         logger: LoggerService = inject(LoggerService)
       ) => ({
+        showError<T>(
+          errorMessage: string,
+          applicationError?: ApplicationError<T>
+        ): void {
+          if (applicationError) {
+            logger.error(
+              `[Error] ${errorMessage}`,
+              applicationError?.message,
+              applicationError?.error,
+              applicationError?.data
+            );
+          } else {
+            logger.error(`[Error] ${errorMessage}`);
+          }
+
+          uiMessageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: errorMessage,
+            life: 3000,
+          });
+        },
+
         resetStatusState(partialReset?: boolean): void {
           if (partialReset) {
             patchState(store, {
