@@ -1,7 +1,7 @@
 import { Node } from '@tiptap/core';
 import { Table, TableOptions } from '@tiptap/extension-table';
 import { EditorView } from '@tiptap/pm/view';
-import { isNil } from 'lodash';
+import { isNil } from 'lodash-es';
 import {
   DOMParser as ProseMirrorDOMParser,
   Node as ProseMirrorNode,

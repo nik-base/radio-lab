@@ -106,6 +106,12 @@
         ],
         "formatter": "unix"
       }
+    },
+    "deploy": {
+      "executor": "angular-cli-ghpages:deploy",
+      "options": {
+        "baseHref": "https://nik-base.github.io/radio-lab/"
+      }
     }
   }
 }

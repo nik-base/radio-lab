@@ -10,7 +10,7 @@ import {
   untracked,
   WritableSignal,
 } from '@angular/core';
-import { isNil } from 'lodash';
+import { isNil } from 'lodash-es';
 import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';

@@ -21,7 +21,7 @@ import {
   Validator,
 } from '@angular/forms';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { isNil } from 'lodash';
+import { isNil } from 'lodash-es';
 import { filter, tap } from 'rxjs';
 
 @UntilDestroy()
