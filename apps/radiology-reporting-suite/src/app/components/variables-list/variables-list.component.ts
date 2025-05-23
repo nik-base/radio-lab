@@ -31,6 +31,7 @@ import { VariableStore } from '@app/store/report-manager/variable-store';
   ],
   providers: [ConfirmationService],
   templateUrl: './variables-list.component.html',
+  styleUrls: ['./variables-list.component.scss'],
 })
 export class VariablesListComponent {
   private readonly confirmationService: ConfirmationService =

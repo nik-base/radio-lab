@@ -1,0 +1,9 @@
+:host {
+  ::ng-deep {
+    p-listbox {
+      .p-listbox-list-container {
+        max-height: 100% !important;
+      }
+    }
+  }
+}

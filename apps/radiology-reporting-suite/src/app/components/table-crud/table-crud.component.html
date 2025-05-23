@@ -3,6 +3,8 @@
 <p-table
   #tableElement
   [value]="_isLoading ? mockRows : rows()"
+  [scrollable]="true"
+  scrollHeight="flex"
   dataKey="id"
   editMode="row"
   selectionMode="single"

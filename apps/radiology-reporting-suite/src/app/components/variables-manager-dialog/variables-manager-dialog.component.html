@@ -1,7 +1,7 @@
 <radio-dialog-layout>
-  <div class="flex flex-col gap-2" dialog-content>
+  <div class="flex flex-col gap-2 h-full" dialog-content>
     @if (dialogData.finding) {
-      <radio-variables-manager [finding]="dialogData.finding">
+      <radio-variables-manager class="h-full" [finding]="dialogData.finding">
       </radio-variables-manager>
     }
   </div>

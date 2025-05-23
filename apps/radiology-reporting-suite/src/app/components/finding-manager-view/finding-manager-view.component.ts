@@ -300,7 +300,7 @@ export class FindingManagerViewComponent {
       modal: true,
       closable: true,
       width: '80%',
-      contentStyle: { overflow: 'auto' },
+      contentStyle: { overflowX: 'auto', overflowY: 'hidden', height: '80vh' },
       baseZIndex: 3000,
       position: 'top',
       data,
