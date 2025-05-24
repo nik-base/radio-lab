@@ -14,7 +14,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Editor, EditorEvents, Extensions } from '@tiptap/core';
+import { Editor, EditorEvents, Extension, Extensions } from '@tiptap/core';
 import { FontFamily } from '@tiptap/extension-font-family';
 import { MentionOptions } from '@tiptap/extension-mention';
 import { TableCell } from '@tiptap/extension-table-cell';
@@ -157,7 +157,7 @@ export class EditorComponent implements OnInit {
       bold: false,
       bulletList: false,
       orderedList: false,
-    }),
+    }) as Extension,
     EditorBold,
     Underline,
     EditorTextAlign,
