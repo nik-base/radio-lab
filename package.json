@@ -40,7 +40,7 @@
     "immer": "^10.1.1",
     "lodash-es": "^4.17.21",
     "material-symbols": "^0.31.3",
-    "ngx-indexed-db": "20.0.0",
+    "ngx-indexed-db": "20.0.1",
     "ngx-tiptap": "12.0.0",
     "primeflex": "4.0.0",
     "primeicons": "^7.0.0",

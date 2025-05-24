@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { forkJoin, map, mergeMap, Observable, of, switchMap, take } from 'rxjs';
+import { forkJoin, map, mergeMap, Observable, of, switchMap } from 'rxjs';
 
 import { VARIABLE_SOURCE } from '@app/constants';
 import { findNextSortOrderWhenOptional } from '@app/utils/functions/order.functions';
@@ -1051,7 +1051,6 @@ export class ReportDBService extends ReportBaseService {
     return this.dbService
       .getByID<TemplateDBModel>('templates', templateId)
       .pipe(
-        take(1),
         mergeMap((templateDb: TemplateDBModel) => {
           const templateDto: TemplateDto =
             this.mapTemplateDBModelToDto(templateDb);
@@ -1068,7 +1067,6 @@ export class ReportDBService extends ReportBaseService {
 
   private cloneFindingById$(findingId: string): Observable<FindingDto> {
     return this.dbService.getByID<FindingDBModel>('findings', findingId).pipe(
-      take(1),
       switchMap((originalFinding: FindingDBModel) =>
         this.dbService
           .getAllByIndex<FindingDBModel>(
@@ -1245,7 +1243,6 @@ export class ReportDBService extends ReportBaseService {
     return this.dbService
       .getByID<VariableDBModel>('variables', variableId)
       .pipe(
-        take(1),
         switchMap((originalVariable: VariableDBModel) =>
           this.dbService
             .getAllByIndex<VariableDBModel>(
@@ -1284,7 +1281,6 @@ export class ReportDBService extends ReportBaseService {
     templateId: string
   ): Observable<ScopeDto> {
     return this.dbService.getByID<ScopeDBModel>('scopes', scopeId).pipe(
-      take(1),
       switchMap((originalScope: ScopeDBModel) =>
         this.dbService
           .getAllByIndex<ScopeDBModel>(
@@ -1460,7 +1456,6 @@ export class ReportDBService extends ReportBaseService {
     return this.dbService
       .getByID<VariableValueDBModel>('variableValues', variableValueId)
       .pipe(
-        take(1),
         mergeMap((variableValue: VariableValueDBModel) =>
           this.createVariableValueInDb$({
             ...variableValue,
