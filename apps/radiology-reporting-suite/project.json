@@ -8,16 +8,12 @@
   "targets": {
     "build": {
       "executor": "@angular/build:application",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/radiology-reporting-suite",
         "index": "apps/radiology-reporting-suite/src/index.html",
         "browser": "apps/radiology-reporting-suite/src/main.ts",
-        "polyfills": [
-          "zone.js"
-        ],
+        "polyfills": ["zone.js"],
         "tsConfig": "apps/radiology-reporting-suite/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
@@ -26,9 +22,7 @@
             "input": "apps/radiology-reporting-suite/public"
           }
         ],
-        "styles": [
-          "apps/radiology-reporting-suite/src/styles.scss"
-        ],
+        "styles": ["apps/radiology-reporting-suite/src/styles.scss"],
         "scripts": []
       },
       "configurations": {
@@ -78,9 +72,7 @@
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/{projectRoot}"
-      ],
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
         "jestConfig": "apps/radiology-reporting-suite/jest.config.ts"
       }
@@ -96,9 +88,7 @@
     },
     "stylelint": {
       "executor": "nx-stylelint:lint",
-      "outputs": [
-        "{options.outputFile}"
-      ],
+      "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": [
           "apps/radiology-reporting-suite/**/*.css",
