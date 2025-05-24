@@ -177,6 +177,9 @@ export class EditorComponent implements OnInit {
 
   readonly editor: Editor = new Editor({
     extensions: this.editorExtensions,
+    parseOptions: {
+      preserveWhitespace: 'full',
+    },
     content: null,
     onCreate: (ctx: EditorEvents['create']) => {
       this.onEditorCreate(ctx);
@@ -341,7 +344,10 @@ export class EditorComponent implements OnInit {
   }
 
   private setEditorContent(editor: Editor, html: string | null) {
-    editor?.chain().setContent(html).run();
+    editor
+      ?.chain()
+      .setContent(html, false, { preserveWhitespace: 'full' })
+      .run();
   }
 
   private markEditorDirty(): void {
