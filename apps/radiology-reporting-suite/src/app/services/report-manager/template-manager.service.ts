@@ -4,8 +4,8 @@ import { Observable } from 'rxjs';
 import {
   SortOrderUpdateDto,
   TemplateCreateDto,
-  TemplateDataDto,
   TemplateDto,
+  TemplateExportDto,
   TemplateImportDto,
   TemplateUpdateDto,
 } from '../../models/data';
@@ -44,7 +44,7 @@ export class TemplateManagerService
     return this.reportService.importTemplate$(entity);
   }
 
-  export$(id: string): Observable<TemplateDataDto> {
+  export$(id: string): Observable<TemplateExportDto> {
     return this.reportService.exportTemplate$(id);
   }
 }

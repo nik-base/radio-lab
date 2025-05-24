@@ -8,15 +8,15 @@ import { exhaustMap, map, pipe, switchMap, tap } from 'rxjs';
 import { GenericEntityMapperService } from '@app/mapper/generic-entity-mapper.service';
 import {
   TemplateCreateDto,
-  TemplateDataDto,
   TemplateDto,
+  TemplateExportDto,
   TemplateImportDto,
   TemplateUpdateDto,
 } from '@app/models/data';
 import {
   Template,
   TemplateCreate,
-  TemplateData,
+  TemplateExport,
   TemplateImport,
   TemplateUpdate,
 } from '@app/models/domain';
@@ -99,12 +99,13 @@ export const TemplateStore = signalStore(
           switchMap((input: Template) =>
             templateManagerService.export$(input.id).pipe(
               map(
-                (dto: TemplateDataDto): TemplateData =>
-                  genericEntityMapper.mapFromDto<TemplateData, TemplateDataDto>(
-                    dto
-                  )
+                (dto: TemplateExportDto): TemplateExport =>
+                  genericEntityMapper.mapFromDto<
+                    TemplateExport,
+                    TemplateExportDto
+                  >(dto)
               ),
-              tap((result: TemplateData): void => {
+              tap((result: TemplateExport): void => {
                 fileService.downloadJSONObject(result, result.name, 2);
               }),
 
