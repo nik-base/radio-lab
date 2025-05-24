@@ -14,6 +14,7 @@ import {
   Signal,
   viewChild,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Editor, EditorEvents, Extension, Extensions } from '@tiptap/core';
 import { FontFamily } from '@tiptap/extension-font-family';
 import { MentionOptions } from '@tiptap/extension-mention';
@@ -35,7 +36,6 @@ import { HostControlDirective } from '@app/directives/host-control.directive';
 import { EditorContent } from '@app/models/domain';
 import { isNilOrEmpty } from '@app/utils/functions/common.functions';
 
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EditorBold } from './extensions/editor-bold.extension';
 import { EditorBulletedList } from './extensions/editor-bulleted-list.extension';
 import { EditorFontSize } from './extensions/editor-font-size.extension';

@@ -28,7 +28,7 @@ export class TemplateManagerListComponent {
   readonly templates: InputSignal<ReadonlyArray<Template>> =
     input.required<ReadonlyArray<Template>>();
 
-  readonly select: OutputEmitterRef<Template | null> =
+  readonly selection: OutputEmitterRef<Template | null> =
     output<Template | null>();
 
   readonly hostControlDirective: HostControlDirective<Template | null> | null =
@@ -40,7 +40,7 @@ export class TemplateManagerListComponent {
   filteredTemplates: Template[] = [];
 
   onSelect(event: AutoCompleteSelectEvent): void {
-    this.select.emit(event.value as Template | null);
+    this.selection.emit(event.value as Template | null);
   }
 
   filterTemplate(event: AutoCompleteCompleteEvent): void {

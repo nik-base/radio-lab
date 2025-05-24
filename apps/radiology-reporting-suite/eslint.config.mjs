@@ -1,15 +1,15 @@
-const nx = require('@nx/eslint-plugin');
-const baseConfig = require('../../eslint.config.js');
-const importPlugin = require('eslint-plugin-import');
-const rxjsPlugin = require('eslint-plugin-rxjs-x');
-const ngrxPlugin = require('@ngrx/eslint-plugin/v9');
-const angularTemplateParser = require('@angular-eslint/template-parser');
-const typscriptParser = require('@typescript-eslint/parser');
-const tseslint = require('typescript-eslint');
-const eslint = require('@eslint/js');
 
-module.exports = [
-  ...baseConfig,
+import angularTemplateParser from '@angular-eslint/template-parser';
+import eslint from '@eslint/js';
+import ngrxPlugin from '@ngrx/eslint-plugin/v9';
+import nx from '@nx/eslint-plugin';
+import importPlugin from 'eslint-plugin-import';
+import rxjsPlugin from 'eslint-plugin-rxjs-x';
+import tseslint from 'typescript-eslint';
+import eslintBaseConfig from '../../eslint.config.mjs';
+
+const eslintConfig = [
+  ...eslintBaseConfig,
   ...nx.configs['flat/angular'],
   ...nx.configs['flat/angular-template'],
   eslint.configs.recommended,
@@ -32,8 +32,7 @@ module.exports = [
     languageOptions: {
       parserOptions: {
         projectService: true,
-        tsconfigRootDir: __dirname,
-        parser: typscriptParser,
+        tsconfigRootDir: import.meta.dirname,
       }
     },
     files: ['**/*.ts'],
@@ -120,3 +119,5 @@ module.exports = [
     rules: {},
   },
 ];
+
+export default eslintConfig;

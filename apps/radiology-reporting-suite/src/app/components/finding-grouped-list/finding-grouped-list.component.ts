@@ -23,9 +23,9 @@ export class FindingGroupedListComponent {
   readonly groupedFindings: InputSignal<FindingGrouped[]> =
     input.required<FindingGrouped[]>();
 
-  readonly select: OutputEmitterRef<Finding> = output<Finding>();
+  readonly selection: OutputEmitterRef<Finding> = output<Finding>();
 
   onClick(finding: Finding): void {
-    this.select.emit(finding);
+    this.selection.emit(finding);
   }
 }

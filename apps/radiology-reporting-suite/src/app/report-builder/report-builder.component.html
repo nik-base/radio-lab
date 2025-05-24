@@ -4,7 +4,7 @@
       id="template-selector"
       class="h-full"
       [templates]="(templates$ | ngrxPush) ?? []"
-      (select)="onSelectTemplate($event)">
+      (selection)="onSelectTemplate($event)">
     </radio-template-selector>
   </div>
 
