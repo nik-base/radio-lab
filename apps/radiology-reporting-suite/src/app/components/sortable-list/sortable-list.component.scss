@@ -8,7 +8,6 @@
 
     .p-listbox {
       height: 100%;
-      /* min-height: 0; */
       display: flex;
       flex-direction: column;
     }
@@ -27,9 +26,9 @@
     }
 
     .p-listbox:not(.p-disabled)
-      .p-listbox-option:not(.p-listbox-option-selected):not(
-        .p-disabled
-      ):hover:not(:has(> .sortable-item-active)) {
+      .p-listbox-option:not(.p-listbox-option-selected, .p-disabled):hover:not(
+        :has(> .sortable-item-active)
+      ) {
       background: var(--p-listbox-option-focus-background) !important;
       color: var(--p-listbox-option-focus-color) !important;
     }

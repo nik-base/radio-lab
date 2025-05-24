@@ -1,4 +1,5 @@
 :host {
+  /* stylelint-disable-next-line selector-pseudo-element-no-unknown */
   ::ng-deep {
     p-listbox {
       .p-listbox-list-container {

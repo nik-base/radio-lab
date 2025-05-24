@@ -1,4 +1,5 @@
 :host {
+  /* stylelint-disable-next-line selector-pseudo-element-no-unknown */
   ::ng-deep {
     .radio-icon-only-file-upload .p-button-label {
       display: none; /* Hide the label text */
