@@ -8,7 +8,6 @@ import {
   OutputEmitterRef,
 } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { UntilDestroy } from '@ngneat/until-destroy';
 import {
   AutoCompleteCompleteEvent,
   AutoCompleteModule,
@@ -18,7 +17,6 @@ import {
 import { HostControlDirective } from '@app/directives/host-control.directive';
 import { Template } from '@app/models/domain';
 
-@UntilDestroy()
 @Component({
   selector: 'radio-template-selector',
   standalone: true,

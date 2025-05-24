@@ -1,11 +1,13 @@
 import {
   ChangeDetectorRef,
+  DestroyRef,
   Directive,
   forwardRef,
   inject,
   Injector,
   OnInit,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
   ControlValueAccessor,
@@ -20,11 +22,9 @@ import {
   ValidationErrors,
   Validator,
 } from '@angular/forms';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { isNil } from 'lodash-es';
 import { filter, tap } from 'rxjs';
 
-@UntilDestroy()
 @Directive({
   selector: '[radioHostControl]',
   standalone: true,
@@ -50,6 +50,8 @@ export class HostControlDirective<TValue = unknown>
 
   private readonly changeDetectorRef: ChangeDetectorRef =
     inject(ChangeDetectorRef);
+
+  readonly #destroyRef: DestroyRef = inject(DestroyRef);
 
   ngOnInit(): void {
     this.initControl();
@@ -146,7 +148,7 @@ export class HostControlDirective<TValue = unknown>
         tap((value: TValue): void => {
           ngControl.viewToModelUpdate(value);
         }),
-        untilDestroyed(this)
+        takeUntilDestroyed(this.#destroyRef)
       )
       .subscribe();
   }
@@ -157,7 +159,7 @@ export class HostControlDirective<TValue = unknown>
         tap((): void => {
           this.markForCheck();
         }),
-        untilDestroyed(this)
+        takeUntilDestroyed(this.#destroyRef)
       )
       .subscribe();
   }

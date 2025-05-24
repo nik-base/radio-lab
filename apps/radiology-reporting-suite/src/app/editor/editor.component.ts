@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import {
   Component,
+  DestroyRef,
   effect,
   HostBinding,
   inject,
@@ -13,7 +14,6 @@ import {
   Signal,
   viewChild,
 } from '@angular/core';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Editor, EditorEvents, Extension, Extensions } from '@tiptap/core';
 import { FontFamily } from '@tiptap/extension-font-family';
 import { MentionOptions } from '@tiptap/extension-mention';
@@ -35,6 +35,7 @@ import { HostControlDirective } from '@app/directives/host-control.directive';
 import { EditorContent } from '@app/models/domain';
 import { isNilOrEmpty } from '@app/utils/functions/common.functions';
 
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EditorBold } from './extensions/editor-bold.extension';
 import { EditorBulletedList } from './extensions/editor-bulleted-list.extension';
 import { EditorFontSize } from './extensions/editor-font-size.extension';
@@ -51,7 +52,6 @@ import {
 import { EditorToolbarComponent } from './toolbar/editor-toolbar.component';
 import { generateEditorMentionVariableConfig } from './utils/editor-extension.functions';
 
-@UntilDestroy()
 @Component({
   selector: 'radio-editor',
   standalone: true,
@@ -76,6 +76,8 @@ export class EditorComponent implements OnInit {
 
   readonly variableClick: OutputEmitterRef<EditorMentionVariableClickEventData> =
     output<EditorMentionVariableClickEventData>();
+
+  readonly #destroyRef: DestroyRef = inject(DestroyRef);
 
   @HostBinding('style.--editor-max-height')
   private _maxHeight: string | undefined;
@@ -333,7 +335,7 @@ export class EditorComponent implements OnInit {
           tap((value: EditorContent | null): void => {
             this.setEditorContent(this.editor, value?.html ?? null);
           }),
-          untilDestroyed(this)
+          takeUntilDestroyed(this.#destroyRef)
         )
         .subscribe();
   }
