@@ -12,13 +12,12 @@ import { Observable, OperatorFunction, tap } from 'rxjs';
 import { ApplicationError } from '@app/models/domain';
 import { LoggerService } from '@app/utils/services/logger.service';
 
-import { AppEntityState } from '../../report-manager/entity-state.interface';
+import { AppEntityState } from '../../entity-state.interface';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function withRequestStatus<
-  TStatus extends { id: string },
-  TAddon extends object = object,
->(initialState: AppEntityState<TStatus, TAddon>) {
+export function withRequestStatus<TStatus, TAddon extends object = object>(
+  initialState: AppEntityState<TStatus, TAddon>
+) {
   return signalStoreFeature(
     withState(initialState),
 

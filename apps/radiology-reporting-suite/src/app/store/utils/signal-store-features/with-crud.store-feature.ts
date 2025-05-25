@@ -29,7 +29,7 @@ import { GenericEntityMapperService } from '@app/mapper/generic-entity-mapper.se
 import { SortOrderUpdateDto } from '@app/models/data';
 import { SortOrderItem, SortOrderUpdate } from '@app/models/domain';
 import { EntityManagerBaseService } from '@app/services/report-manager/entity-manager-base.service';
-import { AppEntityState } from '@app/store/report-manager/entity-state.interface';
+import { AppEntityState } from '@app/store/entity-state.interface';
 import { orderBySortOrder } from '@app/utils/functions/order.functions';
 
 import { withRequestStatus } from './with-request-status.store-feature';

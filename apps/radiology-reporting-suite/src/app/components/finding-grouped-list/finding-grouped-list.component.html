@@ -1,22 +1,52 @@
+@let _isLoading = isLoading();
+@let _findingGroups = _isLoading ? mockFindingGroups : findingGroups();
+
 <div class="flex flex-col gap-1 w-full">
-  <p-accordion
-    class="flex flex-row"
-    styleClass="w-full"
-    [multiple]="true"
-    [activeIndex]="[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]">
-    @for (groupedFinding of groupedFindings(); track groupedFinding.group) {
-      <p-accordionTab [header]="groupedFinding.group">
-        <div class="flex flex-row flex-wrap gap-2">
-          @for (finding of groupedFinding.findings; track finding.id) {
-            <span>
-              <p-chip
-                (click)="onClick(finding)"
-                class="cursor-pointer"
-                [label]="finding.name" />
-            </span>
-          }
-        </div>
-      </p-accordionTab>
-    }
-  </p-accordion>
+  @if (_findingGroups.length > 0) {
+    <p-accordion
+      class="flex flex-col"
+      styleClass="w-full"
+      [multiple]="true"
+      [activeIndex]="[0]">
+      @for (findingGroup of _findingGroups; track findingGroup.id) {
+        <p-accordionTab [header]="findingGroup.name">
+          <div class="flex flex-row flex-wrap gap-2">
+            @let unclassified =
+              findingGroup.classifiers | findInArray: true : 'isDefault';
+
+            @let classified =
+              findingGroup.classifiers | filterArray: false : 'isDefault';
+
+            @let findingAndClassifiers =
+              unclassified?.findings | concatTwoArrays: classified;
+
+            @let sortedFindingAndClassifiers =
+              findingAndClassifiers | sortArray: 'sortOrder' : 'asc';
+
+            @for (
+              findingOrClassifier of sortedFindingAndClassifiers;
+              track findingOrClassifier.id
+            ) {
+              @if (_isLoading) {
+                <p-skeleton
+                  styleClass="mb-2"
+                  width="40px"
+                  height="2rem"
+                  borderRadius="16px" />
+              } @else {
+                <p-button
+                  [label]="findingOrClassifier.name"
+                  [rounded]="true"
+                  severity="secondary"
+                  size="small"
+                  (click)="onClick(findingOrClassifier)" />
+              }
+            }
+          </div>
+        </p-accordionTab>
+      }
+    </p-accordion>
+  } @else {
+    <div>No findings</div>
+  }
 </div>

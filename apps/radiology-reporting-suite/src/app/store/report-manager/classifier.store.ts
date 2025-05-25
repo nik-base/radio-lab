@@ -16,9 +16,9 @@ import {
 import { ClassifierManagerService } from '@app/services/report-manager/classifier-manager.service';
 import { isNotNil } from '@app/utils/functions/common.functions';
 
+import { AppEntityState } from '../entity-state.interface';
 import { withCRUD } from '../utils/signal-store-features/with-crud.store-feature';
 
-import { AppEntityState } from './entity-state.interface';
 import { FindingStore } from './finding.store';
 
 const initialState: AppEntityState<FindingClassifier> = {

@@ -1,54 +1,50 @@
-<div class="flex flex-col gap-2 h-full">
-  <div>
+@let _selectedTemplate = selectedTemplate();
+
+<div
+  class="flex flex-col gap-2 h-full"
+  [ngClass]="_selectedTemplate ? '' : 'template-center-container'">
+  <div
+    class="template-animation-container flex flex-col gap-4"
+    [ngClass]="{
+      'template-selector-centered': !_selectedTemplate,
+      'template-selector-top-left': _selectedTemplate,
+    }">
+    @if (!_selectedTemplate) {
+      <div class="title-text font-bold text-3xl leading-tight">
+        <span class="text-primary-500 dark:text-primary-400">
+          Select a template to continue
+        </span>
+      </div>
+    }
+
     <radio-template-selector
-      id="template-selector"
-      class="h-full"
-      [templates]="(templates$ | ngrxPush) ?? []"
+      [size]="_selectedTemplate ? undefined : 'large'"
+      floatLabelMode="on"
+      [templates]="templateStore$.current() ?? []"
       (selection)="onSelectTemplate($event)">
     </radio-template-selector>
   </div>
 
-  <div class="flex flex-col h-full">
-    @let templateData = templateData$ | ngrxPush;
-
-    @if (templateData) {
-      <p-splitter
-        [panelSizes]="[50, 50]"
-        [minSizes]="[30, 30]"
-        styleClass="h-full"
-        class="h-full">
-        <ng-template pTemplate>
-          <p-splitter
-            [panelSizes]="[20, 80]"
-            [minSizes]="[20, 60]"
-            styleClass="">
-            <ng-template pTemplate>
-              <radio-scope-list
-                class="w-full p-2"
-                [scopes]="templateData.scopes"
-                (changed)="onScopeChange($event)">
-              </radio-scope-list>
-            </ng-template>
-
-            <ng-template pTemplate>
-              <p-panel
-                header="Findings"
-                class="flex w-full h-full p-2"
-                styleClass="w-full  h-full overflow-auto">
-                <radio-finding-grouped-list
-                  class="w-full"
-                  [groupedFindings]="(groupedFindings$ | ngrxPush) ?? []">
-                </radio-finding-grouped-list>
-              </p-panel>
-            </ng-template>
-          </p-splitter>
-        </ng-template>
-
-        <ng-template pTemplate>
-          <radio-editor class="flex flex-col w-full p-2" maxHeight="90vh">
-          </radio-editor>
-        </ng-template>
-      </p-splitter>
-    }
-  </div>
+  @if (_selectedTemplate) {
+    <div class="report-builder-content-container h-full min-h-0">
+      <radio-report-builder-content
+        [isLoading]="templateDataStore$.isLoading()"
+        [templateData]="templateData()">
+      </radio-report-builder-content>
+    </div>
+  }
 </div>
+
+@let _isLoading = isLoading();
+
+<p-blockui [blocked]="_isLoading">
+  @if (_isLoading) {
+    <div class="flex items-center justify-center w-full h-full">
+      <p-progressSpinner
+        styleClass="custom-spinner"
+        strokeWidth="4"
+        animationDuration=".8s">
+      </p-progressSpinner>
+    </div>
+  }
+</p-blockui>

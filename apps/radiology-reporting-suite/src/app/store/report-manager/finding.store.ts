@@ -14,9 +14,9 @@ import {
 import { Finding, FindingCreate, FindingUpdate } from '@app/models/domain';
 import { FindingManagerService } from '@app/services/report-manager/finding-manager.service';
 
+import { AppEntityState } from '../entity-state.interface';
 import { withCRUD } from '../utils/signal-store-features/with-crud.store-feature';
 
-import { AppEntityState } from './entity-state.interface';
 import { VariableStore } from './variable-store';
 
 interface FindingStateAddon {

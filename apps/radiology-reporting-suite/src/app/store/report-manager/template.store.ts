@@ -24,9 +24,9 @@ import { TemplateManagerService } from '@app/services/report-manager/template-ma
 import { isNotNil } from '@app/utils/functions/common.functions';
 import { FileService } from '@app/utils/services/file.service';
 
+import { AppEntityState } from '../entity-state.interface';
 import { withCRUD } from '../utils/signal-store-features/with-crud.store-feature';
 
-import { AppEntityState } from './entity-state.interface';
 import { ScopeStore } from './scope.store';
 
 const initialState: AppEntityState<Template> = {

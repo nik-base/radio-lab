@@ -15,9 +15,8 @@ import {
 } from '@app/models/domain';
 import { VariableValueManagerService } from '@app/services/report-manager/variable-value-manager.service';
 
+import { AppEntityState } from '../entity-state.interface';
 import { withCRUD } from '../utils/signal-store-features/with-crud.store-feature';
-
-import { AppEntityState } from './entity-state.interface';
 
 interface VariableValueStateAddon {
   readonly inProgressFetchVariableId: string | null;

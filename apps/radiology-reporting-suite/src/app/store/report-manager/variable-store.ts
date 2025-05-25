@@ -23,9 +23,9 @@ import { VariableManagerService } from '@app/services/report-manager/variable-ma
 import { isNotNil } from '@app/utils/functions/common.functions';
 import { orderBySortOrder } from '@app/utils/functions/order.functions';
 
+import { AppEntityState } from '../entity-state.interface';
 import { withCRUD } from '../utils/signal-store-features/with-crud.store-feature';
 
-import { AppEntityState } from './entity-state.interface';
 import { VariableValueStore } from './variable-value.store';
 
 const initialState: AppEntityState<Variable> = {

@@ -8,33 +8,49 @@ import {
   OutputEmitterRef,
   Signal,
 } from '@angular/core';
+import { TooltipOptions } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ListboxChangeEvent, ListboxModule } from 'primeng/listbox';
+import { Skeleton } from 'primeng/skeleton';
 import { TooltipModule } from 'primeng/tooltip';
 
-import { Scope } from '@app/models/domain';
+import { APP_TOOLTIP_OPTIONS } from '@app/constants';
+import { ScopeData } from '@app/models/domain';
 
 @Component({
   selector: 'radio-scope-list',
   standalone: true,
-  imports: [CommonModule, ListboxModule, TooltipModule, ButtonModule],
+  imports: [CommonModule, ListboxModule, TooltipModule, ButtonModule, Skeleton],
   templateUrl: './scope-list.component.html',
+  styleUrls: ['./scope-list.component.scss'],
 })
 export class ScopeListComponent {
-  readonly scopes: InputSignal<ReadonlyArray<Scope>> =
-    input.required<ReadonlyArray<Scope>>();
+  readonly scopes: InputSignal<ScopeData[] | ReadonlyArray<ScopeData>> =
+    input.required<ScopeData[] | ReadonlyArray<ScopeData>>();
 
-  readonly changed: OutputEmitterRef<Scope> = output<Scope>();
+  readonly isLoading: InputSignal<boolean> = input<boolean>(true);
 
-  readonly normal: OutputEmitterRef<Scope> = output<Scope>();
+  readonly changed: OutputEmitterRef<ScopeData> = output<ScopeData>();
 
-  readonly scopeList: Signal<Scope[]> = computed(() => [...this.scopes()]);
+  readonly normal: OutputEmitterRef<ScopeData> = output<ScopeData>();
+
+  protected scopeList: Signal<ScopeData[]> = computed(() => [...this.scopes()]);
+
+  protected readonly mockScopes: ScopeData[] = Array<ScopeData>(5).fill({
+    id: '',
+    name: '',
+    sortOrder: 0,
+    templateId: '',
+    groups: [],
+  });
+
+  protected readonly tooltipOptions: TooltipOptions = APP_TOOLTIP_OPTIONS;
 
   onChange($event: ListboxChangeEvent): void {
-    this.changed.emit($event.value as Scope);
+    this.changed.emit($event.value as ScopeData);
   }
 
-  onNormal(scope: Scope): void {
+  onNormal(scope: ScopeData): void {
     this.normal.emit(scope);
   }
 }

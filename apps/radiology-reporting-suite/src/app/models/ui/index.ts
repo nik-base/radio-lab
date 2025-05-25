@@ -21,3 +21,5 @@ export { CommonDialogData } from './common-dialog-data.interface';
 export { DialogTemplateRendererData } from './dialog-template-renderer-data.interface';
 
 export { VariablesManagerDialogData } from './variables-manager-dialog-data.interface';
+
+export { VariableUI } from './variable-ui.interface';

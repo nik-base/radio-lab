@@ -1,7 +1,11 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { TemplateDataDto, TemplateDto } from '../../models/data';
+import {
+  TemplateDataDto,
+  TemplateDto,
+  VariableValueDto,
+} from '../../models/data';
 import { ReportBaseService } from '../report-base.service';
 
 @Injectable({ providedIn: 'root' })
@@ -14,5 +18,9 @@ export class ReportBuilderService {
 
   fetchTemplate$(templateId: string): Observable<TemplateDataDto> {
     return this.reportService.fetchTemplate$(templateId);
+  }
+
+  fetchVariableValues$(variableId: string): Observable<VariableValueDto[]> {
+    return this.reportService.fetchVariableValues$(variableId);
   }
 }

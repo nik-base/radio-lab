@@ -1,0 +1,41 @@
+@let _isLoading = isLoading();
+
+<p-splitter
+  [panelSizes]="[50, 50]"
+  [minSizes]="[30, 30]"
+  styleClass="h-full"
+  class="h-full">
+  <ng-template #panel>
+    <p-splitter [panelSizes]="[20, 80]" [minSizes]="[20, 60]" styleClass="">
+      <ng-template #panel>
+        <radio-scope-list
+          class="w-full p-2"
+          [isLoading]="_isLoading"
+          [scopes]="templateData()?.scopes ?? []"
+          (changed)="onScopeChange($event)">
+        </radio-scope-list>
+      </ng-template>
+
+      <ng-template #panel>
+        <p-panel
+          class="flex w-full h-full p-2"
+          styleClass="w-full h-full overflow-auto">
+          <ng-template #header>
+            <div class="flex items-center gap-2 font-semibold text-gray-500">
+              Findings
+            </div>
+          </ng-template>
+          <radio-finding-grouped-list
+            class="w-full"
+            [isLoading]="_isLoading"
+            [findingGroups]="groupedFindings()">
+          </radio-finding-grouped-list>
+        </p-panel>
+      </ng-template>
+    </p-splitter>
+  </ng-template>
+
+  <ng-template #panel>
+    <radio-report-builder-editor></radio-report-builder-editor>
+  </ng-template>
+</p-splitter>

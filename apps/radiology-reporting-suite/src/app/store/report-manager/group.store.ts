@@ -20,10 +20,10 @@ import {
 import { GroupManagerService } from '@app/services/report-manager/group-manager.service';
 import { isNotNil } from '@app/utils/functions/common.functions';
 
+import { AppEntityState } from '../entity-state.interface';
 import { withCRUD } from '../utils/signal-store-features/with-crud.store-feature';
 
 import { ClassifierStore } from './classifier.store';
-import { AppEntityState } from './entity-state.interface';
 
 const initialState: AppEntityState<FindingGroup> = {
   current: null,

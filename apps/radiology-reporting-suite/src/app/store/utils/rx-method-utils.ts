@@ -2,7 +2,7 @@ import { patchState, WritableStateSource } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { OperatorFunction, pipe, tap } from 'rxjs';
 
-import { AppEntityState } from '../report-manager/entity-state.interface';
+import { AppEntityState } from '../entity-state.interface';
 
 export function rxMethodWithEntityStatus<
   TStatus extends { id: string },

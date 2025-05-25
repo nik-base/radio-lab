@@ -12,9 +12,9 @@ import { Scope, ScopeCreate, ScopeUpdate } from '@app/models/domain';
 import { ScopeManagerService } from '@app/services/report-manager/scope-manager.service';
 import { isNotNil } from '@app/utils/functions/common.functions';
 
+import { AppEntityState } from '../entity-state.interface';
 import { withCRUD } from '../utils/signal-store-features/with-crud.store-feature';
 
-import { AppEntityState } from './entity-state.interface';
 import { GroupStore } from './group.store';
 
 const initialState: AppEntityState<Scope> = {

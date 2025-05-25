@@ -1,11 +1,42 @@
-<p-autoComplete
-  [formControl]="hostControlDirective?.control ?? innerFormControl"
-  placeholder="Template"
-  [forceSelection]="true"
-  [dropdown]="true"
-  appendTo="body"
-  [suggestions]="filteredTemplates"
-  (completeMethod)="filterTemplate($event)"
-  (onSelect)="onSelect($event)"
-  field="name"
-  id="template-selector" />
+@let _size = size();
+@let _placeholder = inputPlaceholder();
+@let _floatLabelMode = floatLabelMode();
+
+@if (_floatLabelMode) {
+  <p-floatlabel [variant]="_floatLabelMode">
+    <ng-container [ngTemplateOutlet]="templateSelector"></ng-container>
+
+    <label for="template-selector">{{ placeholder() }}</label>
+  </p-floatlabel>
+} @else {
+  <ng-container [ngTemplateOutlet]="templateSelector"></ng-container>
+}
+
+<ng-template #templateSelector>
+  @if (_size) {
+    <p-autoComplete
+      [formControl]="hostControlDirective?.control ?? innerFormControl"
+      [placeholder]="_placeholder"
+      [forceSelection]="true"
+      [dropdown]="true"
+      [size]="_size"
+      appendTo="body"
+      [suggestions]="filteredTemplates"
+      (completeMethod)="filterTemplate($event)"
+      (onSelect)="onSelect($event)"
+      field="name"
+      id="template-selector" />
+  } @else {
+    <p-autoComplete
+      [formControl]="hostControlDirective?.control ?? innerFormControl"
+      [placeholder]="_placeholder"
+      [forceSelection]="true"
+      [dropdown]="true"
+      appendTo="body"
+      [suggestions]="filteredTemplates"
+      (completeMethod)="filterTemplate($event)"
+      (onSelect)="onSelect($event)"
+      field="name"
+      id="template-selector" />
+  }
+</ng-template>
