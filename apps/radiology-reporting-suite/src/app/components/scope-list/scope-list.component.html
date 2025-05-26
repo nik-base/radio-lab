@@ -4,7 +4,9 @@
   emptyMessage="No scopes available"
   [options]="_isLoading ? mockScopes : scopeList()"
   optionLabel="name"
+  [(ngModel)]="selectedScope"
   [listStyle]="{ maxHeight: '100%' }"
+  [metaKeySelection]="false"
   styleClass="w-full max-h-full"
   (onChange)="onChange($event)">
   <ng-template #header>

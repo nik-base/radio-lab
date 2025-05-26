@@ -4,10 +4,14 @@ import {
   computed,
   input,
   InputSignal,
+  model,
+  ModelSignal,
   output,
   OutputEmitterRef,
   Signal,
 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { isNil } from 'lodash-es';
 import { TooltipOptions } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ListboxChangeEvent, ListboxModule } from 'primeng/listbox';
@@ -20,7 +24,14 @@ import { ScopeData } from '@app/models/domain';
 @Component({
   selector: 'radio-scope-list',
   standalone: true,
-  imports: [CommonModule, ListboxModule, TooltipModule, ButtonModule, Skeleton],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ListboxModule,
+    TooltipModule,
+    ButtonModule,
+    Skeleton,
+  ],
   templateUrl: './scope-list.component.html',
   styleUrls: ['./scope-list.component.scss'],
 })
@@ -36,6 +47,11 @@ export class ScopeListComponent {
 
   protected scopeList: Signal<ScopeData[]> = computed(() => [...this.scopes()]);
 
+  protected selectedScope: ModelSignal<ScopeData | null> =
+    model<ScopeData | null>(null);
+
+  private previousSelectedScope: ScopeData | null = null;
+
   protected readonly mockScopes: ScopeData[] = Array<ScopeData>(5).fill({
     id: '',
     name: '',
@@ -47,7 +63,16 @@ export class ScopeListComponent {
   protected readonly tooltipOptions: TooltipOptions = APP_TOOLTIP_OPTIONS;
 
   onChange($event: ListboxChangeEvent): void {
-    this.changed.emit($event.value as ScopeData);
+    const scopeData: ScopeData | null = $event.value as ScopeData | null;
+
+    if (isNil(scopeData)) {
+      setTimeout(() => this.selectedScope.set(this.previousSelectedScope), 0);
+      return;
+    }
+
+    this.previousSelectedScope = scopeData;
+
+    this.changed.emit(scopeData);
   }
 
   onNormal(scope: ScopeData): void {

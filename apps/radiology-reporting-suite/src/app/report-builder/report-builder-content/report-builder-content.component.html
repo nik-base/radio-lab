@@ -25,11 +25,19 @@
               Findings
             </div>
           </ng-template>
-          <radio-finding-grouped-list
-            class="w-full"
-            [isLoading]="_isLoading"
-            [findingGroups]="groupedFindings()">
-          </radio-finding-grouped-list>
+
+          @if (selectedScope()) {
+            <radio-finding-grouped-list
+              class="w-full"
+              [isLoading]="_isLoading"
+              [findingGroups]="groupedFindings()">
+            </radio-finding-grouped-list>
+          } @else {
+            <div class="flex flex-col gap-2 w-full items-center p-8">
+              <span class="material-symbols-outlined">touch_app</span>
+              <span>Please select a scope to see findings</span>
+            </div>
+          }
         </p-panel>
       </ng-template>
     </p-splitter>

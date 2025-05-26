@@ -1,4 +1,3 @@
-// concat-two-arrays.pipe.ts
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({

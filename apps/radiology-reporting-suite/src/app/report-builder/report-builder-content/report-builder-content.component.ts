@@ -1,7 +1,10 @@
 import {
   Component,
+  computed,
+  effect,
   input,
   InputSignal,
+  Signal,
   signal,
   WritableSignal,
 } from '@angular/core';
@@ -33,10 +36,28 @@ export class ReportBuilderContentComponent {
 
   readonly isLoading: InputSignal<boolean> = input<boolean>(true);
 
-  protected readonly groupedFindings: WritableSignal<FindingGroupData[]> =
-    signal<FindingGroupData[]>([]);
+  protected readonly selectedScope: WritableSignal<ScopeData | null> =
+    signal<ScopeData | null>(null);
+
+  protected readonly groupedFindings: Signal<FindingGroupData[]> = computed(
+    () => [...(this.selectedScope()?.groups ?? [])]
+  );
+
+  constructor() {
+    this.effectTemplateDataChange();
+  }
 
   onScopeChange(scope: ScopeData): void {
-    this.groupedFindings.set([...scope.groups]);
+    this.selectedScope.set(scope);
+  }
+
+  private effectTemplateDataChange(): void {
+    effect(() => {
+      if (this.templateData()) {
+        this.selectedScope.set(null);
+      } else {
+        this.selectedScope.set(null);
+      }
+    });
   }
 }

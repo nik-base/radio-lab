@@ -11,9 +11,16 @@ import { map, pipe, switchMap, tap } from 'rxjs';
 
 import { GenericEntityMapperService } from '@app/mapper/generic-entity-mapper.service';
 import { TemplateDataDto } from '@app/models/data';
-import { Template, TemplateData } from '@app/models/domain';
+import {
+  FindingClassifierData,
+  FindingGroupData,
+  ScopeData,
+  Template,
+  TemplateData,
+} from '@app/models/domain';
 import { ReportBuilderService } from '@app/services/report-builder/report-builder.service';
 import { isNotNil } from '@app/utils/functions/common.functions';
+import { orderBySortOrder } from '@app/utils/functions/order.functions';
 
 import { AppEntityState } from '../entity-state.interface';
 import { withRequestStatus } from '../utils/signal-store-features/with-request-status.store-feature';
@@ -40,9 +47,42 @@ export const ReportBuilderTemplateDataStore = signalStore(
             return null;
           }
 
-          return templateMap.has(templateId)
-            ? (templateMap.get(templateId) ?? null)
-            : null;
+          if (!templateMap.has(templateId)) {
+            return null;
+          }
+
+          const templateDataItem: TemplateData | undefined =
+            templateMap.get(templateId);
+
+          if (isNil(templateDataItem)) {
+            return null;
+          }
+
+          const sortedScopes: ScopeData[] = orderBySortOrder(
+            templateDataItem.scopes
+          ).map(
+            (scope: ScopeData): ScopeData => ({
+              ...scope,
+              groups: orderBySortOrder(scope.groups).map(
+                (group: FindingGroupData): FindingGroupData => ({
+                  ...group,
+                  classifiers: orderBySortOrder(group.classifiers).map(
+                    (
+                      classifier: FindingClassifierData
+                    ): FindingClassifierData => ({
+                      ...classifier,
+                      findings: orderBySortOrder(classifier.findings),
+                    })
+                  ),
+                })
+              ),
+            })
+          );
+
+          return {
+            ...templateDataItem,
+            scopes: sortedScopes,
+          };
         })
     ),
   })),

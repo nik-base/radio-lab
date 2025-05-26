@@ -1,7 +1,7 @@
 @let _selectedTemplate = selectedTemplate();
 
 <div
-  class="flex flex-col gap-2 h-full"
+  class="flex flex-col gap-4 h-full"
   [ngClass]="_selectedTemplate ? '' : 'template-center-container'">
   <div
     class="template-animation-container flex flex-col gap-4"
@@ -20,7 +20,7 @@
     <radio-template-selector
       [size]="_selectedTemplate ? undefined : 'large'"
       floatLabelMode="on"
-      [templates]="templateStore$.current() ?? []"
+      [templates]="templateStore$.templates() ?? []"
       (selection)="onSelectTemplate($event)">
     </radio-template-selector>
   </div>

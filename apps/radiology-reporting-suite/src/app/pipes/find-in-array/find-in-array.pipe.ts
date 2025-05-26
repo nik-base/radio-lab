@@ -1,4 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { isNil } from 'lodash-es';
 
 @Pipe({
   name: 'findInArray',
@@ -9,7 +10,7 @@ export class FindInArrayPipe implements PipeTransform {
     propertyValue: TValue,
     propertyName?: keyof TArrayItem
   ): TArrayItem | undefined {
-    if (!items?.length || !propertyValue) {
+    if (!items?.length || isNil(propertyValue)) {
       return undefined;
     }
 
@@ -19,7 +20,7 @@ export class FindInArrayPipe implements PipeTransform {
         return item[propertyName] === propertyValue;
       } else {
         // If items are simple strings
-        return item === propertyValue;
+        return item === (propertyValue as unknown as TArrayItem);
       }
     });
   }

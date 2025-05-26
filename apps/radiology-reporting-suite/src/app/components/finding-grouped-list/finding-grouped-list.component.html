@@ -1,5 +1,5 @@
 @let _isLoading = isLoading();
-@let _findingGroups = _isLoading ? mockFindingGroups : findingGroups();
+@let _findingGroups = _isLoading ? mockFindingGroups : findingGroupList();
 
 <div class="flex flex-col gap-1 w-full">
   @if (_findingGroups.length > 0) {
@@ -7,46 +7,72 @@
       class="flex flex-col"
       styleClass="w-full"
       [multiple]="true"
-      [activeIndex]="[0]">
+      [value]="[_findingGroups[0].id]">
       @for (findingGroup of _findingGroups; track findingGroup.id) {
-        <p-accordionTab [header]="findingGroup.name">
-          <div class="flex flex-row flex-wrap gap-2">
-            @let unclassified =
-              findingGroup.classifiers | findInArray: true : 'isDefault';
+        <p-accordionpanel [value]="findingGroup.id">
+          <p-accordion-header>{{ findingGroup.name }}</p-accordion-header>
 
-            @let classified =
-              findingGroup.classifiers | filterArray: false : 'isDefault';
+          <p-accordion-content>
+            <div class="flex flex-row flex-wrap gap-2">
+              @let unclassified =
+                findingGroup.classifiers | findInArray: true : 'isDefault';
 
-            @let findingAndClassifiers =
-              unclassified?.findings | concatTwoArrays: classified;
+              @let classified =
+                findingGroup.classifiers | filterArray: false : 'isDefault';
 
-            @let sortedFindingAndClassifiers =
-              findingAndClassifiers | sortArray: 'sortOrder' : 'asc';
+              @let findingAndClassifiers =
+                unclassified?.findings | concatTwoArrays: classified;
 
-            @for (
-              findingOrClassifier of sortedFindingAndClassifiers;
-              track findingOrClassifier.id
-            ) {
-              @if (_isLoading) {
-                <p-skeleton
-                  styleClass="mb-2"
-                  width="40px"
-                  height="2rem"
-                  borderRadius="16px" />
-              } @else {
-                <p-button
-                  [label]="findingOrClassifier.name"
-                  [rounded]="true"
-                  severity="secondary"
-                  size="small"
-                  (click)="onClick(findingOrClassifier)" />
+              @let sortedFindingAndClassifiers =
+                findingAndClassifiers | sortArray: 'sortOrder' : 'asc';
+
+              @for (
+                findingOrClassifier of sortedFindingAndClassifiers;
+                track findingOrClassifier.id
+              ) {
+                @if (_isLoading) {
+                  <p-skeleton
+                    width="10rem"
+                    height="2rem"
+                    borderRadius="var(--p-button-rounded-border-radius)" />
+                } @else {
+                  @if (Object.hasOwn(findingOrClassifier, 'classifierId')) {
+                    @let finding =
+                      findingOrClassifier | castToType: findingType;
+
+                    <p-button
+                      [label]="findingOrClassifier.name"
+                      [rounded]="true"
+                      severity="secondary"
+                      (click)="onFindingClick(finding)" />
+                  } @else {
+                    @let classifier =
+                      findingOrClassifier | castToType: classifierType;
+
+                    <p-splitbutton
+                      #classifierButton
+                      [label]="findingOrClassifier.name"
+                      [rounded]="true"
+                      severity="secondary"
+                      [model]="
+                        classifier
+                          | classifierToMenuItems
+                            : onFindingInClassifierClick
+                            : this
+                      "
+                      (onClick)="onClassifierClick($event, classifierButton)" />
+                  }
+                }
               }
-            }
-          </div>
-        </p-accordionTab>
+            </div>
+          </p-accordion-content>
+        </p-accordionpanel>
       }
     </p-accordion>
   } @else {
-    <div>No findings</div>
+    <div class="flex flex-col gap-2 w-full items-center p-8">
+      <span class="material-symbols-outlined">database_off</span>
+      <span>No findings available</span>
+    </div>
   }
 </div>
