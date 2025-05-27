@@ -122,6 +122,8 @@ export class FindingGroupedListComponent {
   }
 
   onClassifierClick(event: MouseEvent, splitButton: SplitButton) {
-    setTimeout(() => splitButton.onDropdownButtonClick(event), 0);
+    event.preventDefault();
+
+    setTimeout(() => splitButton.onDropdownButtonClick(event));
   }
 }

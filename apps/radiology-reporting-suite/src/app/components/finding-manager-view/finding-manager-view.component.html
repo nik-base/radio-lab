@@ -32,7 +32,7 @@
   <p-divider />
 
   <div class="flex h-full min-h-0 overflow-auto">
-    <div [formGroup]="formGroup" class="flex flex-col gap-2 w-full">
+    <div [formGroup]="formGroup" class="flex flex-col gap-4 w-full">
       <div class="flex flex-row gap-8">
         <div>
           <p-floatLabel>
@@ -60,7 +60,7 @@
         </div>
       </div>
 
-      <div>
+      <div class="flex flex-col gap-2">
         <label for="findingDescription">Description</label>
 
         <radio-editor
@@ -82,7 +82,7 @@
         }
       </div>
 
-      <div>
+      <div class="flex flex-col gap-2">
         <label for="findingImpression">Impression</label>
 
         <radio-editor
@@ -94,7 +94,7 @@
         </radio-editor>
       </div>
 
-      <div>
+      <div class="flex flex-col gap-2">
         <label for="findingRecommendation">Recommendation</label>
 
         <radio-editor

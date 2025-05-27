@@ -75,7 +75,11 @@ export class ScopeListComponent {
     this.changed.emit(scopeData);
   }
 
-  onNormal(scope: ScopeData): void {
+  onNormal(event: Event, scope: ScopeData): void {
+    event.preventDefault();
+
+    event.stopPropagation();
+
     this.normal.emit(scope);
   }
 }
