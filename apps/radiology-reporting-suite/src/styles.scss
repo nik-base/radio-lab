@@ -18,6 +18,7 @@ html {
   display: flex;
   scrollbar-width: thin;
   scrollbar-color: var(--p-surface-400, #c1c1c1);
+  background-color: var(--p-surface-100);
 }
 
 html > body {
