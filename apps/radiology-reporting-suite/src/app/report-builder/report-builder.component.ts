@@ -6,14 +6,15 @@ import {
   OnInit,
   signal,
   Signal,
+  viewChild,
   WritableSignal,
 } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { BlockUI } from 'primeng/blockui';
+import { Button } from 'primeng/button';
 import { ProgressSpinner } from 'primeng/progressspinner';
 
-import { EditorValidators } from '@app/editor/validators/editor-validator';
-import { EditorContent, Template, TemplateData } from '@app/models/domain';
+import { Template, TemplateData } from '@app/models/domain';
+import { ReportBuilderEditorStore } from '@app/store/report-builder/report-builder-editor.store';
 import { ReportBuilderTemplateDataStore } from '@app/store/report-builder/report-builder-template-data.store';
 import { ReportBuilderTemplateStore } from '@app/store/report-builder/report-builder-templates-store';
 import { ReportBuilderVariableValueStore } from '@app/store/report-builder/report-builder-variable-value.store';
@@ -30,12 +31,14 @@ import { ReportBuilderContentComponent } from './report-builder-content/report-b
     TemplateManagerListComponent,
     BlockUI,
     ProgressSpinner,
+    Button,
     ReportBuilderContentComponent,
   ],
   providers: [
     ReportBuilderTemplateStore,
     ReportBuilderTemplateDataStore,
     ReportBuilderVariableValueStore,
+    ReportBuilderEditorStore,
   ],
   templateUrl: './report-builder.component.html',
   styleUrl: './report-builder.component.scss',
@@ -52,6 +55,10 @@ export class ReportBuilderComponent implements OnInit {
   protected readonly variableValueStore$: InstanceType<
     typeof ReportBuilderVariableValueStore
   > = inject(ReportBuilderVariableValueStore);
+
+  protected readonly editorStore$: InstanceType<
+    typeof ReportBuilderEditorStore
+  > = inject(ReportBuilderEditorStore);
 
   protected readonly isLoading: Signal<boolean> = computed(() => {
     return (
@@ -73,17 +80,23 @@ export class ReportBuilderComponent implements OnInit {
     }
   );
 
-  readonly editorControl: FormControl<EditorContent | null> =
-    new FormControl<EditorContent | null>(null, [EditorValidators.required()]);
+  protected readonly reportContent: Signal<
+    ReportBuilderContentComponent | undefined
+  > = viewChild<ReportBuilderContentComponent | undefined>('reportContent');
 
   protected readonly selectedTemplate: WritableSignal<Template | null> =
     signal<Template | null>(null);
+
+  protected readonly templateChangeConfirmationMessage: string =
+    'All changes to your report will be lost. Are you sure you want to discard changes to current report and switch template?';
 
   ngOnInit(): void {
     this.templateStore$.fetchAll();
   }
 
   onSelectTemplate(template: Template | null): void {
+    this.reportContent()?.resetEditor();
+
     this.selectedTemplate.set(template);
 
     if (!template) {

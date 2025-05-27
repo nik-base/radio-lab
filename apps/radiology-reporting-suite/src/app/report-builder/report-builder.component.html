@@ -17,17 +17,32 @@
       </div>
     }
 
-    <radio-template-selector
-      [size]="_selectedTemplate ? undefined : 'large'"
-      floatLabelMode="on"
-      [templates]="templateStore$.templates() ?? []"
-      (selection)="onSelectTemplate($event)">
-    </radio-template-selector>
+    <div class="flex flex-row gap-4">
+      <radio-template-selector
+        floatLabelMode="on"
+        [size]="_selectedTemplate ? undefined : 'large'"
+        [templates]="templateStore$.templates() ?? []"
+        [shouldConfirmBeforeSelect]="editorStore$.isDirty()"
+        [confirmationMessage]="templateChangeConfirmationMessage"
+        (selection)="onSelectTemplate($event)">
+      </radio-template-selector>
+
+      @if (_selectedTemplate) {
+        <p-button
+          class="template-all-normal-button"
+          label="All Normal"
+          variant="outlined"
+          severity="success"
+          icon="pi pi-check-circle"
+          iconPos="left" />
+      }
+    </div>
   </div>
 
   @if (_selectedTemplate) {
     <div class="report-builder-content-container h-full min-h-0">
       <radio-report-builder-content
+        #reportContent
         [isLoading]="templateDataStore$.isLoading()"
         [templateData]="templateData()">
       </radio-report-builder-content>

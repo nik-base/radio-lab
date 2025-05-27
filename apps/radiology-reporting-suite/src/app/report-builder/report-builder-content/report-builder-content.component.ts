@@ -6,6 +6,7 @@ import {
   InputSignal,
   Signal,
   signal,
+  viewChild,
   WritableSignal,
 } from '@angular/core';
 import { PanelModule } from 'primeng/panel';
@@ -43,12 +44,19 @@ export class ReportBuilderContentComponent {
     () => [...(this.selectedScope()?.groups ?? [])]
   );
 
+  protected readonly reportEditor: Signal<ReportBuilderEditorComponent> =
+    viewChild.required<ReportBuilderEditorComponent>('reportEditor');
+
   constructor() {
     this.effectTemplateDataChange();
   }
 
   onScopeChange(scope: ScopeData): void {
     this.selectedScope.set(scope);
+  }
+
+  resetEditor(): void {
+    this.reportEditor().reset();
   }
 
   private effectTemplateDataChange(): void {

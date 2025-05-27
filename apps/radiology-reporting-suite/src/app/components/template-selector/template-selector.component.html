@@ -24,6 +24,7 @@
       [suggestions]="filteredTemplates"
       (completeMethod)="filterTemplate($event)"
       (onSelect)="onSelect($event)"
+      (onBlur)="onBlur($event)"
       field="name"
       id="template-selector" />
   } @else {
@@ -36,7 +37,10 @@
       [suggestions]="filteredTemplates"
       (completeMethod)="filterTemplate($event)"
       (onSelect)="onSelect($event)"
+      (onBlur)="onBlur($event)"
       field="name"
       id="template-selector" />
   }
 </ng-template>
+
+<p-confirmdialog />

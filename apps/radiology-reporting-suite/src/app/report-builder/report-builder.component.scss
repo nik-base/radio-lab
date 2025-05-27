@@ -48,6 +48,10 @@
   }
 }
 
+.template-all-normal-button {
+  animation: fade-in-all-normal-button 0.5s ease-in-out 1s forwards;
+}
+
 .report-builder-content-container {
   opacity: 0;
   animation: fade-in-report-builder-content 1.5s ease-in-out forwards;
@@ -57,5 +61,17 @@
 @keyframes fade-in-report-builder-content {
   to {
     opacity: 1;
+  }
+}
+
+@keyframes fade-in-all-normal-button {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
