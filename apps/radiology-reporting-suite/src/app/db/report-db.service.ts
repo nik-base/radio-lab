@@ -1,4 +1,5 @@
 import { inject, Injectable } from '@angular/core';
+import { NgxIndexedDBService } from 'ngx-indexed-db';
 import { forkJoin, map, mergeMap, Observable, of, switchMap } from 'rxjs';
 
 import { VARIABLE_SOURCE } from '@app/constants';
@@ -58,7 +59,6 @@ import {
 } from '../models/data';
 import { ReportBaseService } from '../services/report-base.service';
 
-import { DelayedNgxIndexedDBService } from './delayed-ngx-indexed-db.service';
 import { EditorVariableReplaceService } from './editor-variable-replace.service';
 import {
   FindingClassifierDBModel,
@@ -72,9 +72,7 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class ReportDBService extends ReportBaseService {
-  private readonly dbService: DelayedNgxIndexedDBService = inject(
-    DelayedNgxIndexedDBService
-  );
+  private readonly dbService: NgxIndexedDBService = inject(NgxIndexedDBService);
 
   private readonly editorVariableReplaceService: EditorVariableReplaceService =
     inject(EditorVariableReplaceService);
