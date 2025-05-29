@@ -5,6 +5,8 @@ import {
   input,
   InputSignal,
   OnInit,
+  Signal,
+  viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -16,7 +18,8 @@ import {
 import { tap } from 'rxjs';
 
 import { EditorComponent } from '@app/editor/editor.component';
-import { EditorContent } from '@app/models/domain';
+import { EditorContent, Template } from '@app/models/domain';
+import { EditorFindingData } from '@app/models/ui';
 import { ReportBuilderEditorStore } from '@app/store/report-builder/report-builder-editor.store';
 
 @Component({
@@ -32,6 +35,9 @@ export class ReportBuilderEditorComponent implements OnInit {
 
   readonly isLoading: InputSignal<boolean> = input<boolean>(true);
 
+  protected readonly editor: Signal<EditorComponent> =
+    viewChild.required<EditorComponent>('editor');
+
   protected readonly editorControl: FormControl<EditorContent | null> =
     new FormControl<EditorContent | null>(null);
 
@@ -39,6 +45,14 @@ export class ReportBuilderEditorComponent implements OnInit {
 
   ngOnInit(): void {
     this.handleEditorValueChanges();
+  }
+
+  insertReportProtocol(template: Template): void {
+    this.editor().insertReportProtocol(template);
+  }
+
+  insertReportFinding(finding: EditorFindingData): void {
+    this.editor().insertReportFinding(finding);
   }
 
   reset(): void {

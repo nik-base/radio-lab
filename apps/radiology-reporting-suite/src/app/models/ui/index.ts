@@ -23,3 +23,5 @@ export { DialogTemplateRendererData } from './dialog-template-renderer-data.inte
 export { VariablesManagerDialogData } from './variables-manager-dialog-data.interface';
 
 export { VariableUI } from './variable-ui.interface';
+
+export { EditorFindingData } from './editor-finding-data.interface';

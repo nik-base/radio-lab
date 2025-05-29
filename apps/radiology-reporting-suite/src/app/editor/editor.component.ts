@@ -18,6 +18,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Editor, EditorEvents, Extension, Extensions } from '@tiptap/core';
 import { FontFamily } from '@tiptap/extension-font-family';
 import { MentionOptions } from '@tiptap/extension-mention';
+import Paragraph from '@tiptap/extension-paragraph';
 import { TableCell } from '@tiptap/extension-table-cell';
 import { TableHeader } from '@tiptap/extension-table-header';
 import { TableRow } from '@tiptap/extension-table-row';
@@ -33,7 +34,8 @@ import { ContextMenu } from 'primeng/contextmenu';
 import { Observable, of, Subscription, tap } from 'rxjs';
 
 import { HostControlDirective } from '@app/directives/host-control.directive';
-import { EditorContent } from '@app/models/domain';
+import { EditorContent, Template } from '@app/models/domain';
+import { EditorFindingData } from '@app/models/ui';
 import { isNilOrEmpty } from '@app/utils/functions/common.functions';
 
 import { EditorBold } from './extensions/editor-bold.extension';
@@ -43,7 +45,10 @@ import { EditorMentionVariable } from './extensions/editor-mention-variable.exte
 import { EditorNodeAlign } from './extensions/editor-node-align.extension';
 import { EditorOrderedList } from './extensions/editor-ordered-list.extension';
 import { EditorTable } from './extensions/editor-table.extension';
-import { EditorTextAlign } from './extensions/editor-text-align.extensin';
+import { EditorTextAlign } from './extensions/editor-text-align.extension';
+import { EditorReportDiv } from './extensions/radio-extensions/editor-report-div.extension';
+import { EditorReportFinding } from './extensions/radio-extensions/editor-report-finding.extension';
+import { EditorReportProtocol } from './extensions/radio-extensions/editor-report-protocol.extension';
 import {
   EditorMentionVariableClickEventData,
   EditorMentionVariableItem,
@@ -154,12 +159,24 @@ export class EditorComponent implements OnInit {
     EditorTable.configure({ allowTableNodeSelection: true, resizable: true }),
   ];
 
+  private readonly editorReportExtensions: Extensions = [
+    EditorReportDiv,
+    EditorReportProtocol,
+    EditorReportFinding,
+  ];
+
   private readonly editorExtensions: Extensions = [
     StarterKit.configure({
       bold: false,
       bulletList: false,
       orderedList: false,
+      paragraph: false,
     }) as Extension,
+    Paragraph.configure({
+      HTMLAttributes: {
+        class: 'radio-report-paragraph',
+      },
+    }),
     EditorBold,
     Underline,
     EditorTextAlign,
@@ -173,6 +190,7 @@ export class EditorComponent implements OnInit {
     EditorFontSize,
     ...this.editorTableExtensions,
     EditorMentionVariable.configure(this.mentionVariableConfig),
+    ...this.editorReportExtensions,
   ];
 
   readonly editor: Editor = new Editor({
@@ -228,6 +246,14 @@ export class EditorComponent implements OnInit {
 
   ngOnInit(): void {
     this.handleHostControlChanges();
+  }
+
+  insertReportProtocol(template: Template): void {
+    this.editor.chain().focus().insertReportProtocol({ template }).run();
+  }
+
+  insertReportFinding(finding: EditorFindingData): void {
+    this.editor.chain().focus().insertReportFinding({ finding }).run();
   }
 
   private onEditorContextMenu(event: MouseEvent): boolean | void {

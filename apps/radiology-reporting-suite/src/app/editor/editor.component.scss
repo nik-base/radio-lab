@@ -6,6 +6,11 @@
       max-height: var(--editor-max-height, 'unset');
     }
 
+    .radio-report-paragraph {
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
+
     .radio-mention {
       cursor: pointer;
       color: var(--p-primary-color);
@@ -17,6 +22,10 @@
     }
 
     .tiptap-container {
+      :first-child {
+        margin-top: 0 !important;
+      }
+
       /* Table-specific styling */
       table {
         border-collapse: collapse;

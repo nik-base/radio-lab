@@ -6,7 +6,6 @@ import {
   OnInit,
   signal,
   Signal,
-  viewChild,
   WritableSignal,
 } from '@angular/core';
 import { BlockUI } from 'primeng/blockui';
@@ -80,10 +79,6 @@ export class ReportBuilderComponent implements OnInit {
     }
   );
 
-  protected readonly reportContent: Signal<
-    ReportBuilderContentComponent | undefined
-  > = viewChild<ReportBuilderContentComponent | undefined>('reportContent');
-
   protected readonly selectedTemplate: WritableSignal<Template | null> =
     signal<Template | null>(null);
 
@@ -95,8 +90,6 @@ export class ReportBuilderComponent implements OnInit {
   }
 
   onSelectTemplate(template: Template | null): void {
-    this.reportContent()?.resetEditor();
-
     this.selectedTemplate.set(template);
 
     if (!template) {

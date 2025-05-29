@@ -30,7 +30,8 @@
             <radio-finding-grouped-list
               class="w-full"
               [isLoading]="_isLoading"
-              [findingGroups]="groupedFindings()">
+              [findingGroups]="groupedFindings()"
+              (selection)="onFindingSelection($event)">
             </radio-finding-grouped-list>
           } @else {
             <div class="flex flex-col gap-2 w-full items-center p-8">

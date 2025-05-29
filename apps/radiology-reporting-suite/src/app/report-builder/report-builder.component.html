@@ -42,7 +42,7 @@
   @if (_selectedTemplate) {
     <div class="report-builder-content-container h-full min-h-0">
       <radio-report-builder-content
-        #reportContent
+        [template]="_selectedTemplate"
         [isLoading]="templateDataStore$.isLoading()"
         [templateData]="templateData()">
       </radio-report-builder-content>
