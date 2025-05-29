@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { mockProvider } from '@ngneat/spectator/jest';
 import { provideMockStore } from '@ngrx/store/testing';
+import { MessageService } from 'primeng/api';
 
 import { ReportBuilderService } from '../services/report-builder/report-builder.service';
 
@@ -15,6 +16,7 @@ describe('ReportBuilderComponent', () => {
       imports: [ReportBuilderComponent],
       providers: [
         mockProvider(ReportBuilderService),
+        mockProvider(MessageService),
         provideMockStore({
           selectors: [{ selector: 'selectOrderedTemplates', value: [] }],
         }),

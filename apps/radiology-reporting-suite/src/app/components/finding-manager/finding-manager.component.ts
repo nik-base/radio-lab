@@ -5,7 +5,6 @@ import {
   inject,
   input,
   InputSignal,
-  NgZone,
   signal,
   untracked,
   WritableSignal,
@@ -17,7 +16,6 @@ import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { FileUploadModule } from 'primeng/fileupload';
 import { PanelModule } from 'primeng/panel';
 import { TooltipModule } from 'primeng/tooltip';
-import { take, tap } from 'rxjs';
 
 import { CHANGE_MODE } from '@app/constants';
 import {
@@ -61,8 +59,6 @@ export class FindingManagerComponent {
 
   private readonly confirmationService: ConfirmationService =
     inject(ConfirmationService);
-
-  private readonly ngZone: NgZone = inject(NgZone);
 
   readonly findings: InputSignal<Finding[]> = input.required<Finding[]>();
 
@@ -142,14 +138,9 @@ export class FindingManagerComponent {
     this.findingStore$.change(null);
 
     // Ensuring effect in constructor is ran first
-    this.ngZone.onMicrotaskEmpty
-      .pipe(
-        tap(() => {
-          this.mode.set(CHANGE_MODE.Create);
-        }),
-        take(1)
-      )
-      .subscribe();
+    setTimeout(() => {
+      this.mode.set(CHANGE_MODE.Create);
+    }, 0);
   }
 
   onEdit(finding: Finding): void {
