@@ -126,25 +126,25 @@ export class FindingDataEffects {
   });
 
   // eslint-disable-next-line @typescript-eslint/typedef
-  readonly clone$ = createEffect(() => {
-    return this.actions$.pipe(
-      ofType(FindingDataActions.clone),
-      switchMap(({ finding }: ReturnType<typeof FindingDataActions.clone>) =>
-        this.reportManagerService.cloneFinding$(finding.id).pipe(
-          map((importedFinding: FindingDto) =>
-            FindingDataActions.cloneSuccess({
-              finding: importedFinding,
-            })
-          ),
-          catchError((error: unknown) =>
-            of(
-              FindingDataActions.cloneFailure({
-                error: { error, data: finding },
-              })
-            )
-          )
-        )
-      )
-    );
-  });
+  // readonly clone$ = createEffect(() => {
+  //   return this.actions$.pipe(
+  //     ofType(FindingDataActions.clone),
+  //     switchMap(({ finding }: ReturnType<typeof FindingDataActions.clone>) =>
+  //       this.reportManagerService.cloneFinding$(finding.id).pipe(
+  //         map((importedFinding: FindingDto) =>
+  //           FindingDataActions.cloneSuccess({
+  //             finding: importedFinding,
+  //           })
+  //         ),
+  //         catchError((error: unknown) =>
+  //           of(
+  //             FindingDataActions.cloneFailure({
+  //               error: { error, data: finding },
+  //             })
+  //           )
+  //         )
+  //       )
+  //     )
+  //   );
+  // });
 }

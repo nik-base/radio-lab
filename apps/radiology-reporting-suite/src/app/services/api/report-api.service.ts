@@ -253,7 +253,11 @@ export class ReportApiService extends ReportBaseService {
     throw new Error('Method not implemented.');
   }
 
-  override cloneFinding$(findingId: string): Observable<FindingDto> {
+  override cloneFinding$(
+    findingId: string,
+    groupId: string,
+    classifierId: string
+  ): Observable<FindingDto> {
     throw new Error('Method not implemented.');
   }
 }

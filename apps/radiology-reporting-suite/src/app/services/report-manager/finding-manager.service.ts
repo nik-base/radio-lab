@@ -59,7 +59,11 @@ export class FindingManagerService
     return this.reportService.reorderFindings$(sortOrderUpdateRequest);
   }
 
-  clone$(id: string): Observable<FindingDto> {
-    return this.reportService.cloneFinding$(id);
+  clone$(
+    id: string,
+    groupId: string,
+    classifierId: string
+  ): Observable<FindingDto> {
+    return this.reportService.cloneFinding$(id, groupId, classifierId);
   }
 }

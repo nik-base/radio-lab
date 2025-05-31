@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { patchState, signalStore, withHooks, withMethods } from '@ngrx/signals';
 import { addEntity } from '@ngrx/signals/entities';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { exhaustMap, map, pipe, tap } from 'rxjs';
+import { exhaustMap, map, pipe, switchMap, tap } from 'rxjs';
 
 import { RADIO_DEFAULT_CLASSIFIER } from '@app/constants';
 import { GenericEntityMapperService } from '@app/mapper/generic-entity-mapper.service';
@@ -16,20 +16,29 @@ import {
   FindingGroup,
   FindingGroupCreate,
   FindingGroupUpdate,
+  Scope,
 } from '@app/models/domain';
 import { GroupManagerService } from '@app/services/report-manager/group-manager.service';
 import { isNotNil } from '@app/utils/functions/common.functions';
+import { orderBySortOrder } from '@app/utils/functions/order.functions';
 
 import { AppEntityState } from '../entity-state.interface';
 import { withCRUD } from '../utils/signal-store-features/with-crud.store-feature';
 
 import { ClassifierStore } from './classifier.store';
 
-const initialState: AppEntityState<FindingGroup> = {
+interface GroupStateAddon {
+  readonly groupsByScopeId: FindingGroup[];
+}
+
+const initialState: AppEntityState<FindingGroup, GroupStateAddon> = {
   current: null,
   isLoading: false,
   error: null,
   currentOperation: null,
+  additionalData: {
+    groupsByScopeId: [],
+  },
 };
 
 // eslint-disable-next-line @typescript-eslint/typedef
@@ -42,7 +51,8 @@ export const GroupStore = signalStore(
     FindingGroupUpdate,
     FindingGroupUpdateDto,
     { readonly id: string },
-    GroupManagerService
+    GroupManagerService,
+    GroupStateAddon
   >(initialState, GroupManagerService, 'group', 'groups'),
   withMethods(
     (
@@ -100,6 +110,35 @@ export const GroupStore = signalStore(
                   })
                 )
           )
+        )
+      ),
+
+      fetchByScopeId: rxMethod<Scope>(
+        pipe(
+          store.setLoading('fetchByScopeId'),
+
+          switchMap((input: Scope) => {
+            return groupManagerService.fetchAll$({ id: input.id }).pipe(
+              map((dto: FindingGroupDto[]): FindingGroup[] =>
+                genericEntityMapper.mapFromDtoList<
+                  FindingGroup,
+                  FindingGroupDto
+                >(dto)
+              ),
+              tap((result: FindingGroup[]): void => {
+                patchState(store, {
+                  additionalData: {
+                    groupsByScopeId: orderBySortOrder(result),
+                  },
+                });
+              }),
+
+              store.handleStatus({
+                showError: true,
+                errorMessage: `Failed to fetch groups by scope "${input.name}"`,
+              })
+            );
+          })
         )
       ),
 

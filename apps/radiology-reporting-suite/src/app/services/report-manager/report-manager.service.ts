@@ -164,7 +164,11 @@ export class ReportManagerService {
     return this.reportService.cloneScope$(scopeId, templateId);
   }
 
-  cloneFinding$(findingId: string): Observable<FindingDto> {
-    return this.reportService.cloneFinding$(findingId);
+  cloneFinding$(
+    findingId: string,
+    groupId: string,
+    classifierId: string
+  ): Observable<FindingDto> {
+    return this.reportService.cloneFinding$(findingId, groupId, classifierId);
   }
 }

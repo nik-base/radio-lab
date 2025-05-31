@@ -845,8 +845,12 @@ export class ReportDBService extends ReportBaseService {
     return this.cloneScopeByIdIntoTemplate$(scopeId, templateId);
   }
 
-  override cloneFinding$(findingId: string): Observable<FindingDto> {
-    return this.cloneFindingById$(findingId);
+  override cloneFinding$(
+    findingId: string,
+    groupId: string,
+    classifierId: string
+  ): Observable<FindingDto> {
+    return this.cloneFindingIntoGroup$(findingId, groupId, classifierId);
   }
 
   override cloneVariable$(
@@ -1061,6 +1065,49 @@ export class ReportDBService extends ReportBaseService {
           );
         })
       );
+  }
+
+  private cloneFindingIntoGroup$(
+    findingId: string,
+    groupId: string,
+    classifierId: string
+  ): Observable<FindingDto> {
+    return this.dbService.getByID<FindingDBModel>('findings', findingId).pipe(
+      switchMap((originalFinding: FindingDBModel) =>
+        this.dbService
+          .getAllByIndex<FindingDBModel>(
+            'findings',
+            'classifierId',
+            IDBKeyRange.only(classifierId)
+          )
+          .pipe(
+            mergeMap((siblingFindings: FindingDBModel[]) => {
+              const nextSortOrder: number =
+                findNextSortOrderWhenOptional(siblingFindings);
+
+              const newFindingId: string = this.generateId();
+
+              return this.cloneVariables$(findingId, newFindingId).pipe(
+                mergeMap((variableIdsMap: Map<string, VariableDto>) => {
+                  const newFindingWithVariablesReplaced: FindingDBModel =
+                    this.getFindingDBModelWithVariablesReplaced(
+                      originalFinding,
+                      variableIdsMap
+                    );
+
+                  return this.createFindingInDb$({
+                    ...newFindingWithVariablesReplaced,
+                    groupId,
+                    classifierId,
+                    id: newFindingId,
+                    sortOrder: nextSortOrder,
+                  });
+                })
+              );
+            })
+          )
+      )
+    );
   }
 
   private cloneFindingById$(findingId: string): Observable<FindingDto> {

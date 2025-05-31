@@ -42,11 +42,13 @@
   @let findings = findingStore$.orderedList();
   @let selectedClassifier = classifierStore$.current();
 
-  @if (findings && selectedClassifier) {
+  @if (findings && selectedClassifier && selectedGroup && selectedScope) {
     <radio-finding-manager
       class="flex-1 min-w-0"
       [findings]="findings"
-      [classifier]="selectedClassifier">
+      [classifier]="selectedClassifier"
+      [group]="selectedGroup"
+      [scope]="selectedScope">
     </radio-finding-manager>
   }
 </div>

@@ -25,3 +25,6 @@ export { VariablesManagerDialogData } from './variables-manager-dialog-data.inte
 export { VariableUI } from './variable-ui.interface';
 
 export { EditorFindingData } from './editor-finding-data.interface';
+
+export { FindingCloneDialogData } from './finding-clone-dialog-data.interface';
+export { FindingCloneDialogOutput } from './finding-clone-dialog-output.interface';

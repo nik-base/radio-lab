@@ -19,6 +19,12 @@ import { withCRUD } from '../utils/signal-store-features/with-crud.store-feature
 
 import { VariableStore } from './variable-store';
 
+interface FindingCloneInput {
+  readonly finding: Finding;
+  readonly groupId: string;
+  readonly classifierId: string;
+}
+
 interface FindingStateAddon {
   readonly findingsByScopeId: Finding[];
 }
@@ -62,27 +68,34 @@ export const FindingStore = signalStore(
       ),
       variableStore: InstanceType<typeof VariableStore> = inject(VariableStore)
     ) => ({
-      clone: rxMethod<Finding>(
+      clone: rxMethod<FindingCloneInput>(
         pipe(
           store.setLoading('clone'),
 
-          exhaustMap((input: Finding) =>
-            findingManagerService.clone$(input.id).pipe(
-              map(
-                (dto: FindingDto): Finding =>
-                  genericEntityMapper.mapFromDto<Finding, FindingDto>(dto)
-              ),
-              tap((result: Finding): void => {
-                patchState(store, addEntity(result));
-              }),
+          exhaustMap((input: FindingCloneInput) =>
+            findingManagerService
+              .clone$(input.finding.id, input.groupId, input.classifierId)
+              .pipe(
+                map(
+                  (dto: FindingDto): Finding =>
+                    genericEntityMapper.mapFromDto<Finding, FindingDto>(dto)
+                ),
+                tap((result: Finding): void => {
+                  if (
+                    result.classifierId === input.finding.classifierId &&
+                    result.groupId === input.finding.groupId
+                  ) {
+                    patchState(store, addEntity(result));
+                  }
+                }),
 
-              store.handleStatus({
-                showSuccess: true,
-                successMessage: `Successfully cloned finding "${input.name}"`,
-                showError: true,
-                errorMessage: `Failed to clone finding "${input.name}"`,
-              })
-            )
+                store.handleStatus({
+                  showSuccess: true,
+                  successMessage: `Successfully cloned finding "${input.finding.name}"`,
+                  showError: true,
+                  errorMessage: `Failed to clone finding "${input.finding.name}"`,
+                })
+              )
           )
         )
       ),

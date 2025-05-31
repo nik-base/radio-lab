@@ -163,7 +163,11 @@ export abstract class ReportBaseService {
     templateId: string
   ): Observable<ScopeDto>;
 
-  abstract cloneFinding$(findingId: string): Observable<FindingDto>;
+  abstract cloneFinding$(
+    findingId: string,
+    groupId: string,
+    classifierId: string
+  ): Observable<FindingDto>;
 
   abstract cloneVariable$(
     variableId: string,
