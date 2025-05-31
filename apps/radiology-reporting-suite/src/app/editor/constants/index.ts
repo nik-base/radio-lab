@@ -31,11 +31,16 @@ export const EDITOR_DEFAULT_MAX_FONT_SIZE = 32 as const;
 // eslint-disable-next-line @typescript-eslint/typedef
 export const EDITOR_REPORT_ATTRIBUTE_NAMES = {
   RadioItem: 'radioitem',
-  ScopeIndex: 'radioscopeindex',
+  FindingScopeIndex: 'radiofindingscopeindex',
+  ImpressionScopeIndex: 'radioimpressionscopeindex',
+  RecommendationScopeIndex: 'radiorecommendationscopeindex',
   FindingIndex: 'radiofindingindex',
   ImpressionIndex: 'radioimpressionindex',
   RecommendationIndex: 'radiorecommendationindex',
-  ScopeId: 'scopeid',
+  ScopeId: 'radioscopeid',
+  FindingId: 'radiofindingid',
+  ImpressionId: 'radioimpressionid',
+  RecommendationId: 'radiorecommendationid',
 } as const;
 
 // eslint-disable-next-line @typescript-eslint/typedef
@@ -57,7 +62,12 @@ export const EDITOR_REPORT_ID = {
   RadioReportFindings: 'radio-report-findings',
   RadioReportImpressions: 'radio-report-impressions',
   RadioReportRecommendations: 'radio-report-recommendations',
+  RadioReportImpressionsList: 'radio-report-impressions-list',
+  RadioReportRecommendationsList: 'radio-report-recommendations-list',
 } as const;
 
 // eslint-disable-next-line @typescript-eslint/typedef
 export const EDITOR_REPORT_EXTENSION_NODE_NAME = 'radioReportDiv' as const;
+
+// eslint-disable-next-line @typescript-eslint/typedef
+export const EDITOR_REPORT_EXTENSION_LIST_ITEM_NODE_NAME = 'listItem' as const;

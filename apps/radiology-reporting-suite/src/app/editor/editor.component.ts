@@ -48,6 +48,7 @@ import { EditorTable } from './extensions/editor-table.extension';
 import { EditorTextAlign } from './extensions/editor-text-align.extension';
 import { EditorReportDiv } from './extensions/radio-extensions/editor-report-div.extension';
 import { EditorReportFinding } from './extensions/radio-extensions/editor-report-finding.extension';
+import { EditorReportListItem } from './extensions/radio-extensions/editor-report-list-item.extension';
 import { EditorReportProtocol } from './extensions/radio-extensions/editor-report-protocol.extension';
 import {
   EditorMentionVariableClickEventData,
@@ -161,6 +162,7 @@ export class EditorComponent implements OnInit {
 
   private readonly editorReportExtensions: Extensions = [
     EditorReportDiv,
+    EditorReportListItem,
     EditorReportProtocol,
     EditorReportFinding,
   ];
@@ -171,6 +173,7 @@ export class EditorComponent implements OnInit {
       bulletList: false,
       orderedList: false,
       paragraph: false,
+      listItem: false,
     }) as Extension,
     Paragraph.configure({
       HTMLAttributes: {
@@ -254,6 +257,10 @@ export class EditorComponent implements OnInit {
 
   insertReportFinding(finding: EditorFindingData): void {
     this.editor.chain().focus().insertReportFinding({ finding }).run();
+
+    this.editor.chain().focus().insertReportImpression({ finding }).run();
+
+    this.editor.chain().focus().insertReportRecommendation({ finding }).run();
   }
 
   private onEditorContextMenu(event: MouseEvent): boolean | void {

@@ -4,6 +4,7 @@ import {
   EDITOR_REPORT_ATTRIBUTE_NAMES,
   EDITOR_REPORT_EXTENSION_NODE_NAME,
 } from '@app/editor/constants';
+import { generateEditorAttributeName } from '@app/editor/utils/editor-report-extension.functions';
 
 export const EditorReportDiv: Node = Node.create({
   name: EDITOR_REPORT_EXTENSION_NODE_NAME,
@@ -11,11 +12,16 @@ export const EditorReportDiv: Node = Node.create({
   content: 'block*',
   addAttributes() {
     return {
-      [`data-${EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem}`]: {},
-      [`data-${EDITOR_REPORT_ATTRIBUTE_NAMES.ScopeIndex}`]: {},
-      [`data-${EDITOR_REPORT_ATTRIBUTE_NAMES.FindingIndex}`]: {},
-      [`data-${EDITOR_REPORT_ATTRIBUTE_NAMES.ImpressionIndex}`]: {},
-      [`data-${EDITOR_REPORT_ATTRIBUTE_NAMES.RecommendationIndex}`]: {},
+      [generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem)]:
+        {},
+      [generateEditorAttributeName(
+        EDITOR_REPORT_ATTRIBUTE_NAMES.FindingScopeIndex
+      )]: {},
+      [generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.FindingIndex)]:
+        {},
+      [generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.ScopeId)]: {},
+      [generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.FindingId)]:
+        {},
       id: {},
     };
   },
