@@ -51,6 +51,10 @@ import { EditorReportFinding } from './extensions/radio-extensions/editor-report
 import { EditorReportListItem } from './extensions/radio-extensions/editor-report-list-item.extension';
 import { EditorReportProtocol } from './extensions/radio-extensions/editor-report-protocol.extension';
 import {
+  EditorReportVariableValue,
+  EditorReportVariableValueOptions,
+} from './extensions/radio-extensions/editor-report-variable-value.extension';
+import {
   EditorMentionVariableClickEventData,
   EditorMentionVariableItem,
   EditorMentionVariableNodeAttributes,
@@ -165,6 +169,7 @@ export class EditorComponent implements OnInit {
     EditorReportListItem,
     EditorReportProtocol,
     EditorReportFinding,
+    EditorReportVariableValue,
   ];
 
   private readonly editorExtensions: Extensions = [
@@ -261,6 +266,26 @@ export class EditorComponent implements OnInit {
     this.editor.chain().focus().insertReportImpression({ finding }).run();
 
     this.editor.chain().focus().insertReportRecommendation({ finding }).run();
+  }
+
+  replaceVariableValue(options: EditorReportVariableValueOptions): void {
+    this.editor
+      .chain()
+      .focus()
+      .replaceReportVariableValueForFinding(options)
+      .run();
+
+    this.editor
+      .chain()
+      .focus()
+      .replaceReportVariableValueInNextTableCellForNo(options)
+      .run();
+
+    this.editor
+      .chain()
+      .focus()
+      .replaceReportVariableValueForImpression(options)
+      .run();
   }
 
   private onEditorContextMenu(event: MouseEvent): boolean | void {

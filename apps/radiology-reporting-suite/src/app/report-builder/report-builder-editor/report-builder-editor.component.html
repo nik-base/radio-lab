@@ -1,6 +1,21 @@
 <radio-editor
   #editor
   [formControl]="editorControl"
+  (variableClick)="onVariableClick($event)"
   class="flex flex-col w-full h-full p-2"
   maxHeight="100%">
 </radio-editor>
+
+<p-popover #variableValueSelectorPopover (onHide)="onVariablePopoverHide()">
+  @let variableData = currentVariableClickedData();
+
+  @if (variableData) {
+    <radio-variable-value-selector
+      class="block max-w-sm"
+      [variableId]="variableData.id"
+      [variableName]="variableData.name"
+      (cancelSelection)="onVariablePopoverClose()"
+      (selection)="onVariablePopoverValueSelected($event)">
+    </radio-variable-value-selector>
+  }
+</p-popover>

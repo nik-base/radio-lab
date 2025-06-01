@@ -1,0 +1,81 @@
+<div class="flex flex-col gap-4">
+  @let variableValues = values();
+
+  @let isLoading = variableValueStore$.isLoading();
+
+  @let _variableName = variableName();
+
+  <div class="flex flex-col">
+    @if (!isLoading && isManualEntry()) {
+      <p-floatlabel variant="on" class="p-2">
+        <input
+          id="variableValueInput"
+          pInputText
+          [(ngModel)]="variableInputValue" />
+
+        <label for="variableValueInput"
+          >Enter value for {{ _variableName }}</label
+        >
+      </p-floatlabel>
+    } @else {
+      @let selectedValues = variableSelectedValues();
+
+      <p-listbox
+        [options]="isLoading ? mockValues : variableValues"
+        [(ngModel)]="variableSelectedValues"
+        optionLabel="name"
+        listStyleClass="max-h-full w-full"
+        styleClass="w-full flex max-h-full flex-col"
+        [autoOptionFocus]="true"
+        [autofocus]="true"
+        [multiple]="true"
+        [metaKeySelection]="false">
+        <ng-template #header>
+          <div class="font-semibold text-gray-500">
+            Select values for {{ _variableName }}
+          </div>
+        </ng-template>
+
+        <ng-template #item let-variableValue>
+          @if (isLoading) {
+            <div class="w-40">
+              <p-skeleton height="2rem" />
+            </div>
+          } @else {
+            <div class="w-full flex flex-row gap-4">
+              <div class="w-full wrap-anywhere">
+                {{ variableValue.name }}
+              </div>
+
+              @let isSelected =
+                selectedValues | existsInArray: variableValue.id : 'id';
+
+              @if (isSelected) {
+                <div>
+                  @let indexInArray =
+                    selectedValues | findIndexInArray: variableValue.id : 'id';
+
+                  {{ indexInArray + 1 }}
+                </div>
+              }
+            </div>
+          }
+        </ng-template>
+      </p-listbox>
+    }
+  </div>
+  <div class="flex justify-end gap-2">
+    <p-button
+      label="Cancel"
+      [text]="true"
+      severity="secondary"
+      (onClick)="close()" />
+
+    <p-button
+      label="Submit"
+      [outlined]="true"
+      [disabled]="isSubmitDisabled()"
+      severity="primary"
+      (onClick)="submit()" />
+  </div>
+</div>

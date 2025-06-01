@@ -2,19 +2,19 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { isNil } from 'lodash-es';
 
 @Pipe({
-  name: 'findInArray',
+  name: 'existsInArray',
 })
-export class FindInArrayPipe implements PipeTransform {
+export class ExistsInArrayPipe implements PipeTransform {
   transform<TArrayItem, TValue>(
     items: TArrayItem[] | ReadonlyArray<TArrayItem> | null,
     propertyValue: TValue,
     propertyName?: keyof TArrayItem
-  ): TArrayItem | undefined {
+  ): boolean {
     if (!items?.length || isNil(propertyValue)) {
-      return undefined;
+      return false;
     }
 
-    return items.find((item: TArrayItem): boolean => {
+    return items.some((item: TArrayItem): boolean => {
       if (propertyName && item) {
         // By a specific property if provided
         return item[propertyName] === propertyValue;
