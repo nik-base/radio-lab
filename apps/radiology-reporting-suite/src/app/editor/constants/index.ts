@@ -41,6 +41,7 @@ export const EDITOR_REPORT_ATTRIBUTE_NAMES = {
   FindingId: 'radiofindingid',
   ImpressionId: 'radioimpressionid',
   RecommendationId: 'radiorecommendationid',
+  IsNormalFinding: 'radioisnormalfinding',
 } as const;
 
 // eslint-disable-next-line @typescript-eslint/typedef

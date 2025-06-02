@@ -28,6 +28,9 @@ export const EditorReportListItem: Node<ListItemOptions> = ListItem.extend({
       [generateEditorAttributeName(
         EDITOR_REPORT_ATTRIBUTE_NAMES.RecommendationId
       )]: {},
+      [generateEditorAttributeName(
+        EDITOR_REPORT_ATTRIBUTE_NAMES.IsNormalFinding
+      )]: {},
     };
   },
 });

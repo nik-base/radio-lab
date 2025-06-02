@@ -247,22 +247,35 @@ function insertImpression(
 
   const impressionText: string | undefined = impression?.text;
 
-  if (!impression || isNilOrEmpty(impressionText?.trim())) {
+  const hasNoImpression: boolean = isNilOrEmpty(impressionText?.trim());
+
+  if (findingData.finding.isNormal && (!impression || hasNoImpression)) {
+    const existingScopeNodes: NodePos[] = findExistingScopeImpressions(
+      editor,
+      findingData
+    );
+
+    return replaceWithNormalImpressionInScope(
+      editor,
+      chain,
+      null,
+      existingScopeNodes
+    );
+  }
+
+  if (!impression || hasNoImpression) {
     return chain();
   }
 
-  const existingScopeImpressions: NodePos[] = editor.$doc.querySelectorAll(
-    EDITOR_REPORT_EXTENSION_LIST_ITEM_NODE_NAME,
-    {
-      [generateEditorAttributeName(
-        EDITOR_REPORT_ATTRIBUTE_NAMES.ImpressionScopeIndex
-      )]: findingData.scopeIndex,
-    }
+  const existingScopeImpressions: NodePos[] = findExistingScopeImpressions(
+    editor,
+    findingData
   );
 
   if (existingScopeImpressions && existingScopeImpressions.length) {
     // Impression(s) for scope already exists
     return insertImpressionInExistingScopeImpressions(
+      editor,
       chain,
       findingData,
       impression.html,
@@ -289,6 +302,20 @@ function insertImpression(
     findingData,
     impression.html,
     scopeImpressionIndices
+  );
+}
+
+function findExistingScopeImpressions(
+  editor: Editor,
+  findingData: EditorFindingData
+): NodePos[] {
+  return editor.$doc.querySelectorAll(
+    EDITOR_REPORT_EXTENSION_LIST_ITEM_NODE_NAME,
+    {
+      [generateEditorAttributeName(
+        EDITOR_REPORT_ATTRIBUTE_NAMES.ImpressionScopeIndex
+      )]: findingData.scopeIndex,
+    }
   );
 }
 
@@ -530,6 +557,7 @@ function insertFirstRecommendationInReport(
 }
 
 function insertImpressionInExistingScopeImpressions(
+  editor: Editor,
   chain: () => ChainedCommands,
   findingData: EditorFindingData,
   impressionHTML: string,
@@ -537,14 +565,34 @@ function insertImpressionInExistingScopeImpressions(
 ): ChainedCommands {
   const html: string = generateImpressionHTML(findingData, impressionHTML);
 
-  const lastImpressionNode: NodePos =
+  const lastNode: NodePos =
     existingScopeImpressionNodes[existingScopeImpressionNodes.length - 1];
 
-  // insert after the last impression of the existing scope impressions
-  return chain().insertContentAt(
-    lastImpressionNode.pos + lastImpressionNode.size - 1,
-    html
+  if (findingData.finding.isNormal) {
+    // If normal finding than remove existing impressions and insert only normal impression
+    return replaceWithNormalImpressionInScope(
+      editor,
+      chain,
+      html,
+      existingScopeImpressionNodes
+    );
+  }
+
+  const normalNode: NodePos | null = tryGetNormalImpression(
+    existingScopeImpressionNodes
   );
+
+  if (normalNode) {
+    // If not normal finding and existing scope has any normal impression. Remove normal impression and insert the new impression
+    return replaceNormalImpressionWithAbNormalImpression(
+      chain,
+      html,
+      normalNode
+    );
+  }
+
+  // insert after the last impression of the existing scope impressions
+  return chain().insertContentAt(lastNode.pos + lastNode.size - 1, html);
 }
 
 function insertRecommendationInExistingScopeRecommendations(
@@ -703,6 +751,28 @@ function insertFindingInExistingScope(
 ): ChainedCommands {
   const html: string = generateFindingHTML(findingData.finding);
 
+  if (findingData.finding.isNormal) {
+    // If normal finding than remove existing findings and insert only normal finding
+    return replaceWithNormalFindingInScope(chain, html, existingScopeSection);
+  }
+
+  const normalFinding: NodePos | null =
+    tryGetNormalFinding(existingScopeSection);
+
+  if (normalFinding) {
+    // If not normal finding and existing scope has any normal finding. Remove normal finding and insert the new finding
+    return replaceNormalFindingWithAbNormalFinding(chain, html, normalFinding);
+  }
+
+  // If finding is not normal and there are no existing normal findings in scope
+  return appendFindingInScope(chain, html, existingScopeSection);
+}
+
+function appendFindingInScope(
+  chain: () => ChainedCommands,
+  html: string,
+  existingScopeSection: NodePos
+): ChainedCommands {
   const lastChild: NodePos | null = existingScopeSection.lastChild;
 
   if (lastChild) {
@@ -712,6 +782,203 @@ function insertFindingInExistingScope(
 
   // Add finding as the first item in the scope section
   return chain().insertContentAt(existingScopeSection.pos, html);
+}
+
+function replaceNormalFindingWithAbNormalFinding(
+  chain: () => ChainedCommands,
+  html: string,
+  normalFinding: NodePos
+): ChainedCommands {
+  return chain()
+    .deleteRange({
+      from: normalFinding.pos - 1,
+      to: normalFinding.pos + normalFinding.size,
+    })
+    .insertContentAt(normalFinding.pos - 1, html);
+}
+
+function replaceNormalImpressionWithAbNormalImpression(
+  chain: () => ChainedCommands,
+  html: string,
+  normal: NodePos
+): ChainedCommands {
+  return chain()
+    .deleteRange({
+      from: normal.pos - 1,
+      to: normal.pos + normal.size,
+    })
+    .insertContentAt(normal.pos - 1, html);
+}
+
+function replaceWithNormalFindingInScope(
+  chain: () => ChainedCommands,
+  html: string,
+  existingScopeSection: NodePos
+): ChainedCommands {
+  const existingFindings: NodePos[] = existingScopeSection.querySelectorAll(
+    EDITOR_REPORT_EXTENSION_NODE_NAME,
+    {
+      [generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem)]:
+        EDITOR_REPORT_ATTRIBUTE_VALUES.Finding,
+    }
+  );
+
+  if (!existingFindings?.length) {
+    // first finding in scope
+    return appendFindingInScope(chain, html, existingScopeSection);
+  }
+
+  const firstFinding: NodePos = existingFindings[0];
+
+  if (existingFindings.length === 1) {
+    // Remove the only abnormal finding and replace it with normal finding
+    return chain()
+      .deleteRange({
+        from: firstFinding.pos - 1,
+        to: firstFinding.pos + firstFinding.size,
+      })
+      .insertContentAt(firstFinding.pos - 1, html);
+  }
+
+  const lastFinding: NodePos = existingFindings[existingFindings.length - 1];
+
+  // Remove all the abnormal findings and replace it with normal finding
+  return chain()
+    .deleteRange({
+      from: firstFinding.pos - 1,
+      to: lastFinding.pos + lastFinding.size,
+    })
+    .insertContentAt(firstFinding.pos - 1, html);
+}
+
+function replaceWithNormalImpressionInScope(
+  editor: Editor,
+  chain: () => ChainedCommands,
+  html: string | null,
+  existingScopeNodes: NodePos[]
+): ChainedCommands {
+  const existingNodes: NodePos[] = existingScopeNodes.filter(
+    (node: NodePos): boolean =>
+      node.attributes[
+        generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem)
+      ] === EDITOR_REPORT_ATTRIBUTE_VALUES.Impression
+  );
+
+  if (!existingNodes?.length) {
+    // first impression in scope
+    if (isNil(html)) {
+      return chain();
+    }
+
+    const lastNode: NodePos = existingScopeNodes[existingScopeNodes.length - 1];
+
+    return chain().insertContentAt(lastNode.pos + lastNode.size - 1, html);
+  }
+
+  const firstNode: NodePos = existingNodes[0];
+
+  if (existingNodes.length === 1) {
+    // Remove the only abnormal impression and replace it with normal impression
+    if (isNil(html)) {
+      return chain().deleteRange({
+        from: firstNode.pos - 1,
+        to: firstNode.pos + firstNode.size,
+      });
+    }
+
+    return chain()
+      .deleteRange({
+        from: firstNode.pos - 1,
+        to: firstNode.pos + firstNode.size,
+      })
+      .insertContentAt(firstNode.pos - 1, html);
+  }
+
+  const lastNode: NodePos = existingNodes[existingNodes.length - 1];
+
+  // Remove all the abnormal impression and replace it with normal impression
+  if (isNil(html)) {
+    const hasOnlyCurrentScopeNodes: boolean = hasOnlyCurrentScopeImpression(
+      editor,
+      existingScopeNodes
+    );
+
+    if (hasOnlyCurrentScopeNodes) {
+      const rootNode: NodePos | null = findRootImpressionNode(editor);
+
+      if (!rootNode) {
+        return chain().deleteRange({
+          from: firstNode.pos - 1,
+          to: lastNode.pos + lastNode.size,
+        });
+      }
+
+      return chain().deleteRange({
+        from: rootNode.pos - 1,
+        to: rootNode.pos + rootNode.size - 1,
+      });
+    }
+
+    return chain().deleteRange({
+      from: firstNode.pos - 1,
+      to: lastNode.pos + lastNode.size,
+    });
+  }
+
+  return chain()
+    .deleteRange({
+      from: firstNode.pos - 1,
+      to: lastNode.pos + lastNode.size,
+    })
+    .insertContentAt(firstNode.pos - 1, html);
+}
+
+function hasOnlyCurrentScopeImpression(
+  editor: Editor,
+  existingScopeNodes: NodePos[]
+): boolean {
+  const allNodes: NodePos[] = editor.$doc.querySelectorAll(
+    EDITOR_REPORT_EXTENSION_LIST_ITEM_NODE_NAME,
+    {
+      [generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem)]:
+        EDITOR_REPORT_ATTRIBUTE_VALUES.Impression,
+    }
+  );
+
+  return allNodes.length === existingScopeNodes.length;
+}
+
+function findRootImpressionNode(editor: Editor): NodePos | null {
+  return editor.$doc.querySelector(EDITOR_REPORT_EXTENSION_NODE_NAME, {
+    id: EDITOR_REPORT_ID.RadioReportImpressions,
+  });
+}
+
+function tryGetNormalFinding(existingScopeSection: NodePos): NodePos | null {
+  const normalFinding: NodePos | null = existingScopeSection.querySelector(
+    EDITOR_REPORT_EXTENSION_NODE_NAME,
+    {
+      [generateEditorAttributeName(
+        EDITOR_REPORT_ATTRIBUTE_NAMES.IsNormalFinding
+      )]: true,
+    }
+  );
+
+  return normalFinding;
+}
+
+function tryGetNormalImpression(existingScopeNodes: NodePos[]): NodePos | null {
+  const normal: NodePos | null =
+    existingScopeNodes.find(
+      (node: NodePos): boolean =>
+        node.attributes[
+          generateEditorAttributeName(
+            EDITOR_REPORT_ATTRIBUTE_NAMES.IsNormalFinding
+          )
+        ] === true
+    ) ?? null;
+
+  return normal;
 }
 
 function generateProtocolHTML(template: Template): string {
@@ -731,7 +998,7 @@ function generateFirstFindingInScopeHTML(
 }
 
 function generateFindingHTML(finding: FindingData): string {
-  return `<div ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem)}="${EDITOR_REPORT_ATTRIBUTE_VALUES.Finding}" ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.FindingId)}="${finding.id}">${sanitizeHTML(finding.description.html)}</div>`;
+  return `<div ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem)}="${EDITOR_REPORT_ATTRIBUTE_VALUES.Finding}" ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.IsNormalFinding)}=${finding.isNormal} ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.FindingId)}="${finding.id}">${sanitizeHTML(finding.description.html)}</div>`;
 }
 
 function generateFirstImpressionHTML(
@@ -745,7 +1012,7 @@ function generateImpressionHTML(
   findingData: EditorFindingData,
   impressionHTML: string
 ): string {
-  return `<li ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem)}="${EDITOR_REPORT_ATTRIBUTE_VALUES.Impression}" ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.ImpressionScopeIndex)}=${findingData.scopeIndex} ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.ImpressionId)}="${findingData.finding.id}">${sanitizeHTML(impressionHTML)}</li>`;
+  return `<li ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem)}="${EDITOR_REPORT_ATTRIBUTE_VALUES.Impression}" ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.ImpressionScopeIndex)}=${findingData.scopeIndex} ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.IsNormalFinding)}=${findingData.finding.isNormal} ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.ImpressionId)}="${findingData.finding.id}">${sanitizeHTML(impressionHTML)}</li>`;
 }
 
 function generateFirstRecommendationHTML(
@@ -759,7 +1026,7 @@ function generateRecommendationHTML(
   findingData: EditorFindingData,
   recommendationHTML: string
 ): string {
-  return `<li ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem)}="${EDITOR_REPORT_ATTRIBUTE_VALUES.Recommendation}" ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.RecommendationScopeIndex)}=${findingData.scopeIndex} ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.RecommendationId)}="${findingData.finding.id}">${sanitizeHTML(recommendationHTML)}</li>`;
+  return `<li ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem)}="${EDITOR_REPORT_ATTRIBUTE_VALUES.Recommendation}" ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.RecommendationScopeIndex)}=${findingData.scopeIndex} ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.IsNormalFinding)}=${findingData.finding.isNormal} ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.RecommendationId)}="${findingData.finding.id}">${sanitizeHTML(recommendationHTML)}</li>`;
 }
 
 function sanitizeHTML(html: string | null | undefined): string {

@@ -22,6 +22,9 @@ export const EditorReportDiv: Node = Node.create({
       [generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.ScopeId)]: {},
       [generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.FindingId)]:
         {},
+      [generateEditorAttributeName(
+        EDITOR_REPORT_ATTRIBUTE_NAMES.IsNormalFinding
+      )]: {},
       id: {},
     };
   },
