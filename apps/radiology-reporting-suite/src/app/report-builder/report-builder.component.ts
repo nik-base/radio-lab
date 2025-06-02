@@ -6,10 +6,13 @@ import {
   OnInit,
   signal,
   Signal,
+  viewChild,
   WritableSignal,
 } from '@angular/core';
+import { ConfirmationService } from 'primeng/api';
 import { BlockUI } from 'primeng/blockui';
 import { Button } from 'primeng/button';
+import { ConfirmDialog } from 'primeng/confirmdialog';
 import { ProgressSpinner } from 'primeng/progressspinner';
 
 import { Template, TemplateData } from '@app/models/domain';
@@ -32,12 +35,14 @@ import { ReportBuilderContentComponent } from './report-builder-content/report-b
     ProgressSpinner,
     Button,
     ReportBuilderContentComponent,
+    ConfirmDialog,
   ],
   providers: [
     ReportBuilderTemplateStore,
     ReportBuilderTemplateDataStore,
     ReportBuilderVariableValueStore,
     ReportBuilderEditorStore,
+    ConfirmationService,
   ],
   templateUrl: './report-builder.component.html',
   styleUrl: './report-builder.component.scss',
@@ -59,6 +64,9 @@ export class ReportBuilderComponent implements OnInit {
     typeof ReportBuilderEditorStore
   > = inject(ReportBuilderEditorStore);
 
+  private readonly confirmationService: ConfirmationService =
+    inject(ConfirmationService);
+
   protected readonly isLoading: Signal<boolean> = computed(() => {
     return (
       this.templateStore$.isLoading() ||
@@ -78,6 +86,10 @@ export class ReportBuilderComponent implements OnInit {
       return this.templateDataStore$.templateData()(template.id)();
     }
   );
+
+  protected readonly reportContent: Signal<
+    ReportBuilderContentComponent | undefined
+  > = viewChild<ReportBuilderContentComponent | undefined>('reportContent');
 
   protected readonly selectedTemplate: WritableSignal<Template | null> =
     signal<Template | null>(null);
@@ -102,5 +114,27 @@ export class ReportBuilderComponent implements OnInit {
     if (!templateData) {
       this.templateDataStore$.fetchData(template);
     }
+  }
+
+  onAllNormalClick(): void {
+    this.confirmationService.confirm({
+      message:
+        'All changes to your report will be lost. Are you sure you want to discard changes to current report and make a normal report?',
+      header: 'Confirmation',
+      closable: true,
+      closeOnEscape: true,
+      icon: 'pi pi-exclamation-triangle',
+      rejectButtonProps: {
+        label: 'No',
+        severity: 'secondary',
+        outlined: true,
+      },
+      acceptButtonProps: {
+        label: 'Yes',
+      },
+      accept: () => {
+        this.reportContent()?.insertAllNormalFindingsInEditor();
+      },
+    });
   }
 }

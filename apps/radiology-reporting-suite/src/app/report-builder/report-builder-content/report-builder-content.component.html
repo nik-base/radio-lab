@@ -12,6 +12,7 @@
           class="w-full p-2"
           [isLoading]="_isLoading"
           [scopes]="templateData()?.scopes ?? []"
+          (normal)="onNormalClick($event)"
           (changed)="onScopeChange($event)">
         </radio-scope-list>
       </ng-template>

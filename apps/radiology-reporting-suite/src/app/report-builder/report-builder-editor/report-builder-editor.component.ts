@@ -104,6 +104,10 @@ export class ReportBuilderEditorComponent implements OnInit {
     this.editor().insertReportFinding(finding);
   }
 
+  insertReportFindings(findings: ReadonlyArray<EditorFindingData>): void {
+    this.editor().insertReportFindings(findings);
+  }
+
   replaceReportVariableValue(
     variable: EditorMentionVariableClickEventData,
     value: string

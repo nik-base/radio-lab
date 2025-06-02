@@ -189,8 +189,16 @@ export class EditorComponent implements OnInit {
     Underline,
     EditorTextAlign,
     EditorNodeAlign,
-    EditorBulletedList,
-    EditorOrderedList,
+    EditorBulletedList.configure({
+      HTMLAttributes: {
+        class: 'pl-4',
+      },
+    }),
+    EditorOrderedList.configure({
+      HTMLAttributes: {
+        class: 'pl-4',
+      },
+    }),
     TextStyle,
     FontFamily.configure({
       types: ['textStyle'],
@@ -266,6 +274,12 @@ export class EditorComponent implements OnInit {
     this.editor.chain().focus().insertReportImpression({ finding }).run();
 
     this.editor.chain().focus().insertReportRecommendation({ finding }).run();
+  }
+
+  insertReportFindings(findings: ReadonlyArray<EditorFindingData>): void {
+    for (const finding of findings) {
+      this.insertReportFinding(finding);
+    }
   }
 
   replaceVariableValue(options: EditorReportVariableValueOptions): void {

@@ -34,7 +34,8 @@
           variant="outlined"
           severity="success"
           icon="pi pi-check-circle"
-          iconPos="left" />
+          iconPos="left"
+          (onClick)="onAllNormalClick()" />
       }
     </div>
   </div>
@@ -42,6 +43,7 @@
   @if (_selectedTemplate) {
     <div class="report-builder-content-container h-full min-h-0">
       <radio-report-builder-content
+        #reportContent
         [template]="_selectedTemplate"
         [isLoading]="templateDataStore$.isLoading()"
         [templateData]="templateData()">
@@ -63,3 +65,5 @@
     </div>
   }
 </p-blockui>
+
+<p-confirmdialog />

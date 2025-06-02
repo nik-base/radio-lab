@@ -249,24 +249,6 @@ function insertImpression(
 
   const hasNoImpression: boolean = isNilOrEmpty(impressionText?.trim());
 
-  if (findingData.finding.isNormal && (!impression || hasNoImpression)) {
-    const existingScopeNodes: NodePos[] = findExistingScopeImpressions(
-      editor,
-      findingData
-    );
-
-    return replaceWithNormalImpressionInScope(
-      editor,
-      chain,
-      null,
-      existingScopeNodes
-    );
-  }
-
-  if (!impression || hasNoImpression) {
-    return chain();
-  }
-
   const existingScopeImpressions: NodePos[] = findExistingScopeImpressions(
     editor,
     findingData
@@ -278,9 +260,13 @@ function insertImpression(
       editor,
       chain,
       findingData,
-      impression.html,
+      impression?.html ?? null,
       existingScopeImpressions
     );
+  }
+
+  if (!impression || hasNoImpression) {
+    return chain();
   }
 
   const scopeImpressionIndices: number[] = findScopeImpressionIndices(editor);
@@ -560,10 +546,12 @@ function insertImpressionInExistingScopeImpressions(
   editor: Editor,
   chain: () => ChainedCommands,
   findingData: EditorFindingData,
-  impressionHTML: string,
+  impressionHTML: string | null,
   existingScopeImpressionNodes: NodePos[]
 ): ChainedCommands {
-  const html: string = generateImpressionHTML(findingData, impressionHTML);
+  const html: string | null = isNil(impressionHTML)
+    ? null
+    : generateImpressionHTML(findingData, impressionHTML);
 
   const lastNode: NodePos =
     existingScopeImpressionNodes[existingScopeImpressionNodes.length - 1];
@@ -585,10 +573,16 @@ function insertImpressionInExistingScopeImpressions(
   if (normalNode) {
     // If not normal finding and existing scope has any normal impression. Remove normal impression and insert the new impression
     return replaceNormalImpressionWithAbNormalImpression(
+      editor,
       chain,
       html,
-      normalNode
+      normalNode,
+      existingScopeImpressionNodes
     );
+  }
+
+  if (isNil(html)) {
+    return chain();
   }
 
   // insert after the last impression of the existing scope impressions
@@ -798,10 +792,22 @@ function replaceNormalFindingWithAbNormalFinding(
 }
 
 function replaceNormalImpressionWithAbNormalImpression(
+  editor: Editor,
   chain: () => ChainedCommands,
-  html: string,
-  normal: NodePos
+  html: string | null,
+  normal: NodePos,
+  existingScopeNodes: NodePos[]
 ): ChainedCommands {
+  if (isNil(html)) {
+    return replaceImpressionWhenScopeHasOneImpression(
+      editor,
+      chain,
+      html,
+      normal,
+      existingScopeNodes
+    );
+  }
+
   return chain()
     .deleteRange({
       from: normal.pos - 1,
@@ -851,6 +857,95 @@ function replaceWithNormalFindingInScope(
     .insertContentAt(firstFinding.pos - 1, html);
 }
 
+function insertFirstImpressionAsLastItemInScope(
+  chain: () => ChainedCommands,
+  html: string | null,
+  existingScopeNodes: NodePos[]
+): ChainedCommands {
+  if (isNil(html)) {
+    // No impression to insert
+    return chain();
+  }
+
+  const lastNode: NodePos = existingScopeNodes[existingScopeNodes.length - 1];
+
+  // Insert after last existing scope impression
+  return chain().insertContentAt(lastNode.pos + lastNode.size - 1, html);
+}
+
+function replaceImpressionWhenScopeHasOneImpression(
+  editor: Editor,
+  chain: () => ChainedCommands,
+  html: string | null,
+  firstNode: NodePos,
+  existingScopeNodes: NodePos[]
+): ChainedCommands {
+  if (isNil(html)) {
+    return removeImpressionsInScope(
+      editor,
+      chain,
+      firstNode,
+      firstNode,
+      existingScopeNodes
+    );
+  }
+
+  // Remove the only impression and replace it with normal impression
+  return chain()
+    .deleteRange({
+      from: firstNode.pos - 1,
+      to: firstNode.pos + firstNode.size,
+    })
+    .insertContentAt(firstNode.pos - 1, html);
+}
+
+function removeImpressionsInScope(
+  editor: Editor,
+  chain: () => ChainedCommands,
+  firstNode: NodePos,
+  lastNode: NodePos,
+  existingScopeNodes: NodePos[]
+): ChainedCommands {
+  const hasOnlyCurrentScopeNodes: boolean = hasOnlyCurrentScopeImpression(
+    editor,
+    existingScopeNodes
+  ); // Impression to be removed are the only impressions in the report
+
+  if (hasOnlyCurrentScopeNodes) {
+    // Remove impressions section since the impressions to be removed are the only impressions in the report
+    return removeImpressionSection(editor, chain, firstNode, lastNode);
+  }
+
+  // Remove impression from first to last
+  return chain().deleteRange({
+    from: firstNode.pos - 1,
+    to: lastNode.pos + lastNode.size,
+  });
+}
+
+function removeImpressionSection(
+  editor: Editor,
+  chain: () => ChainedCommands,
+  firstNode: NodePos,
+  lastNode: NodePos
+): ChainedCommands {
+  const rootNode: NodePos | null = findRootImpressionNode(editor);
+
+  if (!rootNode) {
+    // Remove all impression from first to last
+    return chain().deleteRange({
+      from: firstNode.pos - 1,
+      to: lastNode.pos + lastNode.size,
+    });
+  }
+
+  // Remove impressions root node (section)
+  return chain().deleteRange({
+    from: rootNode.pos - 1,
+    to: rootNode.pos + rootNode.size - 1,
+  });
+}
+
 function replaceWithNormalImpressionInScope(
   editor: Editor,
   chain: () => ChainedCommands,
@@ -866,65 +961,40 @@ function replaceWithNormalImpressionInScope(
 
   if (!existingNodes?.length) {
     // first impression in scope
-    if (isNil(html)) {
-      return chain();
-    }
-
-    const lastNode: NodePos = existingScopeNodes[existingScopeNodes.length - 1];
-
-    return chain().insertContentAt(lastNode.pos + lastNode.size - 1, html);
+    return insertFirstImpressionAsLastItemInScope(
+      chain,
+      html,
+      existingScopeNodes
+    );
   }
 
   const firstNode: NodePos = existingNodes[0];
 
   if (existingNodes.length === 1) {
-    // Remove the only abnormal impression and replace it with normal impression
-    if (isNil(html)) {
-      return chain().deleteRange({
-        from: firstNode.pos - 1,
-        to: firstNode.pos + firstNode.size,
-      });
-    }
-
-    return chain()
-      .deleteRange({
-        from: firstNode.pos - 1,
-        to: firstNode.pos + firstNode.size,
-      })
-      .insertContentAt(firstNode.pos - 1, html);
+    // Remove the only abnormal impression and replace it with normal impression)
+    return replaceImpressionWhenScopeHasOneImpression(
+      editor,
+      chain,
+      html,
+      firstNode,
+      existingNodes
+    );
   }
 
   const lastNode: NodePos = existingNodes[existingNodes.length - 1];
 
   // Remove all the abnormal impression and replace it with normal impression
   if (isNil(html)) {
-    const hasOnlyCurrentScopeNodes: boolean = hasOnlyCurrentScopeImpression(
+    return removeImpressionsInScope(
       editor,
+      chain,
+      firstNode,
+      lastNode,
       existingScopeNodes
     );
-
-    if (hasOnlyCurrentScopeNodes) {
-      const rootNode: NodePos | null = findRootImpressionNode(editor);
-
-      if (!rootNode) {
-        return chain().deleteRange({
-          from: firstNode.pos - 1,
-          to: lastNode.pos + lastNode.size,
-        });
-      }
-
-      return chain().deleteRange({
-        from: rootNode.pos - 1,
-        to: rootNode.pos + rootNode.size - 1,
-      });
-    }
-
-    return chain().deleteRange({
-      from: firstNode.pos - 1,
-      to: lastNode.pos + lastNode.size,
-    });
   }
 
+  // Remove impressions from first to last
   return chain()
     .deleteRange({
       from: firstNode.pos - 1,
@@ -982,51 +1052,213 @@ function tryGetNormalImpression(existingScopeNodes: NodePos[]): NodePos | null {
 }
 
 function generateProtocolHTML(template: Template): string {
-  return `<div ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem)}="${EDITOR_REPORT_ATTRIBUTE_VALUES.ProtocolSection}" id="${EDITOR_REPORT_ID.RadioReportProtocol}"><p ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem)}="${EDITOR_REPORT_ATTRIBUTE_VALUES.ProtocolTitle}"><u><b>${escapeAndSanitizeHTML(template.name)}</b></u></p><p><b>Protocol:</b></p>${sanitizeHTML(template.protocol.html)}<p><b>Clinical Profile:</b></p><p><b>Comparison:</b></p></div>`;
+  const radioItem: string = generateDataAttribute(
+    EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem,
+    EDITOR_REPORT_ATTRIBUTE_VALUES.ProtocolSection
+  );
+
+  const sectionId: string = EDITOR_REPORT_ID.RadioReportProtocol;
+
+  const protocolTitle: string = generateDataAttribute(
+    EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem,
+    EDITOR_REPORT_ATTRIBUTE_VALUES.ProtocolTitle
+  );
+
+  return (
+    `<div ${radioItem} id="${sectionId}">` +
+    `<p ${protocolTitle}><u><b>${escapeAndSanitizeHTML(template.name)}</b></u></p>` +
+    `<p><b>Protocol:</b></p>` +
+    sanitizeHTML(template.protocol.html) +
+    `<p><b>Clinical Profile:</b></p>` +
+    `<p><b>Comparison:</b></p>` +
+    `</div>`
+  );
 }
 
 function generateFirstFindingInReportHTML(
   findingData: EditorFindingData
 ): string {
-  return `<div ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem)}="${EDITOR_REPORT_ATTRIBUTE_VALUES.FindingsSection}" id="${EDITOR_REPORT_ID.RadioReportFindings}"><p><u><b>Findings:</b></u></p>${generateFirstFindingInScopeHTML(findingData)}</div>`;
+  const radioItem: string = generateDataAttribute(
+    EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem,
+    EDITOR_REPORT_ATTRIBUTE_VALUES.FindingsSection
+  );
+
+  const sectionId: string = EDITOR_REPORT_ID.RadioReportFindings;
+
+  return (
+    `<div ${radioItem} id="${sectionId}">` +
+    `<p><u><b>Findings:</b></u></p>` +
+    generateFirstFindingInScopeHTML(findingData) +
+    `</div>`
+  );
 }
 
 function generateFirstFindingInScopeHTML(
   findingData: EditorFindingData
 ): string {
-  return `<div ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem)}="${EDITOR_REPORT_ATTRIBUTE_VALUES.Scope}" ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.FindingScopeIndex)}="${findingData.scopeIndex}" ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.ScopeId)}="${findingData.scope.id}"><p><b>${escapeAndSanitizeHTML(findingData.scope.name)}</b></p>${generateFindingHTML(findingData.finding)}</div>`;
+  const radioItem: string = generateDataAttribute(
+    EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem,
+    EDITOR_REPORT_ATTRIBUTE_VALUES.Scope
+  );
+
+  const scopeIndex: string = generateDataAttribute(
+    EDITOR_REPORT_ATTRIBUTE_NAMES.FindingScopeIndex,
+    findingData.scopeIndex
+  );
+
+  const dataId: string = generateDataAttribute(
+    EDITOR_REPORT_ATTRIBUTE_NAMES.ScopeId,
+    findingData.scope.id
+  );
+
+  return (
+    `<div ${radioItem} ${scopeIndex} ${dataId}>` +
+    `<p><b>${escapeAndSanitizeHTML(findingData.scope.name)}</b></p>` +
+    generateFindingHTML(findingData.finding) +
+    `</div>`
+  );
 }
 
 function generateFindingHTML(finding: FindingData): string {
-  return `<div ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem)}="${EDITOR_REPORT_ATTRIBUTE_VALUES.Finding}" ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.IsNormalFinding)}=${finding.isNormal} ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.FindingId)}="${finding.id}">${sanitizeHTML(finding.description.html)}</div>`;
+  const radioItem: string = generateDataAttribute(
+    EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem,
+    EDITOR_REPORT_ATTRIBUTE_VALUES.Finding
+  );
+
+  const isNormal: string = generateDataAttribute(
+    EDITOR_REPORT_ATTRIBUTE_NAMES.IsNormalFinding,
+    finding.isNormal
+  );
+
+  const dataId: string = generateDataAttribute(
+    EDITOR_REPORT_ATTRIBUTE_NAMES.FindingId,
+    finding.id
+  );
+
+  return (
+    `<div ${radioItem} ${isNormal} ${dataId}>` +
+    sanitizeHTML(finding.description.html) +
+    `</div>`
+  );
 }
 
 function generateFirstImpressionHTML(
   findingData: EditorFindingData,
   impressionHTML: string
 ): string {
-  return `<div ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem)}="${EDITOR_REPORT_ATTRIBUTE_VALUES.ImpressionsSection}" id="${EDITOR_REPORT_ID.RadioReportImpressions}"><p><u><b>Impressions:</b></u></p><ol id="${EDITOR_REPORT_ID.RadioReportImpressionsList}">${generateImpressionHTML(findingData, impressionHTML)}</ol></div>`;
+  const radioItem: string = generateDataAttribute(
+    EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem,
+    EDITOR_REPORT_ATTRIBUTE_VALUES.ImpressionsSection
+  );
+
+  const sectionId: string = EDITOR_REPORT_ID.RadioReportImpressions;
+
+  const listId: string = EDITOR_REPORT_ID.RadioReportImpressionsList;
+
+  return (
+    `<div ${radioItem} id="${sectionId}">` +
+    `<p><u><b>Impressions:</b></u></p>` +
+    `<ol id="${listId}">` +
+    generateImpressionHTML(findingData, impressionHTML) +
+    `</ol>` +
+    `</div>`
+  );
 }
 
 function generateImpressionHTML(
   findingData: EditorFindingData,
   impressionHTML: string
 ): string {
-  return `<li ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem)}="${EDITOR_REPORT_ATTRIBUTE_VALUES.Impression}" ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.ImpressionScopeIndex)}=${findingData.scopeIndex} ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.IsNormalFinding)}=${findingData.finding.isNormal} ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.ImpressionId)}="${findingData.finding.id}">${sanitizeHTML(impressionHTML)}</li>`;
+  const radioItem: string = generateDataAttribute(
+    EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem,
+    EDITOR_REPORT_ATTRIBUTE_VALUES.Impression
+  );
+
+  const scopeIndex: string = generateDataAttribute(
+    EDITOR_REPORT_ATTRIBUTE_NAMES.ImpressionScopeIndex,
+    findingData.scopeIndex
+  );
+
+  const isNormal: string = generateDataAttribute(
+    EDITOR_REPORT_ATTRIBUTE_NAMES.IsNormalFinding,
+    findingData.finding.isNormal
+  );
+
+  const dataId: string = generateDataAttribute(
+    EDITOR_REPORT_ATTRIBUTE_NAMES.ImpressionId,
+    findingData.finding.id
+  );
+
+  return (
+    `<li ${radioItem} ${scopeIndex} ${isNormal} ${dataId}>` +
+    sanitizeHTML(impressionHTML) +
+    `</li>`
+  );
 }
 
 function generateFirstRecommendationHTML(
   findingData: EditorFindingData,
   recommendationHTML: string
 ): string {
-  return `<div ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem)}="${EDITOR_REPORT_ATTRIBUTE_VALUES.RecommendationsSection}" id="${EDITOR_REPORT_ID.RadioReportRecommendations}"><p><u><b>Recommendations:</b></u></p><ol id="${EDITOR_REPORT_ID.RadioReportRecommendationsList}">${generateRecommendationHTML(findingData, recommendationHTML)}</ol></div>`;
+  const radioItem: string = generateDataAttribute(
+    EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem,
+    EDITOR_REPORT_ATTRIBUTE_VALUES.RecommendationsSection
+  );
+
+  const sectionId: string = EDITOR_REPORT_ID.RadioReportRecommendations;
+
+  const listId: string = EDITOR_REPORT_ID.RadioReportRecommendationsList;
+
+  return (
+    `<div ${radioItem} id="${sectionId}">` +
+    `<p><u><b>Recommendations:</b></u></p>` +
+    `<ol id="${listId}">` +
+    generateRecommendationHTML(findingData, recommendationHTML) +
+    `</ol>` +
+    `</div>`
+  );
 }
 
 function generateRecommendationHTML(
   findingData: EditorFindingData,
   recommendationHTML: string
 ): string {
-  return `<li ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem)}="${EDITOR_REPORT_ATTRIBUTE_VALUES.Recommendation}" ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.RecommendationScopeIndex)}=${findingData.scopeIndex} ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.IsNormalFinding)}=${findingData.finding.isNormal} ${generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.RecommendationId)}="${findingData.finding.id}">${sanitizeHTML(recommendationHTML)}</li>`;
+  const radioItem: string = generateDataAttribute(
+    EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem,
+    EDITOR_REPORT_ATTRIBUTE_VALUES.Recommendation
+  );
+
+  const scopeIndex: string = generateDataAttribute(
+    EDITOR_REPORT_ATTRIBUTE_NAMES.RecommendationScopeIndex,
+    findingData.scopeIndex
+  );
+
+  const isNormal: string = generateDataAttribute(
+    EDITOR_REPORT_ATTRIBUTE_NAMES.IsNormalFinding,
+    findingData.finding.isNormal
+  );
+
+  const dataId: string = generateDataAttribute(
+    EDITOR_REPORT_ATTRIBUTE_NAMES.RecommendationId,
+    findingData.finding.id
+  );
+
+  return (
+    `<li ${radioItem} ${scopeIndex} ${isNormal} ${dataId}>` +
+    sanitizeHTML(recommendationHTML) +
+    `</li>`
+  );
+}
+
+function generateDataAttribute(
+  attributeName: string,
+  attributeValue: string | number | boolean
+): string {
+  if (typeof attributeValue === 'string') {
+    return `${generateEditorAttributeName(attributeName)}="${attributeValue}"`;
+  }
+
+  return `${generateEditorAttributeName(attributeName)}=${attributeValue}`;
 }
 
 function sanitizeHTML(html: string | null | undefined): string {

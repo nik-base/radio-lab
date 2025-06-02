@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common';
 import {
   Component,
   computed,
+  effect,
+  EffectRef,
   input,
   InputSignal,
   model,
@@ -9,6 +11,7 @@ import {
   output,
   OutputEmitterRef,
   Signal,
+  untracked,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { isNil } from 'lodash-es';
@@ -61,6 +64,20 @@ export class ScopeListComponent {
   });
 
   protected readonly tooltipOptions: TooltipOptions = APP_TOOLTIP_OPTIONS;
+
+  /**
+   * @private
+   * DO NOT REMOVE - effect will run on scopes input change
+   */
+  private readonly effectScopesChange: EffectRef = effect(() => {
+    this.scopes();
+
+    untracked(() => {
+      this.selectedScope.set(null);
+
+      this.previousSelectedScope = null;
+    });
+  });
 
   onChange($event: ListboxChangeEvent): void {
     const scopeData: ScopeData | null = $event.value as ScopeData | null;

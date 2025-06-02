@@ -10,6 +10,7 @@ import {
   viewChild,
   WritableSignal,
 } from '@angular/core';
+import { isNil } from 'lodash-es';
 import { PanelModule } from 'primeng/panel';
 import { Splitter } from 'primeng/splitter';
 
@@ -22,6 +23,8 @@ import {
   Template,
   TemplateData,
 } from '@app/models/domain';
+import { EditorFindingData } from '@app/models/ui';
+import { isNotNil } from '@app/utils/functions/common.functions';
 
 import { ReportBuilderEditorComponent } from '../report-builder-editor/report-builder-editor.component';
 
@@ -74,6 +77,48 @@ export class ReportBuilderContentComponent implements AfterViewInit {
     this.selectedScope.set(scope);
   }
 
+  onNormalClick(scope: ScopeData): void {
+    const normalFinding: FindingData | null =
+      this.findNormalFindingInScope(scope);
+
+    if (isNil(normalFinding)) {
+      return;
+    }
+
+    this.reportEditor().insertReportFinding({
+      scope,
+      finding: normalFinding,
+      scopeIndex: scope.sortOrder,
+    });
+  }
+
+  insertAllNormalFindingsInEditor(): void {
+    const scopes: ReadonlyArray<ScopeData> = this.templateData()?.scopes ?? [];
+
+    const normalFindings: EditorFindingData[] = scopes
+      .map((scope: ScopeData): EditorFindingData | null => {
+        const finding: FindingData | null =
+          this.findNormalFindingInScope(scope);
+
+        if (!finding) {
+          return null;
+        }
+
+        return {
+          scope,
+          finding,
+          scopeIndex: scope.sortOrder,
+        };
+      })
+      .filter(isNotNil);
+
+    if (!normalFindings?.length) {
+      return;
+    }
+
+    this.reportEditor().insertReportFindings(normalFindings);
+  }
+
   onFindingSelection(finding: FindingData): void {
     const scope: ScopeData | null = this.selectedScope();
 
@@ -88,6 +133,20 @@ export class ReportBuilderContentComponent implements AfterViewInit {
     });
   }
 
+  private findNormalFindingInScope(scope: ScopeData): FindingData | null {
+    for (const group of scope.groups) {
+      for (const classifier of group.classifiers) {
+        for (const finding of classifier.findings) {
+          if (finding.isNormal) {
+            return finding;
+          }
+        }
+      }
+    }
+
+    return null;
+  }
+
   private insertReportProtocol(template: Template): void {
     this.reportEditor().insertReportProtocol(template);
   }
@@ -99,6 +158,8 @@ export class ReportBuilderContentComponent implements AfterViewInit {
   private effectTemplateChange(): void {
     effect(() => {
       const template: Template = this.template();
+
+      this.selectedScope.set(null);
 
       if (!this.hasComponentLoaded) {
         return;
