@@ -35,13 +35,13 @@ import { SortableListComponent } from '../sortable-list/sortable-list.component'
     ButtonModule,
     SortableListComponent,
   ],
-  styleUrls: ['./finding-manager-list.component.scss'],
   templateUrl: './finding-manager-list.component.html',
 })
 export class FindingManagerListComponent {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   private readonly sortableListItemMapper: SortableListItemMapperService<Finding> =
-    inject(SortableListItemMapperService);
+    inject(
+      SortableListItemMapperService
+    ) as SortableListItemMapperService<Finding>;
 
   readonly findings: InputSignal<Finding[]> = input.required<Finding[]>();
 
@@ -95,9 +95,15 @@ export class FindingManagerListComponent {
         menuEvent: MenuItemCommandEvent,
         originalEvent: Event | null,
         item: SortableListItem<Finding>
-      ): void =>
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        this.onDelete(originalEvent ?? menuEvent.originalEvent!, item.value),
+      ): void => {
+        if (originalEvent) {
+          return this.onDelete(originalEvent, item.value);
+        }
+
+        if (menuEvent.originalEvent) {
+          return this.onDelete(menuEvent.originalEvent, item.value);
+        }
+      },
     },
   ];
 

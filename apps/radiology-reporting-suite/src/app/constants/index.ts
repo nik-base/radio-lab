@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/typedef */
 import { TooltipOptions } from 'primeng/api';
 
 import {
@@ -5,43 +6,36 @@ import {
   FindingGroupCreate,
 } from '@app/models/domain';
 
-// eslint-disable-next-line @typescript-eslint/typedef
 export const APP_NOTIFICATION_TYPE = {
   Success: 'success',
   Error: 'error',
 } as const;
 
-// eslint-disable-next-line @typescript-eslint/typedef
 export const CHANGE_MODE = {
   Create: 'create',
   Update: 'update',
 } as const;
 
-// eslint-disable-next-line @typescript-eslint/typedef
 export const VARIABLE_SOURCE = {
   Finding: 'finding',
 } as const;
 
-// eslint-disable-next-line @typescript-eslint/typedef
 export const VARIABLE_TYPE = {
   MultiSelect: 'multiselect',
 } as const;
 
-// eslint-disable-next-line @typescript-eslint/typedef
 export const APP_TOOLTIP_OPTIONS = {
   showDelay: 300,
   hideDelay: 50,
   tooltipPosition: 'bottom',
 } as const as TooltipOptions;
 
-// eslint-disable-next-line @typescript-eslint/typedef
 export const RADIO_DEFAULT_GROUP = {
   name: 'Uncategorized',
   sortOrder: 0,
   isDefault: true,
 } as const satisfies Omit<FindingGroupCreate, 'scopeId'>;
 
-// eslint-disable-next-line @typescript-eslint/typedef
 export const RADIO_DEFAULT_CLASSIFIER = {
   name: 'Unclassified',
   sortOrder: 0,

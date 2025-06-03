@@ -24,8 +24,7 @@ export const appConfig: ApplicationConfig = {
       theme: {
         preset: AURA_LIGHT_BLUE,
         options: {
-          // eslint-disable-next-line no-constant-binary-expression
-          darkModeSelector: false || 'none',
+          darkModeSelector: 'none',
           cssLayer: {
             name: 'primeng',
             order: 'theme, base, primeng',

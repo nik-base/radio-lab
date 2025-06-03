@@ -38,9 +38,10 @@ import { SortableListComponent } from '../sortable-list/sortable-list.component'
   templateUrl: './group-manager-list.component.html',
 })
 export class GroupManagerListComponent {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   private readonly sortableListItemMapper: SortableListItemMapperService<FindingGroup> =
-    inject(SortableListItemMapperService);
+    inject(
+      SortableListItemMapperService
+    ) as SortableListItemMapperService<FindingGroup>;
 
   readonly groups: InputSignal<FindingGroup[]> =
     input.required<FindingGroup[]>();
@@ -94,9 +95,15 @@ export class GroupManagerListComponent {
         menuEvent: MenuItemCommandEvent,
         originalEvent: Event | null,
         item: SortableListItem<FindingGroup>
-      ): void =>
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        this.onDelete(originalEvent ?? menuEvent.originalEvent!, item.value),
+      ): void => {
+        if (originalEvent) {
+          return this.onDelete(originalEvent, item.value);
+        }
+
+        if (menuEvent.originalEvent) {
+          return this.onDelete(menuEvent.originalEvent, item.value);
+        }
+      },
     },
   ];
 

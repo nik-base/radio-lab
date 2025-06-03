@@ -1511,45 +1511,6 @@ export class ReportDBService extends ReportBaseService {
       );
   }
 
-  private getImportObservable$<
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    TParentImport extends Record<string, any>,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    TEntityImport extends Record<string, any>,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    TDBModel extends Record<string, any>,
-  >(
-    parent: TParentImport,
-    childKey: string,
-    parentIdKey: string,
-    parentId: string,
-    dbStoreName: string,
-    dbModelMapper: (entity: TEntityImport) => Partial<TDBModel>
-  ): {
-    readonly observable: Observable<number[]>;
-    entries: [string, TEntityImport][];
-  } {
-    const idsMap: Record<string, TEntityImport> = this.generateIdsMap([
-      ...(parent[childKey] as Iterable<TEntityImport>),
-    ]);
-
-    const entries: [string, TEntityImport][] = Object.entries(idsMap);
-
-    const rows: TDBModel[] = entries.map(
-      ([id, row]: [string, TEntityImport]): TDBModel =>
-        ({
-          ...dbModelMapper(row),
-          id,
-          [parentIdKey]: parentId,
-        }) as unknown as TDBModel
-    );
-
-    return {
-      observable: this.dbService.bulkAdd<TDBModel>(dbStoreName, rows),
-      entries,
-    };
-  }
-
   private deleteAllVariablesByEntityId$(entityId: string): Observable<void> {
     return this.dbService
       .deleteAllByIndex<VariableDBModel>('variables', 'entityId', entityId)

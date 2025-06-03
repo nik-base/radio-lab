@@ -38,9 +38,10 @@ import { SortableListComponent } from '../sortable-list/sortable-list.component'
   templateUrl: './template-manager-list.component.html',
 })
 export class TemplateManagerListComponent {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   private readonly sortableListItemMapper: SortableListItemMapperService<Template> =
-    inject(SortableListItemMapperService);
+    inject(
+      SortableListItemMapperService
+    ) as SortableListItemMapperService<Template>;
 
   readonly templates: InputSignal<Template[]> = input.required<Template[]>();
 
@@ -107,9 +108,15 @@ export class TemplateManagerListComponent {
         menuEvent: MenuItemCommandEvent,
         originalEvent: Event | null,
         item: SortableListItem<Template>
-      ): void =>
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        this.onDelete(originalEvent ?? menuEvent.originalEvent!, item.value),
+      ): void => {
+        if (originalEvent) {
+          return this.onDelete(originalEvent, item.value);
+        }
+
+        if (menuEvent.originalEvent) {
+          return this.onDelete(menuEvent.originalEvent, item.value);
+        }
+      },
     },
   ];
 

@@ -38,9 +38,10 @@ import { SortableListComponent } from '../sortable-list/sortable-list.component'
   templateUrl: './classifier-manager-list.component.html',
 })
 export class ClassifierManagerListComponent {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   private readonly sortableListItemMapper: SortableListItemMapperService<FindingClassifier> =
-    inject(SortableListItemMapperService);
+    inject(
+      SortableListItemMapperService
+    ) as SortableListItemMapperService<FindingClassifier>;
 
   readonly classifiers: InputSignal<FindingClassifier[]> =
     input.required<FindingClassifier[]>();
@@ -98,9 +99,15 @@ export class ClassifierManagerListComponent {
         menuEvent: MenuItemCommandEvent,
         originalEvent: Event | null,
         item: SortableListItem<FindingClassifier>
-      ): void =>
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        this.onDelete(originalEvent ?? menuEvent.originalEvent!, item.value),
+      ): void => {
+        if (originalEvent) {
+          return this.onDelete(originalEvent, item.value);
+        }
+
+        if (menuEvent.originalEvent) {
+          return this.onDelete(menuEvent.originalEvent, item.value);
+        }
+      },
     },
   ];
 

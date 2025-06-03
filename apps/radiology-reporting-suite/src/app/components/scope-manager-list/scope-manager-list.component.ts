@@ -35,13 +35,13 @@ import { SortableListComponent } from '../sortable-list/sortable-list.component'
     MenuModule,
     SortableListComponent,
   ],
-  styleUrls: ['./scope-manager-list.component.scss'],
   templateUrl: './scope-manager-list.component.html',
 })
 export class ScopeManagerListComponent {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   private readonly sortableListItemMapper: SortableListItemMapperService<Scope> =
-    inject(SortableListItemMapperService);
+    inject(
+      SortableListItemMapperService
+    ) as SortableListItemMapperService<Scope>;
 
   readonly scopes: InputSignal<Scope[]> = input.required<Scope[]>();
 
@@ -104,9 +104,15 @@ export class ScopeManagerListComponent {
         menuEvent: MenuItemCommandEvent,
         originalEvent: Event | null,
         item: SortableListItem<Scope>
-      ): void =>
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        this.onDelete(originalEvent ?? menuEvent.originalEvent!, item.value),
+      ): void => {
+        if (originalEvent) {
+          return this.onDelete(originalEvent, item.value);
+        }
+
+        if (menuEvent.originalEvent) {
+          return this.onDelete(menuEvent.originalEvent, item.value);
+        }
+      },
     },
   ];
 

@@ -204,8 +204,7 @@ export class LegacyTemplateImportMapperService {
   private mapLegacyFindingToFindingImport(
     lfi: LegacyFindingImport
   ): FindingImport {
-    // eslint-disable-next-line @typescript-eslint/typedef
-    const findingBase = lfi.finding;
+    const findingBase: typeof lfi.finding = lfi.finding;
 
     const hasImpression: boolean = !isNilOrEmpty(
       findingBase.impression?.trim()

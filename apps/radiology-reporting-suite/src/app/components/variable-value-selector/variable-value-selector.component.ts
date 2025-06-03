@@ -38,7 +38,6 @@ import { isNilOrEmpty, isNotNil } from '@app/utils/functions/common.functions';
     FindIndexInArrayPipe,
   ],
   templateUrl: './variable-value-selector.component.html',
-  styleUrls: ['./variable-value-selector.component.scss'],
 })
 export class VariableValueSelectorComponent implements OnInit {
   protected readonly variableValueStore$: InstanceType<
