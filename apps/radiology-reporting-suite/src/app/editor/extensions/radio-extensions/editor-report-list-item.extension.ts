@@ -2,33 +2,35 @@ import { Node } from '@tiptap/core';
 import { ListItem, ListItemOptions } from '@tiptap/extension-list-item';
 
 import { EDITOR_REPORT_ATTRIBUTE_NAMES } from '@app/editor/constants';
-import { generateEditorAttributeName } from '@app/editor/utils/editor-report-extension.functions';
+import { generateEditorDataAttributeName } from '@app/editor/utils/editor-report-common-extension.functions';
 
 export const EditorReportListItem: Node<ListItemOptions> = ListItem.extend({
   content: 'paragraph block*',
 
   addAttributes() {
     return {
-      [generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem)]:
-        {},
-      [generateEditorAttributeName(
+      [generateEditorDataAttributeName(
+        EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem
+      )]: {},
+      [generateEditorDataAttributeName(
         EDITOR_REPORT_ATTRIBUTE_NAMES.ImpressionScopeIndex
       )]: {},
-      [generateEditorAttributeName(
+      [generateEditorDataAttributeName(
         EDITOR_REPORT_ATTRIBUTE_NAMES.ImpressionIndex
       )]: {},
-      [generateEditorAttributeName(
+      [generateEditorDataAttributeName(
         EDITOR_REPORT_ATTRIBUTE_NAMES.RecommendationScopeIndex
       )]: {},
-      [generateEditorAttributeName(
+      [generateEditorDataAttributeName(
         EDITOR_REPORT_ATTRIBUTE_NAMES.RecommendationIndex
       )]: {},
-      [generateEditorAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.ImpressionId)]:
-        {},
-      [generateEditorAttributeName(
+      [generateEditorDataAttributeName(
+        EDITOR_REPORT_ATTRIBUTE_NAMES.ImpressionId
+      )]: {},
+      [generateEditorDataAttributeName(
         EDITOR_REPORT_ATTRIBUTE_NAMES.RecommendationId
       )]: {},
-      [generateEditorAttributeName(
+      [generateEditorDataAttributeName(
         EDITOR_REPORT_ATTRIBUTE_NAMES.IsNormalFinding
       )]: {},
     };
