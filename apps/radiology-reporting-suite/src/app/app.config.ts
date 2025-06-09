@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import {
   ApplicationConfig,
   importProvidersFrom,
-  provideExperimentalZonelessChangeDetection,
+  provideZonelessChangeDetection,
 } from '@angular/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
@@ -17,7 +17,7 @@ import { AURA_LIGHT_BLUE } from './themes/aura-light-blue.theme';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideExperimentalZonelessChangeDetection(),
+    provideZonelessChangeDetection(),
     provideRouter(appRoutes),
     provideAnimationsAsync(),
     providePrimeNG({
