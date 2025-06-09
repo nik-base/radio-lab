@@ -1,6 +1,5 @@
 name: CI
 env:
-  NODE_OPTIONS: '--max-old-space-size=6144'
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
 on:
@@ -25,7 +24,7 @@ jobs:
       # Run this command as early as possible, before dependencies are installed
       # Learn more at https://nx.dev/ci/reference/nx-cloud-cli#npx-nxcloud-startcirun
       # Uncomment this line to enable task distribution
-      - run: npx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="e2e-ci"
+      # - run: npx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="e2e-ci"
 
       # Cache node_modules
       - uses: actions/setup-node@v4
@@ -44,25 +43,8 @@ jobs:
           echo "Runner memory:"
           free -h
 
-      # --- START: NEW BINARY CACHING STEP ---
-      # Cache binaries for tools like esbuild, swc, playwright, etc.
-      # This prevents postinstall scripts from re-downloading them.
-      - name: Cache binaries
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/esbuild
-            ~/.cache/ms-playwright
-            ~/.swc
-          key: ${{ runner.os }}-binaries-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-binaries-
-
       - name: Install Dependencies
-        env:
-          # Nx verbose logging can sometimes reveal hidden processes
-          NX_VERBOSE_LOGGING: 'true'
-        run: npm install --legacy-peer-deps --verbose
+        run: npm ci --legacy-peer-deps
 
       - run: npx playwright install --with-deps
       - uses: nrwl/nx-set-shas@v4
