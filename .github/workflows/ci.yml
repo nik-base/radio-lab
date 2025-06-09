@@ -62,7 +62,7 @@ jobs:
         env:
           # Nx verbose logging can sometimes reveal hidden processes
           NX_VERBOSE_LOGGING: 'true'
-        run: npm ci --legacy-peer-deps --foreground-scripts
+        run: npm install --legacy-peer-deps --verbose
 
       - run: npx playwright install --with-deps
       - uses: nrwl/nx-set-shas@v4
