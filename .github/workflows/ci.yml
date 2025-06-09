@@ -44,7 +44,26 @@ jobs:
           echo "Runner memory:"
           free -h
 
-      - run: npm ci --legacy-peer-deps --verbose
+      # --- START: NEW BINARY CACHING STEP ---
+      # Cache binaries for tools like esbuild, swc, playwright, etc.
+      # This prevents postinstall scripts from re-downloading them.
+      - name: Cache binaries
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/esbuild
+            ~/.cache/ms-playwright
+            ~/.swc
+          key: ${{ runner.os }}-binaries-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-binaries-
+
+      - name: Install Dependencies
+        env:
+          # Nx verbose logging can sometimes reveal hidden processes
+          NX_VERBOSE_LOGGING: 'true'
+        run: npm ci --legacy-peer-deps --foreground-scripts
+
       - run: npx playwright install --with-deps
       - uses: nrwl/nx-set-shas@v4
 
