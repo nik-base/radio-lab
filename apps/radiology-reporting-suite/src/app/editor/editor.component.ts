@@ -17,6 +17,8 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Editor, EditorEvents, Extension, Extensions } from '@tiptap/core';
 import { FontFamily } from '@tiptap/extension-font-family';
+import { History } from '@tiptap/extension-history';
+import { Italic } from '@tiptap/extension-italic';
 import { MentionOptions } from '@tiptap/extension-mention';
 import Paragraph from '@tiptap/extension-paragraph';
 import { TableCell } from '@tiptap/extension-table-cell';
@@ -175,10 +177,12 @@ export class EditorComponent implements OnInit {
   private readonly editorExtensions: Extensions = [
     StarterKit.configure({
       bold: false,
+      italic: false,
       bulletList: false,
       orderedList: false,
       paragraph: false,
       listItem: false,
+      history: false,
     }) as Extension,
     Paragraph.configure({
       HTMLAttributes: {
@@ -186,7 +190,9 @@ export class EditorComponent implements OnInit {
       },
     }),
     EditorBold,
+    Italic,
     Underline,
+    History,
     EditorTextAlign,
     EditorNodeAlign,
     EditorBulletedList.configure({
