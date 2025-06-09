@@ -1,47 +1,55 @@
-<div class="flex gap-2">
-  <div class="flex flex-column gap-2">
-    <div class="flex align-self-end gap-2">
+<div class="flex gap-2 w-full h-full min-h-0">
+  @let selectedFinding = findingStore$.current();
+
+  <radio-sortable-list-manager-layout style="width: 15%">
+    <ng-container actions>
       <p-button
         icon="pi pi-plus"
         pTooltip="Create Finding"
         tooltipPosition="bottom"
         [outlined]="true"
+        [disabled]="findingStore$.isFetching()"
         (onClick)="onCreate()" />
-    </div>
+    </ng-container>
 
-    <div class="flex h-full min-h-0">
-      <radio-finding-manager-list
-        [findings]="findings()"
-        [selectedFinding]="selectedFinding()"
-        (edit)="onEdit($event)"
-        (delete)="onDelete($event)"
-        (clone)="onClone($event)"
-        (reorder)="onReorder($event)">
-      </radio-finding-manager-list>
-    </div>
-  </div>
+    <radio-finding-manager-list
+      list
+      class="w-full"
+      [findings]="findings()"
+      [isLoading]="findingStore$.isFetching()"
+      [selectedFinding]="selectedFinding"
+      (delete)="onDelete($event)"
+      (clone)="onClone($event)"
+      (reorder)="onReorder($event)"
+      (changed)="onChange($event)">
+    </radio-finding-manager-list>
+  </radio-sortable-list-manager-layout>
 
-  <div class="flex h-full min-h-0">
-    @if (mode()) {
-      @let groups = (groups$ | ngrxPush) ?? [];
+  @let _mode = mode();
 
-      @let storeSelectedFinding = (selectedFinding$ | ngrxPush) ?? null;
-
-      @if (mode() === ChangeModes.Update && selectedFinding()) {
+  @if (_mode) {
+    <p-panel
+      [showHeader]="false"
+      class="w-full"
+      styleClass="flex h-full min-h-0">
+      @if (_mode === ChangeModes.Update && selectedFinding) {
         <radio-finding-manager-view
-          [finding]="selectedFinding()"
-          [groups]="groups"
+          class="flex h-full min-h-0 w-full"
+          [finding]="selectedFinding"
           [mode]="ChangeModes.Update"
-          (save)="onSave($event, ChangeModes.Update, storeSelectedFinding)">
+          (save)="onSave($event, ChangeModes.Update, selectedFinding)"
+          (canceled)="onCancel()">
         </radio-finding-manager-view>
       } @else {
         <radio-finding-manager-view
-          [groups]="groups"
-          (save)="onSave($event, ChangeModes.Create)">
+          class="flex h-full min-h-0 w-full"
+          [mode]="ChangeModes.Create"
+          (save)="onSave($event, ChangeModes.Create)"
+          (canceled)="onCancel()">
         </radio-finding-manager-view>
       }
-    }
-  </div>
+    </p-panel>
+  }
 </div>
 
 <p-confirmPopup />

@@ -1,0 +1,18 @@
+<radio-dialog-layout>
+  <div class="flex flex-col gap-2 h-full" dialog-content>
+    @if (dialogData.finding) {
+      <radio-variables-manager class="h-full" [finding]="dialogData.finding">
+      </radio-variables-manager>
+    }
+  </div>
+</radio-dialog-layout>
+
+<ng-template #footer>
+  <div class="flex justify-end gap-2">
+    <p-button
+      label="Close"
+      [text]="true"
+      severity="secondary"
+      (onClick)="close()" />
+  </div>
+</ng-template>

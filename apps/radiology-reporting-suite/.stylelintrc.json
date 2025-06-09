@@ -1,10 +1,45 @@
 {
   "extends": ["../../.stylelintrc.json"],
-  "ignoreFiles": ["!**/*"],
+  "files": ["**/*.scss"],
   "overrides": [
     {
-      "files": ["**/*.css","**/*.scss"],
-      "rules": {}
+      "files": ["**/*.css", "**/*.scss"],
+      "rules": {
+        "at-rule-no-unknown": [
+          true,
+          {
+            "ignoreAtRules": ["tailwind", "use", "plugin"]
+          }
+        ],
+        "scss/at-rule-no-unknown": [
+          true,
+          {
+            "ignoreAtRules": ["tailwind", "use", "plugin"]
+          }
+        ],
+        "no-invalid-position-at-import-rule": [
+          true,
+          {
+            "ignoreAtRules": ["tailwind"]
+          }
+        ],
+        "at-rule-empty-line-before": [
+          "always",
+          {
+            "except": ["blockless-after-same-name-blockless", "first-nested"],
+            "ignore": ["after-comment"],
+            "ignoreAtRules": [
+              "else",
+              "tailwind",
+              "layer",
+              "import",
+              "use",
+              "forward",
+              "plugin"
+            ]
+          }
+        ]
+      }
     }
   ]
 }

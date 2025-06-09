@@ -35,6 +35,7 @@ export class TemplateMapperService {
   mapToBaseDto(template: TemplateBase): TemplateBaseDto {
     return {
       name: template.name,
+      sortOrder: template.sortOrder,
       protocol: this.editorContentMapper.mapToDto(template.protocol),
       patientInfo: this.editorContentMapper.mapToDto(template.patientInfo),
     };
@@ -43,6 +44,7 @@ export class TemplateMapperService {
   mapFromBaseDto(finding: TemplateBaseDto): TemplateBase {
     return {
       name: finding.name,
+      sortOrder: finding.sortOrder,
       protocol: this.editorContentMapper.mapFromDto(finding.protocol),
       patientInfo: this.editorContentMapper.mapFromDto(finding.patientInfo),
     };

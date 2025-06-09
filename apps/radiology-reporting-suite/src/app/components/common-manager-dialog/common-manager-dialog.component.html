@@ -1,0 +1,37 @@
+<radio-dialog-layout>
+  <div class="flex flex-col gap-2" [formGroup]="formGroup" dialog-content>
+    <label for="itemName" class="font-semibold"> Name </label>
+
+    <input
+      pInputText
+      id="itemName"
+      formControlName="name"
+      class="flex-auto"
+      autocomplete="off" />
+
+    @let nameControl = formGroup.get('name');
+
+    @if (nameControl?.hasError('required') && nameControl?.dirty) {
+      <p-message severity="error" variant="simple" size="small">
+        Name is required
+      </p-message>
+    }
+  </div>
+</radio-dialog-layout>
+
+<ng-template #footer>
+  <div class="flex justify-end gap-2">
+    <p-button
+      label="Cancel"
+      [text]="true"
+      severity="secondary"
+      (onClick)="close()" />
+
+    <p-button
+      label="Save"
+      [outlined]="true"
+      [disabled]="!formGroup.valid"
+      severity="primary"
+      (onClick)="save()" />
+  </div>
+</ng-template>

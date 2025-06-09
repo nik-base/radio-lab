@@ -3,9 +3,11 @@
   [pTooltip]="name()"
   tooltipPosition="bottom"
   size="small"
-  class="p-button-icon-only editor-button"
+  style="height: 100%"
   [disabled]="disabled()"
-  [ngClass]="isActive() ? 'editor-button-active' : 'editor-button-inactive'"
-  (click)="onClick()">
-  <span class="text-2xl material-icons">{{ icon() }}</span>
+  [severity]="isActive() ? 'primary' : 'secondary'"
+  (click)="onClick($event)">
+  <span class="material-symbols-outlined" style="font-size: 16px">
+    {{ icon() }}
+  </span>
 </button>

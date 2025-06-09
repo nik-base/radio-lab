@@ -26,7 +26,6 @@ export class FindingMapperService {
   mapToBaseDto(finding: FindingBase): FindingBaseDto {
     return {
       name: finding.name,
-      group: finding.group,
       isNormal: finding.isNormal,
       sortOrder: finding.sortOrder,
       description: this.editorContentMapper.mapToDto(finding.description),
@@ -38,7 +37,6 @@ export class FindingMapperService {
   mapFromBaseDto(finding: FindingBaseDto): FindingBase {
     return {
       name: finding.name,
-      group: finding.group,
       isNormal: finding.isNormal,
       sortOrder: finding.sortOrder,
       description: this.editorContentMapper.mapFromDto(finding.description),
@@ -54,6 +52,8 @@ export class FindingMapperService {
       ...this.mapToBaseDto(finding),
       id: finding.id,
       scopeId: finding.scopeId,
+      groupId: finding.groupId,
+      classifierId: finding.classifierId,
     };
   }
 
@@ -62,6 +62,8 @@ export class FindingMapperService {
       ...this.mapFromBaseDto(finding),
       id: finding.id,
       scopeId: finding.scopeId,
+      groupId: finding.groupId,
+      classifierId: finding.classifierId,
     };
   }
 
@@ -69,6 +71,8 @@ export class FindingMapperService {
     return {
       ...this.mapToBaseDto(finding),
       scopeId: finding.scopeId,
+      groupId: finding.groupId,
+      classifierId: finding.classifierId,
     };
   }
 
@@ -76,6 +80,8 @@ export class FindingMapperService {
     return {
       ...this.mapFromBaseDto(finding),
       scopeId: finding.scopeId,
+      groupId: finding.groupId,
+      classifierId: finding.classifierId,
     };
   }
 

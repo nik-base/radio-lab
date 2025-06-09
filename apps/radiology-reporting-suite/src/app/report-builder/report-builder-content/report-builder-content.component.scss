@@ -1,0 +1,11 @@
+:host {
+  /* stylelint-disable-next-line selector-pseudo-element-no-unknown */
+  ::ng-deep {
+    .p-panel-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background-color: var(--p-surface-0);
+    }
+  }
+}

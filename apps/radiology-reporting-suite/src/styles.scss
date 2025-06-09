@@ -1,31 +1,60 @@
 /* You can add global styles to this file, and also import other style files */
-@import 'primeng/resources/themes/aura-light-blue/theme.css';
-@import 'primeng/resources/primeng.css';
-@import 'primeflex/primeflex.css';
-@import 'primeicons/primeicons.css';
-@import 'material-icons/iconfont/material-icons.css';
 
-html,
-body {
-  font-family: var(--font-family);
+@use 'tailwindcss';
+@use 'primeicons/primeicons';
+@use 'material-symbols/outlined';
+
+@plugin "tailwindcss-primeui";
+
+html {
+  font-family: "'Inter var'", sans-serif;
   font-weight: normal;
-  font-size: var(--font-size, 12px);
-  background: var(--surface-ground);
-  color: var(--text-color);
+  font-size: 12px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   margin: 0;
   height: 100%;
   width: 100%;
   display: flex;
+  scrollbar-width: thin;
+  scrollbar-color: var(--p-surface-400, #c1c1c1);
+  background-color: var(--p-surface-100);
 }
 
 html > body {
   padding: var(--radio-default-padding, 0.5rem);
   flex: auto;
   flex-direction: column;
+  min-width: 0;
 }
 
 .flex-basis-auto {
   flex-basis: auto;
+}
+
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* For Webkit-based browsers (Chrome, Safari, Edge, Opera) */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: var(
+    --p-surface-200,
+    #f1f1f1
+  ); /* Fallback if variable isn't defined */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--p-surface-400, #c1c1c1); /* Fallback */
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--p-surface-500, #a8a8a8); /* Fallback */
 }

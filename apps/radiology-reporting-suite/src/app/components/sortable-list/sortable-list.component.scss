@@ -1,0 +1,50 @@
+:host {
+  /* stylelint-disable-next-line selector-pseudo-element-no-unknown */
+  ::ng-deep {
+    .p-orderlist-list-container {
+      width: 100%;
+      overflow: auto;
+    }
+
+    .p-listbox {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    p-listbox {
+      max-height: 100%;
+    }
+
+    .p-orderlist-controls {
+      display: none;
+    }
+
+    .p-listbox .p-listbox-list .p-listbox-option.p-listbox-option-selected {
+      background-color: inherit;
+      color: inherit;
+    }
+
+    .p-listbox:not(.p-disabled)
+      .p-listbox-option:not(.p-listbox-option-selected, .p-disabled):hover:not(
+        :has(> .sortable-item-active)
+      ) {
+      background: var(--p-listbox-option-focus-background) !important;
+      color: var(--p-listbox-option-focus-color) !important;
+    }
+
+    .p-listbox:not(.p-disabled)
+      .p-listbox-option.p-listbox-option-selected.p-focus:not(
+        :has(> .sortable-item-active)
+      ) {
+      background: var(--p-listbox-option-focus-background) !important;
+      color: var(--p-listbox-option-focus-color) !important;
+    }
+
+    li:has(> .sortable-item-active) {
+      font-weight: bold;
+      background: var(--p-listbox-option-selected-focus-background) !important;
+      color: var(--p-listbox-option-selected-focus-color) !important;
+    }
+  }
+}

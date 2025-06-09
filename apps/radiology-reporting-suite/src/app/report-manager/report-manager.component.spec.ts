@@ -1,7 +1,10 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideMockStore } from '@ngrx/store/testing';
+import { mockProvider } from '@ngneat/spectator/jest';
+import { MessageService } from 'primeng/api';
+
+import { ReportBaseService } from '@app/services/report-base.service';
 
 import { ReportManagerComponent } from './report-manager.component';
 
@@ -13,9 +16,10 @@ describe('ReportManagerComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ReportManagerComponent],
       providers: [
-        provideMockStore({}),
         provideHttpClient(),
         provideHttpClientTesting(),
+        mockProvider(MessageService),
+        mockProvider(ReportBaseService),
       ],
     }).compileComponents();
 

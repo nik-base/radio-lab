@@ -1,4 +1,4 @@
-<p-toolbar styleClass="border-noround-bottom">
+<p-toolbar styleClass="rounded-b-none">
   <ng-template pTemplate="start">
     <div class="flex flex-row gap-1 flex-wrap">
       @for (item of toolbarConfig().items; track $index) {
@@ -45,6 +45,10 @@
             <radio-editor-input-font-size [context]="{ editor: editor()! }">
             </radio-editor-input-font-size>
           }
+          @case (ToolbarItemType.Table) {
+            <radio-editor-button-table [context]="{ editor: editor()! }">
+            </radio-editor-button-table>
+          }
           @case (ToolbarItemType.Undo) {
             <radio-editor-button-undo [context]="{ editor: editor()! }">
             </radio-editor-button-undo>
@@ -54,7 +58,7 @@
             </radio-editor-button-redo>
           }
           @case (ToolbarItemType.Separator) {
-            <p-divider styleClass="h-1rem" layout="vertical" />
+            <p-divider layout="vertical" />
           }
         }
       }

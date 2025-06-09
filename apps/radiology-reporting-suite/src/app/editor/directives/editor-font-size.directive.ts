@@ -5,7 +5,7 @@ import {
   input,
   output,
 } from '@angular/core';
-import { isNil } from 'lodash';
+import { isNil } from 'lodash-es';
 
 import {
   EDITOR_DEFAULT_FONT_SIZE,

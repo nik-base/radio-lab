@@ -1,41 +1,10 @@
-<p-listbox
+<radio-sortable-list
+  [items]="templateItems()"
+  [selectedItem]="selectedItem()"
+  [menuItems]="menuItems"
+  [isLoading]="isLoading()"
+  headerLabel="Templates"
   emptyMessage="No templates available"
-  [options]="templates()"
-  optionLabel="name"
-  listStyleClass="max-h-full"
-  styleClass="w-full flex max-h-full"
-  (onChange)="onChange($event)">
-  <ng-template let-template pTemplate="item">
-    <div class="flex flex-row p-1 justify-content-between w-full">
-      <div
-        class="flex align-items-center flex-grow-1"
-        pTooltip="{{ template.name }}"
-        tooltipPosition="bottom">
-        {{ template.name }}
-      </div>
-
-      <div class="flex flex-row gap-2">
-        <p-button
-          icon="pi pi-download"
-          pTooltip="Export Template"
-          tooltipPosition="bottom"
-          [outlined]="true"
-          (onClick)="onExport(template)" />
-
-        <p-button
-          icon="pi pi-pencil"
-          pTooltip="Edit Template"
-          tooltipPosition="bottom"
-          (onClick)="onEdit(template)"
-          [outlined]="true" />
-
-        <p-button
-          icon="pi pi-trash"
-          pTooltip="Delete Template"
-          tooltipPosition="bottom"
-          [outlined]="true"
-          (onClick)="onDelete($event, template)" />
-      </div>
-    </div>
-  </ng-template>
-</p-listbox>
+  (changed)="onChange($event)"
+  (reorder)="onReorder($event)">
+</radio-sortable-list>

@@ -1,19 +1,39 @@
-<div class="flex flex-column gap-2">
-  <p-button
-    class="flex align-self-end"
-    [label]="
-      mode() === ChangeModes.Update ? 'Update Finding' : ' Create Finding'
-    "
-    [disabled]="formGroup.invalid"
-    [pTooltip]="
-      mode() === ChangeModes.Update ? 'Update Finding' : ' Create Finding'
-    "
-    tooltipPosition="bottom"
-    (onClick)="onSave()" />
+<div class="flex flex-col gap-2 w-full">
+  @let isUpdateMode = mode() === ChangeModes.Update;
 
-  <p-scrollPanel>
-    <div [formGroup]="formGroup" class="flex flex-column gap-2">
-      <div class="flex flex-row gap-5">
+  <div class="flex gap-2 self-end">
+    @if (isUpdateMode) {
+      <p-button
+        icon="pi pi-code"
+        [outlined]="true"
+        size="large"
+        pTooltip="Variables"
+        tooltipPosition="bottom"
+        (onClick)="onManageVariables()" />
+    }
+
+    <p-button
+      label="Cancel"
+      icon="pi pi-times"
+      severity="secondary"
+      pTooltip="Cancel"
+      tooltipPosition="bottom"
+      (onClick)="onCancel()" />
+
+    <p-button
+      icon="pi pi-save"
+      [label]="isUpdateMode ? 'Update Finding' : ' Create Finding'"
+      [disabled]="formGroup.invalid"
+      [pTooltip]="isUpdateMode ? 'Update Finding' : ' Create Finding'"
+      tooltipPosition="bottom"
+      (onClick)="onSave()" />
+  </div>
+
+  <p-divider />
+
+  <div class="flex h-full min-h-0 overflow-auto">
+    <div [formGroup]="formGroup" class="flex flex-col gap-4 w-full">
+      <div class="flex flex-row gap-8">
         <div>
           <p-floatLabel>
             <input
@@ -27,37 +47,27 @@
           @let nameControl = formGroup.get('name');
 
           @if (nameControl?.hasError('required') && nameControl?.dirty) {
-            <small id="findingName-error" class="p-error"
-              >Name is required</small
-            >
+            <p-message severity="error" variant="simple" size="small">
+              Name is required
+            </p-message>
           }
         </div>
 
-        <div>
-          <p-floatLabel>
-            <p-autoComplete
-              id="findingGroup"
-              formControlName="group"
-              [suggestions]="filteredGroups"
-              (completeMethod)="filterGroups($event)" />
-
-            <label for="findingGroup">Group</label>
-          </p-floatLabel>
-        </div>
-
-        <div class="flex gap-2">
+        <div class="flex gap-2 self-end">
           <label for="findingIsNormal">Is Normal</label>
 
-          <p-inputSwitch id="findingIsNormal" formControlName="isNormal" />
+          <p-toggleswitch id="findingIsNormal" formControlName="isNormal" />
         </div>
       </div>
 
-      <div>
+      <div class="flex flex-col gap-2">
         <label for="findingDescription">Description</label>
 
         <radio-editor
           id="findingDescription"
           maxHeight="15rem"
+          [suggestions]="variables()"
+          (variableClick)="onVariableClick($event)"
           formControlName="description">
         </radio-editor>
 
@@ -66,29 +76,43 @@
         @if (
           descriptionControl?.hasError('required') && descriptionControl?.dirty
         ) {
-          <small class="p-error"> Description is required </small>
+          <p-message severity="error" variant="simple" size="small">
+            Description is required
+          </p-message>
         }
       </div>
 
-      <div>
+      <div class="flex flex-col gap-2">
         <label for="findingImpression">Impression</label>
 
         <radio-editor
           id="findingImpression"
           maxHeight="10rem"
+          [suggestions]="variables()"
+          (variableClick)="onVariableClick($event)"
           formControlName="impression">
         </radio-editor>
       </div>
 
-      <div>
+      <div class="flex flex-col gap-2">
         <label for="findingRecommendation">Recommendation</label>
 
         <radio-editor
           id="findingRecommendation"
           maxHeight="10rem"
+          [suggestions]="variables()"
+          (variableClick)="onVariableClick($event)"
           formControlName="recommendation">
         </radio-editor>
       </div>
     </div>
-  </p-scrollPanel>
+  </div>
 </div>
+
+<p-popover #variableValueViewerPopover (onHide)="onVariablePopoverHide()">
+  <radio-variable-values-viewer
+    class="block max-w-sm"
+    [isLoading]="isVariableValuesLoading()"
+    [values]="variableValues()">
+  </radio-variable-values-viewer>
+</p-popover>

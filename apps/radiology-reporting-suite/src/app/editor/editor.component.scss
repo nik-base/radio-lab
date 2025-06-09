@@ -1,14 +1,93 @@
 :host {
   --editor-max-height: unset;
+
   /* stylelint-disable-next-line selector-pseudo-element-no-unknown */
   ::ng-deep {
     .editor-input-container {
       max-height: var(--editor-max-height, 'unset');
     }
+
+    .radio-report-paragraph {
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
+
+    .radio-mention {
+      cursor: pointer;
+      color: var(--p-primary-color);
+    }
+
+    /* stylelint-disable-next-line selector-class-pattern */
+    .ProseMirror .selectedCell {
+      background: var(--p-highlight-focus-background);
+    }
+
+    .tiptap-container {
+      :first-child {
+        margin-top: 0 !important;
+      }
+
+      /* Table-specific styling */
+      table {
+        border-collapse: collapse;
+        margin: 0;
+        overflow: hidden;
+        table-layout: fixed;
+        width: 100%;
+
+        td,
+        th {
+          border: 1px solid var(--p-surface-950);
+          box-sizing: border-box;
+          min-width: 1em;
+          position: relative;
+          vertical-align: top;
+
+          > * {
+            margin-bottom: 0;
+          }
+        }
+
+        th {
+          background-color: var(--p-surface-300);
+          font-weight: bold;
+          text-align: left;
+        }
+
+        /* stylelint-disable-next-line selector-class-pattern */
+        .selectedCell::after {
+          content: '';
+          inset: 0;
+          pointer-events: none;
+          position: absolute;
+          z-index: 2;
+        }
+
+        .column-resize-handle {
+          background-color: var(--p-primary-color);
+          bottom: -2px;
+          pointer-events: none;
+          position: absolute;
+          right: -2px;
+          top: 0;
+          width: 4px;
+        }
+      }
+
+      /* stylelint-disable-next-line selector-class-pattern */
+      .tableWrapper {
+        overflow-x: auto;
+      }
+
+      &.resize-cursor {
+        cursor: ew-resize;
+        cursor: col-resize;
+      }
+    }
   }
 }
 
 .editor-invalid {
-  border: 1px solid var(--red-400);
+  border: 1px solid var(--p-red-400);
   border-radius: 0.5rem;
 }

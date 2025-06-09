@@ -1,16 +1,24 @@
 {
-    "editor.formatOnSave": true,
-    "prettier.documentSelectors": [
-        "**/*.{ts,js,html,css,scss,json}"
-    ],
-    "editor.codeActionsOnSave": {
-        "source.organizeImports": "explicit",
-    },
-    "eslint.validate": ["javascript", "typescript", "html", "scss", "css"],
-    "stylelint.validate": [
-        "css",
-        "postcss",
-        "scss"
-    ],
-    "prettier.htmlWhitespaceSensitivity": "strict"
+  "editor.formatOnSave": true,
+  "eslint.useFlatConfig": true,
+  "prettier.documentSelectors": ["**/*.{ts,js,html,css,scss,json}"],
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit"
+  },
+  "eslint.validate": [
+    "javascript",
+    "typescript",
+    "html",
+    "scss",
+    "css",
+    "tailwindcss"
+  ],
+  "stylelint.enable": true,
+  "stylelint.validate": ["css", "scss", "postcss", "tailwindcss"],
+  "prettier.htmlWhitespaceSensitivity": "strict",
+  "files.associations": {
+    "*.css": "tailwindcss",
+    "*.scss": "tailwindcss"
+  },
+  "nxConsole.generateAiAgentRules": true
 }

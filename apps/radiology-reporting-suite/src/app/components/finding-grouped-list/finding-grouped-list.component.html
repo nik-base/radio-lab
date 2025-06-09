@@ -1,22 +1,78 @@
-<div class="flex flex-column gap-1 w-full">
-  <p-accordion
-    class="flex flex-row"
-    styleClass="w-full"
-    [multiple]="true"
-    [activeIndex]="[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]">
-    @for (groupedFinding of groupedFindings(); track groupedFinding.group) {
-      <p-accordionTab [header]="groupedFinding.group">
-        <div class="flex flex-row flex-wrap gap-2">
-          @for (finding of groupedFinding.findings; track finding.id) {
-            <span>
-              <p-chip
-                (click)="onClick(finding)"
-                class="cursor-pointer"
-                [label]="finding.name" />
-            </span>
-          }
-        </div>
-      </p-accordionTab>
-    }
-  </p-accordion>
+@let _isLoading = isLoading();
+@let _findingGroups = _isLoading ? mockFindingGroups : findingGroupList();
+
+<div class="flex flex-col gap-1 w-full">
+  @if (_findingGroups.length > 0) {
+    <p-accordion
+      class="flex flex-col"
+      styleClass="w-full"
+      [multiple]="true"
+      [value]="[_findingGroups[0].id]">
+      @for (findingGroup of _findingGroups; track findingGroup.id) {
+        <p-accordionpanel [value]="findingGroup.id">
+          <p-accordion-header>{{ findingGroup.name }}</p-accordion-header>
+
+          <p-accordion-content>
+            <div class="flex flex-row flex-wrap gap-2">
+              @let unclassified =
+                findingGroup.classifiers | findInArray: true : 'isDefault';
+
+              @let classified =
+                findingGroup.classifiers | filterArray: false : 'isDefault';
+
+              @let findingAndClassifiers =
+                unclassified?.findings | concatTwoArrays: classified;
+
+              @let sortedFindingAndClassifiers =
+                findingAndClassifiers | sortArray: 'sortOrder' : 'asc';
+
+              @for (
+                findingOrClassifier of sortedFindingAndClassifiers;
+                track findingOrClassifier.id
+              ) {
+                @if (_isLoading) {
+                  <p-skeleton
+                    width="10rem"
+                    height="2rem"
+                    borderRadius="var(--p-button-rounded-border-radius)" />
+                } @else {
+                  @if (Object.hasOwn(findingOrClassifier, 'classifierId')) {
+                    @let finding =
+                      findingOrClassifier | castToType: findingType;
+
+                    <p-button
+                      [label]="findingOrClassifier.name"
+                      [rounded]="true"
+                      severity="secondary"
+                      (click)="onFindingClick(finding)" />
+                  } @else {
+                    @let classifier =
+                      findingOrClassifier | castToType: classifierType;
+
+                    <p-splitbutton
+                      #classifierButton
+                      [label]="findingOrClassifier.name"
+                      [rounded]="true"
+                      severity="secondary"
+                      [model]="
+                        classifier
+                          | classifierToMenuItems
+                            : onFindingInClassifierClick
+                            : this
+                      "
+                      (onClick)="onClassifierClick($event, classifierButton)" />
+                  }
+                }
+              }
+            </div>
+          </p-accordion-content>
+        </p-accordionpanel>
+      }
+    </p-accordion>
+  } @else {
+    <div class="flex flex-col gap-2 w-full items-center p-8">
+      <span class="material-symbols-outlined">database_off</span>
+      <span>No findings available</span>
+    </div>
+  }
 </div>

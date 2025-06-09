@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { DBConfig, NgxIndexedDBModule } from 'ngx-indexed-db';
 
 const reportDBConfig: DBConfig = {
-  name: 'RadioReportDB',
+  name: 'RadioReportDataDB',
   version: 2,
   objectStoresMeta: [
     {
@@ -10,6 +10,7 @@ const reportDBConfig: DBConfig = {
       storeConfig: { keyPath: 'id', autoIncrement: false },
       storeSchema: [
         { name: 'name', keypath: 'name', options: { unique: false } },
+        { name: 'sortOrder', keypath: 'sortOrder', options: { unique: false } },
         {
           name: 'description',
           keypath: 'description',
@@ -43,11 +44,11 @@ const reportDBConfig: DBConfig = {
       ],
     },
     {
-      store: 'protocols',
+      store: 'scopes',
       storeConfig: { keyPath: 'id', autoIncrement: false },
       storeSchema: [
         { name: 'name', keypath: 'name', options: { unique: false } },
-        { name: 'order', keypath: 'order', options: { unique: false } },
+        { name: 'sortOrder', keypath: 'sortOrder', options: { unique: false } },
         {
           name: 'templateId',
           keypath: 'templateId',
@@ -56,15 +57,53 @@ const reportDBConfig: DBConfig = {
       ],
     },
     {
+      store: 'findingGroups',
+      storeConfig: { keyPath: 'id', autoIncrement: false },
+      storeSchema: [
+        { name: 'name', keypath: 'name', options: { unique: false } },
+        { name: 'sortOrder', keypath: 'sortOrder', options: { unique: false } },
+        { name: 'isDefault', keypath: 'isDefault', options: { unique: false } },
+        {
+          name: 'scopeId',
+          keypath: 'scopeId',
+          options: { unique: false },
+        },
+      ],
+    },
+    {
+      store: 'findingClassifiers',
+      storeConfig: { keyPath: 'id', autoIncrement: false },
+      storeSchema: [
+        { name: 'name', keypath: 'name', options: { unique: false } },
+        { name: 'sortOrder', keypath: 'sortOrder', options: { unique: false } },
+        { name: 'isDefault', keypath: 'isDefault', options: { unique: false } },
+        {
+          name: 'scopeId',
+          keypath: 'scopeId',
+          options: { unique: false },
+        },
+        {
+          name: 'groupId',
+          keypath: 'groupId',
+          options: { unique: false },
+        },
+      ],
+    },
+    {
       store: 'findings',
       storeConfig: { keyPath: 'id', autoIncrement: false },
       storeSchema: [
-        { name: 'title', keypath: 'title', options: { unique: false } },
-        { name: 'group', keypath: 'group', options: { unique: false } },
-        { name: 'order', keypath: 'order', options: { unique: false } },
+        { name: 'name', keypath: 'name', options: { unique: false } },
+        { name: 'sortOrder', keypath: 'sortOrder', options: { unique: false } },
+        { name: 'groupId', keypath: 'groupId', options: { unique: false } },
         {
-          name: 'protocolId',
-          keypath: 'protocolId',
+          name: 'classifierId',
+          keypath: 'classifierId',
+          options: { unique: false },
+        },
+        {
+          name: 'scopeId',
+          keypath: 'scopeId',
           options: { unique: false },
         },
         {
@@ -115,6 +154,30 @@ const reportDBConfig: DBConfig = {
         {
           name: 'isNormal',
           keypath: 'isNormal',
+          options: { unique: false },
+        },
+      ],
+    },
+    {
+      store: 'variables',
+      storeConfig: { keyPath: 'id', autoIncrement: false },
+      storeSchema: [
+        { name: 'name', keypath: 'name', options: { unique: false } },
+        { name: 'type', keypath: 'type', options: { unique: false } },
+        { name: 'source', keypath: 'source', options: { unique: false } },
+        { name: 'entityId', keypath: 'entityId', options: { unique: false } },
+        { name: 'sortOrder', keypath: 'sortOrder', options: { unique: false } },
+      ],
+    },
+    {
+      store: 'variableValues',
+      storeConfig: { keyPath: 'id', autoIncrement: false },
+      storeSchema: [
+        { name: 'name', keypath: 'name', options: { unique: false } },
+        { name: 'sortOrder', keypath: 'sortOrder', options: { unique: false } },
+        {
+          name: 'variableId',
+          keypath: 'variableId',
           options: { unique: false },
         },
       ],

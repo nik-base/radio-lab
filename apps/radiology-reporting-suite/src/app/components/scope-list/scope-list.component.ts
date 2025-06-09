@@ -1,35 +1,102 @@
 import { CommonModule } from '@angular/common';
 import {
   Component,
+  computed,
+  effect,
+  EffectRef,
   input,
   InputSignal,
+  model,
+  ModelSignal,
   output,
   OutputEmitterRef,
+  Signal,
+  untracked,
 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { isNil } from 'lodash-es';
+import { TooltipOptions } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ListboxChangeEvent, ListboxModule } from 'primeng/listbox';
+import { Skeleton } from 'primeng/skeleton';
 import { TooltipModule } from 'primeng/tooltip';
 
-import { Scope } from '@app/models/domain';
+import { APP_TOOLTIP_OPTIONS } from '@app/constants';
+import { ScopeData } from '@app/models/domain';
 
 @Component({
   selector: 'radio-scope-list',
   standalone: true,
-  imports: [CommonModule, ListboxModule, TooltipModule, ButtonModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ListboxModule,
+    TooltipModule,
+    ButtonModule,
+    Skeleton,
+  ],
   templateUrl: './scope-list.component.html',
+  styleUrls: ['./scope-list.component.scss'],
 })
 export class ScopeListComponent {
-  readonly scopes: InputSignal<Scope[]> = input.required<Scope[]>();
+  readonly scopes: InputSignal<ScopeData[] | ReadonlyArray<ScopeData>> =
+    input.required<ScopeData[] | ReadonlyArray<ScopeData>>();
 
-  readonly changed: OutputEmitterRef<Scope> = output<Scope>();
+  readonly isLoading: InputSignal<boolean> = input<boolean>(true);
 
-  readonly normal: OutputEmitterRef<Scope> = output<Scope>();
+  readonly changed: OutputEmitterRef<ScopeData> = output<ScopeData>();
+
+  readonly normal: OutputEmitterRef<ScopeData> = output<ScopeData>();
+
+  protected scopeList: Signal<ScopeData[]> = computed(() => [...this.scopes()]);
+
+  protected selectedScope: ModelSignal<ScopeData | null> =
+    model<ScopeData | null>(null);
+
+  private previousSelectedScope: ScopeData | null = null;
+
+  protected readonly mockScopes: ScopeData[] = Array<ScopeData>(5).fill({
+    id: '',
+    name: '',
+    sortOrder: 0,
+    templateId: '',
+    groups: [],
+  });
+
+  protected readonly tooltipOptions: TooltipOptions = APP_TOOLTIP_OPTIONS;
+
+  /**
+   * @private
+   * DO NOT REMOVE - effect will run on scopes input change
+   */
+  private readonly effectScopesChange: EffectRef = effect(() => {
+    this.scopes();
+
+    untracked(() => {
+      this.selectedScope.set(null);
+
+      this.previousSelectedScope = null;
+    });
+  });
 
   onChange($event: ListboxChangeEvent): void {
-    this.changed.emit($event.value as Scope);
+    const scopeData: ScopeData | null = $event.value as ScopeData | null;
+
+    if (isNil(scopeData)) {
+      setTimeout(() => this.selectedScope.set(this.previousSelectedScope), 0);
+      return;
+    }
+
+    this.previousSelectedScope = scopeData;
+
+    this.changed.emit(scopeData);
   }
 
-  onNormal(scope: Scope): void {
+  onNormal(event: Event, scope: ScopeData): void {
+    event.preventDefault();
+
+    event.stopPropagation();
+
     this.normal.emit(scope);
   }
 }

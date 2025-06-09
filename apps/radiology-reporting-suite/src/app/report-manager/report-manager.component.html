@@ -1,28 +1,68 @@
-<div class="flex h-full">
-  <radio-template-manager
-    [templates]="(templates$ | ngrxPush) ?? []"
-    class="flex flex-grow-0 flex-shrink-1 flex-basis-auto">
-  </radio-template-manager>
+<div class="flex w-full h-full gap-2">
+  <div class="grid grid-cols-4 gap-2 basis-[40%] shrink-0">
+    <radio-template-manager
+      class="min-w-0 min-h-0"
+      [templates]="templateStore$.orderedList()">
+    </radio-template-manager>
 
-  @let scopes = scopes$ | ngrxPush;
-  @let selectedTemplate = selectedTemplate$ | ngrxPush;
+    @let scopes = scopeStore$.orderedList();
+    @let selectedTemplate = templateStore$.current();
 
-  @if (scopes && selectedTemplate) {
-    <radio-scope-manager
-      [scopes]="scopes"
-      [template]="selectedTemplate"
-      class="flex flex-grow-0 flex-shrink-1 flex-basis-auto">
-    </radio-scope-manager>
-  }
+    @if (scopes && selectedTemplate) {
+      <radio-scope-manager
+        class="min-w-0 min-h-0"
+        [scopes]="scopes"
+        [template]="selectedTemplate">
+      </radio-scope-manager>
+    }
 
-  @let findings = findings$ | ngrxPush;
-  @let selectedScope = selectedScope$ | ngrxPush;
+    @let groups = groupStore$.orderedList();
+    @let selectedScope = scopeStore$.current();
 
-  @if (findings && selectedScope) {
+    @if (groups && selectedScope) {
+      <radio-group-manager
+        class="min-w-0 min-h-0"
+        [groups]="groups"
+        [scope]="selectedScope">
+      </radio-group-manager>
+    }
+
+    @let classifiers = classifierStore$.orderedList();
+    @let selectedGroup = groupStore$.current();
+
+    @if (classifiers && selectedGroup) {
+      <radio-classifier-manager
+        class="min-w-0 min-h-0"
+        [classifiers]="classifiers"
+        [group]="selectedGroup">
+      </radio-classifier-manager>
+    }
+  </div>
+
+  @let findings = findingStore$.orderedList();
+  @let selectedClassifier = classifierStore$.current();
+
+  @if (findings && selectedClassifier && selectedGroup && selectedScope) {
     <radio-finding-manager
+      class="flex-1 min-w-0"
       [findings]="findings"
-      [scope]="selectedScope"
-      class="flex flex-grow-1 flex-shrink-0 flex-basis-auto">
+      [classifier]="selectedClassifier"
+      [group]="selectedGroup"
+      [scope]="selectedScope">
     </radio-finding-manager>
   }
 </div>
+
+@let _isLoading = isLoading();
+
+<p-blockui [blocked]="_isLoading">
+  @if (_isLoading) {
+    <div class="flex items-center justify-center w-full h-full">
+      <p-progressSpinner
+        styleClass="custom-spinner"
+        strokeWidth="4"
+        animationDuration=".8s">
+      </p-progressSpinner>
+    </div>
+  }
+</p-blockui>

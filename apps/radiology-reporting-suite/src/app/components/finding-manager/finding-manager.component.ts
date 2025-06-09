@@ -1,139 +1,190 @@
 import { CommonModule } from '@angular/common';
 import {
   Component,
+  effect,
   inject,
   input,
   InputSignal,
   signal,
+  untracked,
   WritableSignal,
 } from '@angular/core';
-import { PushPipe } from '@ngrx/component';
-import { Store } from '@ngrx/store';
-import { maxBy } from 'lodash';
+import { isNil } from 'lodash-es';
 import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FileUploadModule } from 'primeng/fileupload';
+import { PanelModule } from 'primeng/panel';
 import { TooltipModule } from 'primeng/tooltip';
-import { Observable } from 'rxjs';
+import { filter, take, tap } from 'rxjs';
 
 import { CHANGE_MODE } from '@app/constants';
 import {
   Finding,
+  FindingClassifier,
+  FindingGroup,
   Scope,
   SortOrderItem,
   SortOrderUpdate,
 } from '@app/models/domain';
-import { EventData } from '@app/models/ui';
 import {
-  selectGroups,
-  selectSelectedFinding,
-} from '@app/store/report-manager/domain/report-manager.feature';
-import { FindingUIActions } from '@app/store/report-manager/ui/actions/finding-ui.actions';
+  EventData,
+  FindingCloneDialogData,
+  FindingCloneDialogOutput,
+} from '@app/models/ui';
+import { FindingStore } from '@app/store/report-manager/finding.store';
 import { ChangeModes } from '@app/types';
+import { isNotNil } from '@app/utils/functions/common.functions';
+import { findNextSortOrder } from '@app/utils/functions/order.functions';
 
+import { FindingCloneDialogComponent } from '../finding-clone-dialog/finding-clone-dialog.component';
 import { FindingManagerListComponent } from '../finding-manager-list/finding-manager-list.component';
-import { ScopeManagerComponent } from '../finding-manager-view/finding-manager-view.component';
+import { FindingManagerViewComponent } from '../finding-manager-view/finding-manager-view.component';
+import { SortableListManagerLayoutComponent } from '../sortable-list-manager-layout/sortable-list-manager-layout.component';
 
 @Component({
   selector: 'radio-finding-manager',
   standalone: true,
   imports: [
     CommonModule,
-    PushPipe,
     TooltipModule,
     ButtonModule,
     ConfirmPopupModule,
     FileUploadModule,
+    PanelModule,
     FindingManagerListComponent,
-    ScopeManagerComponent,
+    SortableListManagerLayoutComponent,
+    FindingManagerListComponent,
+    FindingManagerViewComponent,
   ],
-  providers: [ConfirmationService],
+  providers: [ConfirmationService, DialogService],
   templateUrl: './finding-manager.component.html',
+  styleUrls: ['./finding-manager.component.scss'],
 })
 export class FindingManagerComponent {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  private readonly store$: Store = inject(Store);
+  protected readonly findingStore$: InstanceType<typeof FindingStore> =
+    inject(FindingStore);
 
   private readonly confirmationService: ConfirmationService =
     inject(ConfirmationService);
 
+  private readonly dialogService: DialogService = inject(DialogService);
+
   readonly findings: InputSignal<Finding[]> = input.required<Finding[]>();
+
+  readonly classifier: InputSignal<FindingClassifier> =
+    input.required<FindingClassifier>();
+
+  readonly group: InputSignal<FindingGroup> = input.required<FindingGroup>();
 
   readonly scope: InputSignal<Scope> = input.required<Scope>();
 
   readonly mode: WritableSignal<ChangeModes | null> = signal(null);
 
-  readonly selectedFinding: WritableSignal<Finding | null> = signal(null);
-
-  readonly selectedFinding$: Observable<Finding | null> = this.store$.select(
-    selectSelectedFinding
-  );
-
-  readonly groups$: Observable<string[]> = this.store$.select(selectGroups);
-
   readonly ChangeModes: typeof CHANGE_MODE = CHANGE_MODE;
+
+  constructor() {
+    effect(() => {
+      this.findingStore$.orderedList();
+
+      if (isNil(this.findingStore$.current())) {
+        untracked(() => this.mode.set(null));
+      }
+    });
+  }
+
+  onChange(finding: Finding | null): void {
+    this.findingStore$.change(finding);
+
+    if (isNotNil(finding)) {
+      this.onEdit(finding);
+    }
+  }
 
   onSave(
     finding: Finding,
     mode: ChangeModes,
     storeSelectedFinding: Finding | null = null
   ): void {
-    const selectedFinding: Finding | null = this.selectedFinding();
+    const selectedFinding: Finding | null = this.findingStore$.current();
 
-    const scope: Scope = this.scope();
+    const classifier: FindingClassifier = this.classifier();
 
     if (mode === CHANGE_MODE.Update && selectedFinding) {
-      this.store$.dispatch(
-        FindingUIActions.update({
-          finding: {
-            ...finding,
-            id: selectedFinding.id,
-            scopeId: scope.id,
-            sortOrder:
-              storeSelectedFinding?.sortOrder ?? selectedFinding.sortOrder,
-          },
-        })
-      );
+      this.findingStore$.update({
+        ...finding,
+        id: selectedFinding.id,
+        classifierId: classifier.id,
+        groupId: classifier.groupId,
+        scopeId: classifier.scopeId,
+        sortOrder: storeSelectedFinding?.sortOrder ?? selectedFinding.sortOrder,
+      });
+
+      this.mode.set(null);
+
+      this.findingStore$.change(null);
 
       return;
     }
 
-    const nextSortOrder: number = this.findNextFindingSortOrder();
+    const nextSortOrder: number = findNextSortOrder(this.findings());
 
-    this.store$.dispatch(
-      FindingUIActions.create({
-        finding: { ...finding, scopeId: scope.id, sortOrder: nextSortOrder },
-      })
-    );
+    this.findingStore$.create({
+      ...finding,
+      classifierId: classifier.id,
+      groupId: classifier.groupId,
+      scopeId: classifier.scopeId,
+      sortOrder: nextSortOrder,
+    });
 
     this.mode.set(null);
 
-    this.selectedFinding.set(null);
+    this.findingStore$.change(null);
+  }
+
+  onCancel(): void {
+    this.mode.set(null);
+
+    this.findingStore$.change(null);
   }
 
   onCreate(): void {
-    this.mode.set(CHANGE_MODE.Create);
+    this.findingStore$.change(null);
 
-    this.selectedFinding.set(null);
-
-    this.store$.dispatch(FindingUIActions.change({ finding: null }));
+    // Ensuring effect in constructor is ran first
+    setTimeout(() => {
+      this.mode.set(CHANGE_MODE.Create);
+    }, 0);
   }
 
   onEdit(finding: Finding): void {
     this.mode.set(CHANGE_MODE.Update);
 
-    this.selectedFinding.set(finding);
-
-    this.store$.dispatch(FindingUIActions.change({ finding }));
+    this.findingStore$.change(finding);
   }
 
   onClone(finding: Finding): void {
-    this.store$.dispatch(
-      FindingUIActions.clone({
-        finding,
-      })
-    );
+    const dialogRef: DynamicDialogRef = this.openCloneDialog('Clone Finding', {
+      finding: finding,
+      scope: this.scope(),
+      group: this.group(),
+      classifier: this.classifier(),
+    });
+
+    dialogRef.onClose
+      .pipe(
+        filter<FindingCloneDialogOutput>(isNotNil),
+        tap((cloneOutput: FindingCloneDialogOutput): void => {
+          this.findingStore$.clone({
+            finding: cloneOutput.finding,
+            groupId: cloneOutput.group.id,
+            classifierId: cloneOutput.classifier.id,
+          });
+        }),
+        take(1)
+      )
+      .subscribe();
   }
 
   onDelete(eventData: EventData<Finding>): void {
@@ -143,9 +194,7 @@ export class FindingManagerComponent {
       icon: 'pi pi-info-circle',
       acceptButtonStyleClass: 'p-button-danger p-button-sm',
       accept: () => {
-        this.store$.dispatch(
-          FindingUIActions.delete({ finding: eventData.data })
-        );
+        this.findingStore$.delete(eventData.data);
       },
     });
   }
@@ -160,14 +209,22 @@ export class FindingManagerComponent {
       ),
     };
 
-    this.store$.dispatch(FindingUIActions.reorder({ sortOrders }));
+    this.findingStore$.reorder(sortOrders);
   }
 
-  private findNextFindingSortOrder(): number {
-    const lastFinding: Finding | null =
-      maxBy(this.findings(), (finding: Finding): number => finding.sortOrder) ??
-      null;
-
-    return lastFinding === null ? 0 : lastFinding.sortOrder + 1;
+  private openCloneDialog(
+    header: string,
+    data: FindingCloneDialogData
+  ): DynamicDialogRef {
+    return this.dialogService.open(FindingCloneDialogComponent, {
+      header,
+      modal: true,
+      closable: true,
+      width: '40rem',
+      contentStyle: { overflow: 'auto' },
+      baseZIndex: 3000,
+      position: 'top',
+      data,
+    });
   }
 }

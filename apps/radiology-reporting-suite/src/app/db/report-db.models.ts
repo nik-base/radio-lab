@@ -1,6 +1,7 @@
 export interface TemplateDBModel {
   readonly id: string;
   readonly name: string;
+  readonly sortOrder: number;
   readonly description?: string;
   readonly descriptionHTML?: string;
   readonly descriptionJSON?: string | null;
@@ -12,16 +13,32 @@ export interface TemplateDBModel {
 export interface ScopeDBModel {
   readonly id: string;
   readonly name: string;
-  readonly order: number;
+  readonly sortOrder: number;
   readonly templateId: string;
+}
+
+export interface FindingGroupDBModel {
+  readonly id: string;
+  readonly name: string;
+  readonly sortOrder: number;
+  readonly scopeId: string;
+  readonly isDefault: boolean;
+}
+
+export interface FindingClassifierDBModel {
+  readonly id: string;
+  readonly name: string;
+  readonly sortOrder: number;
+  readonly scopeId: string;
+  readonly groupId: string;
+  readonly isDefault: boolean;
 }
 
 export interface FindingDBModel {
   readonly id: string;
-  readonly title: string;
-  readonly group?: string;
+  readonly name: string;
   readonly isNormal?: boolean;
-  readonly order?: number;
+  readonly sortOrder?: number;
   readonly description?: string;
   readonly descriptionHTML?: string;
   readonly descriptionJSON?: string | null;
@@ -32,5 +49,23 @@ export interface FindingDBModel {
   readonly recommendation?: string;
   readonly recommendationHTML?: string;
   readonly recommendationJSON?: string | null;
-  readonly protocolId: string;
+  readonly scopeId: string;
+  readonly groupId: string;
+  readonly classifierId: string;
+}
+
+export interface VariableDBModel {
+  readonly id: string;
+  readonly name: string;
+  readonly type: string;
+  readonly source: string;
+  readonly entityId: string;
+  readonly sortOrder: number;
+}
+
+export interface VariableValueDBModel {
+  readonly id: string;
+  readonly name: string;
+  readonly variableId: string;
+  readonly sortOrder: number;
 }

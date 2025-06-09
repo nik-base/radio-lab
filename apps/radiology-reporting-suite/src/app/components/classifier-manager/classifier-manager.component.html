@@ -1,0 +1,25 @@
+<radio-sortable-list-manager-layout>
+  <ng-container actions>
+    <p-button
+      icon="pi pi-plus"
+      pTooltip="Create Classifier"
+      tooltipPosition="bottom"
+      [outlined]="true"
+      [disabled]="classifierStore$.isFetching()"
+      (onClick)="onCreate()" />
+  </ng-container>
+
+  <radio-classifier-manager-list
+    list
+    class="w-full"
+    [classifiers]="classifiers()"
+    [isLoading]="classifierStore$.isFetching()"
+    [selectedClassifier]="classifierStore$.current()"
+    (edit)="onEdit($event)"
+    (delete)="onDelete($event)"
+    (reorder)="onReorder($event)"
+    (changed)="onChange($event)">
+  </radio-classifier-manager-list>
+</radio-sortable-list-manager-layout>
+
+<p-confirmPopup />

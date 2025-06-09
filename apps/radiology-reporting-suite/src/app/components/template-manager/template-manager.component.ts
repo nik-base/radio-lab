@@ -6,34 +6,37 @@ import {
   InputSignal,
   ViewChild,
 } from '@angular/core';
-import { Store } from '@ngrx/store';
 import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
-import {
-  DialogService,
-  DynamicDialogModule,
-  DynamicDialogRef,
-} from 'primeng/dynamicdialog';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import {
   FileSelectEvent,
   FileUpload,
   FileUploadModule,
 } from 'primeng/fileupload';
 import { TooltipModule } from 'primeng/tooltip';
-import { take, tap } from 'rxjs';
+import { filter, take, tap } from 'rxjs';
 
 import { CHANGE_MODE } from '@app/constants';
 import { LegacyTemplateImportMapperService } from '@app/mapper/legacy-template-import-mapper.service';
-import { Template, TemplateImport } from '@app/models/domain';
+import {
+  SortOrderItem,
+  SortOrderUpdate,
+  Template,
+  TemplateImport,
+} from '@app/models/domain';
 import {
   EventData,
   LegacyTemplateImport,
   TemplateManagerDialogData,
 } from '@app/models/ui';
-import { TemplateUIActions } from '@app/store/report-manager/ui/actions/template-ui.actions';
+import { TemplateStore } from '@app/store/report-manager/template.store';
+import { isNotNil } from '@app/utils/functions/common.functions';
+import { findNextSortOrder } from '@app/utils/functions/order.functions';
 import { JsonService } from '@app/utils/services/json.service';
 
+import { SortableListManagerLayoutComponent } from '../sortable-list-manager-layout/sortable-list-manager-layout.component';
 import { TemplateManagerDialogComponent } from '../template-manager-dialog/template-manager-dialog.component';
 import { TemplateManagerListComponent } from '../template-manager-list/template-manager-list.component';
 
@@ -44,17 +47,18 @@ import { TemplateManagerListComponent } from '../template-manager-list/template-
     CommonModule,
     TooltipModule,
     ButtonModule,
-    DynamicDialogModule,
     ConfirmPopupModule,
     FileUploadModule,
     TemplateManagerListComponent,
+    SortableListManagerLayoutComponent,
   ],
   providers: [DialogService, ConfirmationService],
   templateUrl: './template-manager.component.html',
+  styleUrls: ['./template-manager.component.scss'],
 })
 export class TemplateManagerComponent {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  private readonly store$: Store = inject(Store);
+  protected readonly templateStore$: InstanceType<typeof TemplateStore> =
+    inject(TemplateStore);
 
   private readonly jsonService: JsonService = inject(JsonService);
 
@@ -70,8 +74,8 @@ export class TemplateManagerComponent {
 
   @ViewChild('import') importRef: FileUpload | undefined;
 
-  onChange(template: Template): void {
-    this.store$.dispatch(TemplateUIActions.change({ template }));
+  onChange(template: Template | null): void {
+    this.templateStore$.change(template);
   }
 
   onCreate(): void {
@@ -81,12 +85,14 @@ export class TemplateManagerComponent {
 
     dialogRef.onClose
       .pipe(
-        tap((template: Template | null | undefined): void => {
-          if (!template) {
-            return;
-          }
+        filter<Template>(isNotNil),
+        tap((template: Template): void => {
+          const nextSortOrder: number = findNextSortOrder(this.templates());
 
-          this.store$.dispatch(TemplateUIActions.create({ template }));
+          this.templateStore$.create({
+            ...template,
+            sortOrder: nextSortOrder,
+          });
         }),
         take(1)
       )
@@ -101,16 +107,13 @@ export class TemplateManagerComponent {
 
     dialogRef.onClose
       .pipe(
-        tap((updatedTemplate: Template | null | undefined): void => {
-          if (!updatedTemplate) {
-            return;
-          }
-
-          this.store$.dispatch(
-            TemplateUIActions.update({
-              template: { ...updatedTemplate, id: template.id },
-            })
-          );
+        filter<Template>(isNotNil),
+        tap((updatedTemplate: Template): void => {
+          this.templateStore$.update({
+            ...updatedTemplate,
+            id: template.id,
+            sortOrder: template.sortOrder,
+          });
         }),
         take(1)
       )
@@ -125,15 +128,13 @@ export class TemplateManagerComponent {
       icon: 'pi pi-info-circle',
       acceptButtonStyleClass: 'p-button-danger p-button-sm',
       accept: () => {
-        this.store$.dispatch(
-          TemplateUIActions.delete({ template: eventData.data })
-        );
+        this.templateStore$.delete(eventData.data);
       },
     });
   }
 
   onExport(template: Template): void {
-    this.store$.dispatch(TemplateUIActions.export({ template }));
+    this.templateStore$.export(template);
   }
 
   onImport(event: FileSelectEvent): void {
@@ -154,46 +155,56 @@ export class TemplateManagerComponent {
     reader.readAsText(uploadedFile);
   }
 
+  onReorder(templates: ReadonlyArray<Template>): void {
+    const sortOrders: SortOrderUpdate = {
+      sortOrdersMap: templates.map(
+        (template: Template, index: number): SortOrderItem => ({
+          id: template.id,
+          sortOrder: index,
+        })
+      ),
+    };
+
+    this.templateStore$.reorder(sortOrders);
+  }
+
   private import(eventTarget: FileReader | null): void {
     const fileContent: string | ArrayBufferLike | null | undefined =
       eventTarget?.result;
 
     if (!fileContent) {
-      this.store$.dispatch(
-        TemplateUIActions.importFailure({
-          message: 'Cannot import empty template data',
-        })
-      );
+      this.templateStore$.showError('Cannot import empty template');
 
       return;
     }
 
-    const template: TemplateImport = this.parseImportedTemplate(
-      fileContent as string
-    );
+    const template: TemplateImport | { error: unknown } =
+      this.parseImportedTemplate(fileContent as string);
 
-    if (!template) {
-      this.store$.dispatch(
-        TemplateUIActions.importFailure({
-          message: 'Cannot parse invalid template data',
-        })
-      );
+    if (!template || 'error' in template) {
+      this.templateStore$.showError('Cannot parse file. Invalid template');
 
       return;
     }
 
-    this.store$.dispatch(TemplateUIActions.import({ template }));
+    this.templateStore$.import(template);
   }
 
-  private parseImportedTemplate(content: string): TemplateImport {
-    const importObject: LegacyTemplateImport =
-      this.jsonService.parseSafe<LegacyTemplateImport>(content);
+  private parseImportedTemplate(
+    content: string
+  ): TemplateImport | { error: unknown } {
+    try {
+      const importObject: LegacyTemplateImport =
+        this.jsonService.parseSafe<LegacyTemplateImport>(content);
 
-    if ('template' in importObject) {
-      return this.legacyTemplateImportMapper.mapFromLegacy(importObject);
+      if ('template' in importObject) {
+        return this.legacyTemplateImportMapper.mapFromLegacy(importObject);
+      }
+
+      return this.jsonService.parseSafe<TemplateImport>(content);
+    } catch (error: unknown) {
+      return { error };
     }
-
-    return this.jsonService.parseSafe<TemplateImport>(content);
   }
 
   private openDialog(
@@ -202,6 +213,8 @@ export class TemplateManagerComponent {
   ): DynamicDialogRef {
     return this.dialogService.open(TemplateManagerDialogComponent, {
       header,
+      modal: true,
+      closable: true,
       width: '70rem',
       contentStyle: { overflow: 'auto' },
       baseZIndex: 3000,

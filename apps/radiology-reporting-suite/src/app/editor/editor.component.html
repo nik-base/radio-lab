@@ -1,5 +1,5 @@
 <div
-  class="flex flex-column flex-grow-1"
+  class="flex flex-col grow h-full"
   [ngClass]="{
     'editor-invalid':
       !!hostControlDirective?.control?.invalid &&
@@ -7,5 +7,10 @@
   }">
   <radio-editor-toolbar [editor]="editor"></radio-editor-toolbar>
 
-  <tiptap-editor class="flex-grow-1" [editor]="editor"></tiptap-editor>
+  <tiptap-editor class="grow h-full min-h-0" [editor]="editor"></tiptap-editor>
 </div>
+
+<p-contextMenu
+  #tableContextMenu
+  [model]="tableContextMenuItems"
+  appendTo="body" />

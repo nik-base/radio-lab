@@ -1,0 +1,74 @@
+<radio-dialog-layout>
+  <div class="flex flex-col gap-8" [formGroup]="formGroup" dialog-content>
+    <label for="clone-finding"
+      >Select the Group and Classifier in which the Finding will be
+      cloned</label
+    >
+
+    <div class="flex flex-row gap-8">
+      <div class="flex flex-col gap-2">
+        <p-floatlabel variant="on">
+          <p-autoComplete
+            formControlName="group"
+            [forceSelection]="true"
+            [dropdown]="true"
+            appendTo="body"
+            [suggestions]="filteredGroups"
+            (completeMethod)="filterGroups($event)"
+            (onSelect)="onGroupSelect($event)"
+            field="name" />
+
+          <label for="group">Group</label>
+        </p-floatlabel>
+
+        @let groupControl = formGroup.get('group');
+
+        @if (groupControl?.hasError('required')) {
+          <p-message severity="error" variant="simple" size="small">
+            Please select a group
+          </p-message>
+        }
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <p-floatlabel variant="on">
+          <p-autoComplete
+            formControlName="classifier"
+            [forceSelection]="true"
+            [dropdown]="true"
+            appendTo="body"
+            [suggestions]="filteredClassifiers"
+            (completeMethod)="filterClassifiers($event)"
+            field="name" />
+
+          <label for="group">Classifier</label>
+        </p-floatlabel>
+
+        @let classifierControl = formGroup.get('classifier');
+
+        @if (classifierControl?.hasError('required')) {
+          <p-message severity="error" variant="simple" size="small">
+            Please select a classifier
+          </p-message>
+        }
+      </div>
+    </div>
+  </div>
+</radio-dialog-layout>
+
+<ng-template #footer>
+  <div class="flex justify-end gap-2">
+    <p-button
+      label="Cancel"
+      [text]="true"
+      severity="secondary"
+      (onClick)="close()" />
+
+    <p-button
+      label="Clone"
+      [outlined]="true"
+      [disabled]="!formGroup.valid"
+      severity="primary"
+      (onClick)="clone()" />
+  </div>
+</ng-template>

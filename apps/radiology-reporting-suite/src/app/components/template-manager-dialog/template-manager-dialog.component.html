@@ -1,6 +1,6 @@
 <radio-dialog-layout>
-  <div class="flex flex-column gap-2" [formGroup]="formGroup" dialog-content>
-    <div class="flex flex-column gap-2">
+  <div class="flex flex-col gap-2" [formGroup]="formGroup" dialog-content>
+    <div class="flex flex-col gap-2">
       <label for="templateName" class="font-semibold"> Name </label>
 
       <input
@@ -13,7 +13,9 @@
       @let nameControl = formGroup.get('name');
 
       @if (nameControl?.hasError('required') && nameControl?.dirty) {
-        <small class="p-error"> Name is required </small>
+        <p-message severity="error" variant="simple" size="small">
+          Name is required
+        </p-message>
       }
     </div>
 
@@ -29,7 +31,9 @@
       @let protocolControl = formGroup.get('protocol');
 
       @if (protocolControl?.hasError('required') && protocolControl?.dirty) {
-        <small class="p-error"> Description is required </small>
+        <p-message severity="error" variant="simple" size="small">
+          Description is required
+        </p-message>
       }
     </div>
 
@@ -43,8 +47,10 @@
       </radio-editor>
     </div>
   </div>
+</radio-dialog-layout>
 
-  <ng-container dialog-actions>
+<ng-template #footer>
+  <div class="flex justify-end gap-2">
     <p-button
       label="Cancel"
       [text]="true"
@@ -57,5 +63,5 @@
       [disabled]="!formGroup.valid"
       severity="primary"
       (onClick)="save()" />
-  </ng-container>
-</radio-dialog-layout>
+  </div>
+</ng-template>

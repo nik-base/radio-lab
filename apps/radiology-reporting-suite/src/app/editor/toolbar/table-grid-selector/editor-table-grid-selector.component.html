@@ -1,0 +1,30 @@
+<div class="flex flex-col gap-2">
+  <div class="flex flex-col gap-1" (mouseleave)="resetHover()">
+    @for (row of rowsArray(); track $index; let rowIndex = $index) {
+      <div class="flex flex-row gap-1">
+        @for (
+          row of columnsArray();
+          track $index;
+          let columnIndex = $index;
+          let isFirst = $first
+        ) {
+          <div
+            [radioAutofocus]="isFirst"
+            class="table-insert-cell"
+            [class.selected]="
+              rowIndex < selectedRows && columnIndex < selectedColumns
+            "
+            tabindex="-1"
+            role="button"
+            (mouseenter)="onHover(rowIndex + 1, columnIndex + 1)"
+            (click)="onClick(rowIndex + 1, columnIndex + 1)"
+            (keydown)="onKeydown($event)"></div>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="flex justify-center text-gray-700">
+    {{ selectedRows }} x {{ selectedColumns }}
+  </div>
+</div>

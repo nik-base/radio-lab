@@ -1,97 +1,140 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { PushPipe } from '@ngrx/component';
-import { Store } from '@ngrx/store';
-import { PanelModule } from 'primeng/panel';
-import { SplitterModule } from 'primeng/splitter';
-import { Observable, tap } from 'rxjs';
-
-import { ScopeListComponent } from '@app/components/scope-list/scope-list.component';
-import { EditorValidators } from '@app/editor/validators/editor-validator';
 import {
-  EditorContent,
-  Scope,
-  Template,
-  TemplateData,
-} from '@app/models/domain';
-import { FindingGrouped } from '@app/models/ui';
-import {
-  selectOrderedTemplateData,
-  selectOrderedTemplates,
-  selectScopeOrderedGroupedFindings,
-} from '@app/store/report-builder/domain/report-builder.feature';
-import { ReportBuilderUIActions } from '@app/store/report-builder/ui/report-builder-ui.actions';
+  Component,
+  computed,
+  inject,
+  OnInit,
+  signal,
+  Signal,
+  viewChild,
+  WritableSignal,
+} from '@angular/core';
+import { ConfirmationService } from 'primeng/api';
+import { BlockUI } from 'primeng/blockui';
+import { Button } from 'primeng/button';
+import { ConfirmDialog } from 'primeng/confirmdialog';
+import { ProgressSpinner } from 'primeng/progressspinner';
 
-import { FindingGroupedListComponent } from '../components/finding-grouped-list/finding-grouped-list.component';
+import { Template, TemplateData } from '@app/models/domain';
+import { ReportBuilderEditorStore } from '@app/store/report-builder/report-builder-editor.store';
+import { ReportBuilderTemplateDataStore } from '@app/store/report-builder/report-builder-template-data.store';
+import { ReportBuilderTemplateStore } from '@app/store/report-builder/report-builder-templates-store';
+import { ReportBuilderVariableValueStore } from '@app/store/report-builder/report-builder-variable-value.store';
+
 import { TemplateManagerListComponent } from '../components/template-selector/template-selector.component';
-import { EditorComponent } from '../editor/editor.component';
+
+import { ReportBuilderContentComponent } from './report-builder-content/report-builder-content.component';
 
 @Component({
   selector: 'radio-report-builder',
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
-    PushPipe,
-    SplitterModule,
-    PanelModule,
-    EditorComponent,
-    ScopeListComponent,
     TemplateManagerListComponent,
-    FindingGroupedListComponent,
+    BlockUI,
+    ProgressSpinner,
+    Button,
+    ReportBuilderContentComponent,
+    ConfirmDialog,
+  ],
+  providers: [
+    ReportBuilderTemplateStore,
+    ReportBuilderTemplateDataStore,
+    ReportBuilderVariableValueStore,
+    ReportBuilderEditorStore,
+    ConfirmationService,
   ],
   templateUrl: './report-builder.component.html',
   styleUrl: './report-builder.component.scss',
 })
 export class ReportBuilderComponent implements OnInit {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  private readonly store$: Store = inject(Store);
+  protected readonly templateStore$: InstanceType<
+    typeof ReportBuilderTemplateStore
+  > = inject(ReportBuilderTemplateStore);
 
-  readonly templates$: Observable<Template[]> = this.store$.select(
-    selectOrderedTemplates
+  protected readonly templateDataStore$: InstanceType<
+    typeof ReportBuilderTemplateDataStore
+  > = inject(ReportBuilderTemplateDataStore);
+
+  protected readonly variableValueStore$: InstanceType<
+    typeof ReportBuilderVariableValueStore
+  > = inject(ReportBuilderVariableValueStore);
+
+  protected readonly editorStore$: InstanceType<
+    typeof ReportBuilderEditorStore
+  > = inject(ReportBuilderEditorStore);
+
+  private readonly confirmationService: ConfirmationService =
+    inject(ConfirmationService);
+
+  protected readonly isLoading: Signal<boolean> = computed(() => {
+    return (
+      this.templateStore$.isLoading() ||
+      this.templateDataStore$.isLoading() ||
+      this.variableValueStore$.isLoading()
+    );
+  });
+
+  protected readonly templateData: Signal<TemplateData | null> = computed(
+    () => {
+      const template: Template | null = this.selectedTemplate();
+
+      if (!template) {
+        return null;
+      }
+
+      return this.templateDataStore$.templateData()(template.id)();
+    }
   );
 
-  readonly templateData$: Observable<TemplateData | null> = this.store$.select(
-    selectOrderedTemplateData
-  );
+  protected readonly reportContent: Signal<
+    ReportBuilderContentComponent | undefined
+  > = viewChild<ReportBuilderContentComponent | undefined>('reportContent');
 
-  readonly groupedFindings$: Observable<FindingGrouped[]> = this.store$.select(
-    selectScopeOrderedGroupedFindings
-  );
+  protected readonly selectedTemplate: WritableSignal<Template | null> =
+    signal<Template | null>(null);
 
-  readonly editorControl: FormControl<EditorContent | null> =
-    new FormControl<EditorContent | null>(null, [EditorValidators.required()]);
+  protected readonly templateChangeConfirmationMessage: string =
+    'All changes to your report will be lost. Are you sure you want to discard changes to current report and switch template?';
 
   ngOnInit(): void {
-    this.store$.dispatch(ReportBuilderUIActions.load());
-
-    this.editorControl.setValue({
-      html: '<b>Nikhil</b>',
-      text: 'Nikhil',
-      json: null,
-    });
-
-    console.log(this.editorControl);
-
-    this.editorControl.valueChanges
-      .pipe(tap(() => console.log(this.editorControl)))
-      .subscribe();
+    this.templateStore$.fetchAll();
   }
 
   onSelectTemplate(template: Template | null): void {
-    if (!template) {
-      this.store$.dispatch(ReportBuilderUIActions.resetTemplateData());
+    this.selectedTemplate.set(template);
 
+    if (!template) {
       return;
     }
 
-    this.store$.dispatch(
-      ReportBuilderUIActions.fetchTemplateData({ templateId: template.id })
-    );
+    const templateData: TemplateData | null =
+      this.templateDataStore$.templateData()(template.id)();
+
+    if (!templateData) {
+      this.templateDataStore$.fetchData(template);
+    }
   }
 
-  onScopeChange(scope: Scope): void {
-    this.store$.dispatch(ReportBuilderUIActions.setScope({ scope }));
+  onAllNormalClick(): void {
+    this.confirmationService.confirm({
+      message:
+        'All changes to your report will be lost. Are you sure you want to discard changes to current report and make a normal report?',
+      header: 'Confirmation',
+      closable: true,
+      closeOnEscape: true,
+      icon: 'pi pi-exclamation-triangle',
+      rejectButtonProps: {
+        label: 'No',
+        severity: 'secondary',
+        outlined: true,
+      },
+      acceptButtonProps: {
+        label: 'Yes',
+      },
+      accept: () => {
+        this.reportContent()?.insertAllNormalFindingsInEditor();
+      },
+    });
   }
 }

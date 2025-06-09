@@ -1,0 +1,134 @@
+@let _isLoading = isLoading();
+
+<p-table
+  #tableElement
+  [value]="_isLoading ? mockRows : rows()"
+  [scrollable]="true"
+  scrollHeight="flex"
+  dataKey="id"
+  editMode="row"
+  selectionMode="single"
+  (onRowSelect)="onRowSelect($event)"
+  (onRowUnSelect)="onRowUnSelect()"
+  (onRowReorder)="onRowReorder()"
+  [metaKeySelection]="true"
+  [tableStyle]="{ width: '100%' }">
+  <ng-template #caption>
+    <div class="flex justify-content-end">
+      <p-button
+        icon="pi pi-plus"
+        pTooltip="Create {{ entityName() }}"
+        tooltipPosition="bottom"
+        [tooltipOptions]="tooltipOptions"
+        [outlined]="true"
+        [disabled]="_isLoading"
+        (onClick)="addNew($event)" />
+    </div>
+  </ng-template>
+
+  <ng-template #header>
+    <tr>
+      <th style="width: 3rem"></th>
+
+      <th style="width: 100%">{{ entityNamePlural() }}</th>
+    </tr>
+  </ng-template>
+
+  <ng-template #body let-row let-editing="editing" let-index="rowIndex">
+    @if (_isLoading) {
+      <tr>
+        <td>
+          <p-skeleton width="2rem" height="2rem" />
+        </td>
+        <td>
+          <p-skeleton height="2rem" />
+        </td>
+      </tr>
+    } @else {
+      <tr
+        [pSelectableRow]="row"
+        [pEditableRow]="row"
+        [pReorderableRow]="index"
+        data-row="items">
+        <td>
+          <span class="pi pi-bars" pReorderableRowHandle></span>
+        </td>
+
+        <td>
+          <p-cellEditor data-cell="item">
+            <ng-template #input>
+              <input
+                pInputText
+                type="text"
+                [(ngModel)]="row.label"
+                [placeholder]="'Enter ' + entityName() + ' name'"
+                required />
+            </ng-template>
+
+            <ng-template #output>
+              <div class="wrap-anywhere">
+                {{ row.label }}
+              </div>
+            </ng-template>
+          </p-cellEditor>
+        </td>
+
+        <td>
+          <div class="flex items-center justify-center gap-2">
+            @if (editing) {
+              <p-button
+                pSaveEditableRow
+                icon="pi pi-check"
+                pTooltip="Save"
+                [tooltipOptions]="tooltipOptions"
+                (click)="onRowEditSave(row)"
+                text
+                rounded
+                severity="success" />
+
+              <p-button
+                pCancelEditableRow
+                icon="pi pi-times"
+                pTooltip="Cancel"
+                [tooltipOptions]="tooltipOptions"
+                (click)="onRowEditCancel(row, index)"
+                text
+                rounded
+                severity="danger" />
+            } @else {
+              <p-button
+                pInitEditableRow
+                icon="pi pi-pencil"
+                pTooltip="Edit"
+                [tooltipOptions]="tooltipOptions"
+                (click)="onRowEditInit(row)"
+                text
+                rounded
+                severity="primary" />
+
+              <p-button
+                icon="pi pi-trash"
+                pTooltip="Delete {{ entityName() }}"
+                [tooltipOptions]="tooltipOptions"
+                text
+                rounded
+                severity="danger"
+                (click)="deleteRow($event, row)" />
+            }
+          </div>
+        </td>
+      </tr>
+    }
+  </ng-template>
+
+  <ng-template #emptymessage>
+    <tr>
+      <td></td>
+      <td>
+        {{ emptyMessage() }}
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-confirmPopup />

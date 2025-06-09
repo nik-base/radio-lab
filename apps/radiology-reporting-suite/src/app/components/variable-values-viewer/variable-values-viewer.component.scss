@@ -1,0 +1,8 @@
+:host {
+  /* stylelint-disable-next-line selector-pseudo-element-no-unknown */
+  ::ng-deep {
+    .p-datatable .p-datatable-tbody > tr:last-child > td {
+      border-bottom: none;
+    }
+  }
+}

@@ -2,63 +2,88 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
   OnInit,
+  Signal,
 } from '@angular/core';
-import { PushPipe } from '@ngrx/component';
-import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import { BlockUI } from 'primeng/blockui';
+import { ProgressSpinner } from 'primeng/progressspinner';
 
 import { FindingManagerComponent } from '@app/components/finding-manager/finding-manager.component';
 import { ScopeManagerComponent } from '@app/components/scope-manager/scope-manager.component';
 import { TemplateManagerComponent } from '@app/components/template-manager/template-manager.component';
-import { Finding, Scope, Template } from '@app/models/domain';
-import {
-  selectOrderedFindings,
-  selectOrderedScopes,
-  selectOrderedTemplates,
-  selectSelectedScope,
-  selectSelectedTemplate,
-} from '@app/store/report-manager/domain/report-manager.feature';
-import { ReportManagerUIActions } from '@app/store/report-manager/ui/actions/report-manager-ui.actions';
+import { ClassifierStore } from '@app/store/report-manager/classifier.store';
+import { FindingStore } from '@app/store/report-manager/finding.store';
+import { GroupStore } from '@app/store/report-manager/group.store';
+import { ScopeStore } from '@app/store/report-manager/scope.store';
+import { TemplateStore } from '@app/store/report-manager/template.store';
+import { VariableStore } from '@app/store/report-manager/variable-store';
+import { VariableValueStore } from '@app/store/report-manager/variable-value.store';
+
+import { ClassifierManagerComponent } from '../components/classifier-manager/classifier-manager.component';
+import { GroupManagerComponent } from '../components/group-manager/group-manager.component';
 
 @Component({
   selector: 'radio-report-manager',
   standalone: true,
   imports: [
     CommonModule,
-    PushPipe,
     TemplateManagerComponent,
     ScopeManagerComponent,
     FindingManagerComponent,
+    GroupManagerComponent,
+    ClassifierManagerComponent,
+    BlockUI,
+    ProgressSpinner,
   ],
   templateUrl: './report-manager.component.html',
   styleUrl: './report-manager.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [
+    TemplateStore,
+    ScopeStore,
+    GroupStore,
+    ClassifierStore,
+    FindingStore,
+    VariableStore,
+    VariableValueStore,
+  ],
 })
 export class ReportManagerComponent implements OnInit {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  private readonly store$: Store = inject(Store);
+  readonly templateStore$: InstanceType<typeof TemplateStore> =
+    inject(TemplateStore);
 
-  readonly templates$: Observable<Template[]> = this.store$.select(
-    selectOrderedTemplates
-  );
+  readonly scopeStore$: InstanceType<typeof ScopeStore> = inject(ScopeStore);
 
-  readonly scopes$: Observable<Scope[] | null> =
-    this.store$.select(selectOrderedScopes);
+  readonly groupStore$: InstanceType<typeof GroupStore> = inject(GroupStore);
 
-  readonly findings$: Observable<Finding[] | null> = this.store$.select(
-    selectOrderedFindings
-  );
+  readonly classifierStore$: InstanceType<typeof ClassifierStore> =
+    inject(ClassifierStore);
 
-  readonly selectedTemplate$: Observable<Template | null> = this.store$.select(
-    selectSelectedTemplate
-  );
+  readonly findingStore$: InstanceType<typeof FindingStore> =
+    inject(FindingStore);
 
-  readonly selectedScope$: Observable<Scope | null> =
-    this.store$.select(selectSelectedScope);
+  private readonly variableStore$: InstanceType<typeof VariableStore> =
+    inject(VariableStore);
+
+  private readonly variableValueStore$: InstanceType<
+    typeof VariableValueStore
+  > = inject(VariableValueStore);
+
+  protected readonly isLoading: Signal<boolean> = computed(() => {
+    return (
+      this.templateStore$.isLoading() ||
+      this.scopeStore$.isLoading() ||
+      this.groupStore$.isLoading() ||
+      this.classifierStore$.isLoading() ||
+      this.findingStore$.isLoading() ||
+      this.variableStore$.isLoading() ||
+      this.variableValueStore$.isLoading()
+    );
+  });
 
   ngOnInit(): void {
-    this.store$.dispatch(ReportManagerUIActions.load());
+    this.templateStore$.fetchAll();
   }
 }

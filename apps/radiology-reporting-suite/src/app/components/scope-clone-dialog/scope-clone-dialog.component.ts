@@ -1,24 +1,31 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  inject,
+  Signal,
+  TemplateRef,
+  viewChild,
+} from '@angular/core';
 import {
   FormControl,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { PushPipe } from '@ngrx/component';
-import { Store } from '@ngrx/store';
+import { isNil } from 'lodash-es';
 import { ButtonModule } from 'primeng/button';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { InputTextModule } from 'primeng/inputtext';
+import { MessageModule } from 'primeng/message';
 import { TooltipModule } from 'primeng/tooltip';
-import { Observable } from 'rxjs';
 
 import { Template } from '@app/models/domain';
 import { ScopeCloneDialogData, ScopeCloneDialogOutput } from '@app/models/ui';
-import { selectOrderedTemplates } from '@app/store/report-manager/domain/report-manager.feature';
+import { TemplateStore } from '@app/store/report-manager/template.store';
 
 import { DialogLayoutComponent } from '../dialog-layout/dialog-layout.component';
+import { DynamicTemplateRendererComponent } from '../dialog-template-renderer/dialog-template-renderer.component';
 import { TemplateManagerListComponent } from '../template-selector/template-selector.component';
 
 @Component({
@@ -27,32 +34,31 @@ import { TemplateManagerListComponent } from '../template-selector/template-sele
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    PushPipe,
     InputTextModule,
     TooltipModule,
     ButtonModule,
+    MessageModule,
     DialogLayoutComponent,
     TemplateManagerListComponent,
   ],
   templateUrl: './scope-clone-dialog.component.html',
 })
-export class ScopeCloneDialogComponent {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  private readonly store$: Store = inject(Store);
+export class ScopeCloneDialogComponent implements AfterViewInit {
+  protected readonly templateStore$: InstanceType<typeof TemplateStore> =
+    inject(TemplateStore);
 
   private readonly dynamicDialogRef: DynamicDialogRef =
     inject(DynamicDialogRef);
 
-  private readonly dynamicDialogConfig: DynamicDialogConfig =
-    inject(DynamicDialogConfig);
+  private readonly dynamicDialogConfig: DynamicDialogConfig<ScopeCloneDialogData> =
+    inject(DynamicDialogConfig) as DynamicDialogConfig<ScopeCloneDialogData>;
+
+  protected readonly footer: Signal<TemplateRef<unknown>> =
+    viewChild.required<TemplateRef<unknown>>('footer');
 
   formGroup!: FormGroup;
 
   readonly data!: ScopeCloneDialogData;
-
-  readonly templates$: Observable<Template[]> = this.store$.select(
-    selectOrderedTemplates
-  );
 
   constructor() {
     const data: ScopeCloneDialogData = this.dynamicDialogConfig
@@ -63,6 +69,23 @@ export class ScopeCloneDialogComponent {
     this.formGroup = this.createFormGroup(data);
   }
 
+  ngAfterViewInit(): void {
+    if (isNil(this.dynamicDialogConfig.data)) {
+      return;
+    }
+
+    // Defer the assignment of 'templateToRender' to the next microtask
+    // to prevent ExpressionChangedAfterItHasBeenCheckedError.
+    queueMicrotask(() => {
+      this.dynamicDialogConfig.templates = {
+        footer: DynamicTemplateRendererComponent,
+      };
+
+      if (this.dynamicDialogConfig.data) {
+        this.dynamicDialogConfig.data.templateToRender = this.footer();
+      }
+    });
+  }
   close(): void {
     this.dynamicDialogRef.close();
   }

@@ -1,52 +1,10 @@
-<p-orderList
-  [value]="scopes()"
-  [metaKeySelection]="true"
-  [responsive]="true"
-  [listStyle]="{ maxHeight: '100%' }"
-  styleClass="w-full max-h-full overflow-auto"
-  header="Scopes"
-  [dragdrop]="true"
-  (onReorder)="onReorder()">
-  <ng-template let-scope pTemplate="item">
-    <div
-      class="flex flex-row p-1 justify-content-between"
-      [ngClass]="selectedScope()?.id === scope.id ? 'scope-active' : ''">
-      <div
-        class="flex align-items-center flex-grow-1"
-        pTooltip="{{ scope.name }}"
-        tooltipPosition="bottom">
-        {{ scope.name }}
-      </div>
-
-      <div class="flex flex-row gap-2">
-        <p-button
-          icon="pi pi-cog"
-          pTooltip="Configure Findings"
-          tooltipPosition="bottom"
-          (onClick)="onConfigure(scope)"
-          [outlined]="true" />
-
-        <p-button
-          icon="pi pi-clone"
-          pTooltip="Clone Scope"
-          tooltipPosition="bottom"
-          (onClick)="onClone(scope)"
-          [outlined]="true" />
-
-        <p-button
-          icon="pi pi-pencil"
-          pTooltip="Edit Scope"
-          tooltipPosition="bottom"
-          (onClick)="onEdit(scope)"
-          [outlined]="true" />
-
-        <p-button
-          pTooltip="Delete Scope"
-          tooltipPosition="bottom"
-          icon="pi pi-trash"
-          [outlined]="true"
-          (onClick)="onDelete($event, scope)" />
-      </div>
-    </div>
-  </ng-template>
-</p-orderList>
+<radio-sortable-list
+  [items]="scopeItems()"
+  [selectedItem]="selectedItem()"
+  [isLoading]="isLoading()"
+  [menuItems]="menuItems"
+  headerLabel="Scopes"
+  emptyMessage="No scopes available"
+  (changed)="onChange($event)"
+  (reorder)="onReorder($event)">
+</radio-sortable-list>

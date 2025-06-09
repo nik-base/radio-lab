@@ -19,4 +19,17 @@ export class SortOrderMapperService {
       sortOrder: item.sortOrder,
     };
   }
+
+  mapEntitiesToSortOrderUpdate<
+    T extends { readonly id: string; readonly sortOrder: number },
+  >(item: T[] | ReadonlyArray<T>): SortOrderUpdate {
+    return {
+      sortOrdersMap: item.map(
+        (item: T, index: number): SortOrderItem => ({
+          id: item.id,
+          sortOrder: index,
+        })
+      ),
+    };
+  }
 }

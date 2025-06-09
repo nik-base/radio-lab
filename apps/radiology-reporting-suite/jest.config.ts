@@ -1,6 +1,6 @@
 export default {
   displayName: 'radiology-reporting-suite',
-  preset: '../../jest.preset.js',
+  preset: '../../jest.preset.mjs',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
   coverageDirectory: '../../coverage/apps/radiology-reporting-suite',
   transform: {

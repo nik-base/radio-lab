@@ -15,6 +15,7 @@ import { EditorButtonBulletedListComponent } from './button-bulleted-list/editor
 import { EditorButtonItalicComponent } from './button-italic/editor-button-italic.component';
 import { EditorButtonOrderedListComponent } from './button-ordered-list/editor-button-ordered-list.component';
 import { EditorButtonRedoComponent } from './button-redo/editor-button-redo.component';
+import { EditorButtonTableComponent } from './button-table/editor-button-table.component';
 import { EditorButtonUnderlineComponent } from './button-underline/editor-button-underline.component';
 import { EditorButtonUndoComponent } from './button-undo/editor-button-undo.component';
 import { EditorInputFontSizeComponent } from './input-font-size/editor-input-font-size.component';
@@ -39,6 +40,7 @@ import { EditorSelectorFontFamilyComponent } from './selector-font-family/editor
     EditorButtonRedoComponent,
     EditorSelectorFontFamilyComponent,
     EditorInputFontSizeComponent,
+    EditorButtonTableComponent,
   ],
   templateUrl: './editor-toolbar.component.html',
   styleUrls: ['./editor-toolbar.component.scss'],
@@ -75,6 +77,8 @@ export class EditorToolbarComponent {
       '|',
       'font-family',
       'font-size',
+      '|',
+      'table',
       '|',
       'undo',
       'redo',
