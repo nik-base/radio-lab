@@ -1,4 +1,3 @@
-
 import angularTemplateParser from '@angular-eslint/template-parser';
 import eslint from '@eslint/js';
 import ngrxPlugin from '@ngrx/eslint-plugin/v9';
@@ -33,7 +32,7 @@ const eslintConfig = [
       parserOptions: {
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
-      }
+      },
     },
     files: ['**/*.ts'],
     rules: {
@@ -52,7 +51,7 @@ const eslintConfig = [
       ],
       '@typescript-eslint/no-inferrable-types': 'off',
       '@typescript-eslint/explicit-function-return-type': [
-        'error', 
+        'error',
         {
           allowConciseArrowFunctionExpressionsStartingWithVoid: false,
           allowDirectConstAssertionInArrowFunctions: true,
@@ -62,7 +61,7 @@ const eslintConfig = [
           allowHigherOrderFunctions: true,
           allowIIFEs: false,
           allowTypedFunctionExpressions: true,
-        }
+        },
       ],
       '@angular-eslint/directive-selector': [
         'error',
@@ -82,7 +81,7 @@ const eslintConfig = [
       ],
       'eslint-plugin-import/order': [
         'error',
-        {          
+        {
           groups: [
             'builtin',
             'external',
@@ -91,14 +90,14 @@ const eslintConfig = [
             'sibling',
             'index',
           ],
-          'pathGroups': [
+          pathGroups: [
             {
-              'pattern': '@app/**',
-              'group': 'internal',
-              'position': 'after'
-            }
+              pattern: '@app/**',
+              group: 'internal',
+              position: 'after',
+            },
           ],
-          'pathGroupsExcludedImportTypes': [],
+          pathGroupsExcludedImportTypes: [],
           'newlines-between': 'always',
           distinctGroup: false,
           alphabetize: {
@@ -107,7 +106,7 @@ const eslintConfig = [
           },
         },
       ],
-      '@ngrx/use-consistent-global-store-name': ['error', 'store$']
+      '@ngrx/use-consistent-global-store-name': ['error', 'store$'],
     },
   },
   {
