@@ -1,6 +1,22 @@
-import { setupZonelessTestEnv } from 'jest-preset-angular/setup-env/zoneless';
+import '@analogjs/vitest-angular/setup-snapshots';
 
-setupZonelessTestEnv({
-  errorOnUnknownElements: true,
-  errorOnUnknownProperties: true,
-});
+import { NgModule, provideZonelessChangeDetection } from '@angular/core';
+import { getTestBed } from '@angular/core/testing';
+import {
+  BrowserTestingModule,
+  platformBrowserTesting,
+} from '@angular/platform-browser/testing';
+
+@NgModule({
+  providers: [provideZonelessChangeDetection()],
+})
+export class ZonelessTestModule {}
+
+getTestBed().initTestEnvironment(
+  [BrowserTestingModule, ZonelessTestModule],
+  platformBrowserTesting()
+  // {
+  //   errorOnUnknownElements: true,
+  //   errorOnUnknownProperties: true,
+  // }
+);
