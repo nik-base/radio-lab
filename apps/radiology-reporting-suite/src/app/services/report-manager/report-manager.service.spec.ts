@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { mockProvider } from '@ngneat/spectator/jest';
+import { mockProvider } from '@ngneat/spectator/vitest';
 
 import { ReportManagerService } from './report-manager.service';
 

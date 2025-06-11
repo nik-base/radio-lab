@@ -1,30 +1,48 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { mockProvider } from '@ngneat/spectator/jest';
-import { MessageService } from 'primeng/api';
+import {
+  createComponentFactory,
+  mockProvider,
+  Spectator,
+  SpectatorFactory,
+} from '@ngneat/spectator/vitest';
+import { ConfirmationService } from 'primeng/api';
 
-import { ReportBuilderService } from '../services/report-builder/report-builder.service';
+import { ReportBuilderEditorStore } from '@app/store/report-builder/report-builder-editor.store';
+import { ReportBuilderTemplateDataStore } from '@app/store/report-builder/report-builder-template-data.store';
+import { ReportBuilderTemplateStore } from '@app/store/report-builder/report-builder-templates-store';
+import { ReportBuilderVariableValueStore } from '@app/store/report-builder/report-builder-variable-value.store';
 
 import { ReportBuilderComponent } from './report-builder.component';
 
 describe('ReportBuilderComponent', () => {
-  let component: ReportBuilderComponent;
-  let fixture: ComponentFixture<ReportBuilderComponent>;
+  let spectator: Spectator<ReportBuilderComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [ReportBuilderComponent],
-      providers: [
-        mockProvider(ReportBuilderService),
-        mockProvider(MessageService),
+  const createComponent: SpectatorFactory<ReportBuilderComponent> =
+    createComponentFactory({
+      component: ReportBuilderComponent,
+      componentProviders: [
+        ConfirmationService,
+        mockProvider(ReportBuilderTemplateStore, {
+          fetchAll: vi.fn(),
+          templates: vi.fn(),
+          isLoading: vi.fn(),
+        }),
+        mockProvider(ReportBuilderTemplateDataStore, {
+          isLoading: vi.fn(),
+        }),
+        mockProvider(ReportBuilderVariableValueStore, {
+          isLoading: vi.fn(),
+        }),
+        mockProvider(ReportBuilderEditorStore, {
+          isDirty: vi.fn(),
+        }),
       ],
-    }).compileComponents();
+    });
 
-    fixture = TestBed.createComponent(ReportBuilderComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+  beforeEach(() => {
+    spectator = createComponent();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(spectator.component).toBeDefined();
   });
 });

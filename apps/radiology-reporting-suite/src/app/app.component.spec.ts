@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
-import { mockProvider } from '@ngneat/spectator/jest';
+import { mockProvider } from '@ngneat/spectator/vitest';
 import { MessageService } from 'primeng/api';
 
 import { AppComponent } from './app.component';
