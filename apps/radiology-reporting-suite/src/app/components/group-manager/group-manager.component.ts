@@ -15,12 +15,18 @@ import {
   SortOrderItem,
   SortOrderUpdate,
 } from '@app/models/domain';
-import { CommonDialogData, EventData } from '@app/models/ui';
+import {
+  CommonDialogData,
+  EventData,
+  GroupCloneDialogData,
+  GroupCloneDialogOutput,
+} from '@app/models/ui';
 import { GroupStore } from '@app/store/report-manager/group.store';
 import { isNotNil } from '@app/utils/functions/common.functions';
 import { findNextSortOrder } from '@app/utils/functions/order.functions';
 
 import { CommonManagerDialogComponent } from '../common-manager-dialog/common-manager-dialog.component';
+import { GroupCloneDialogComponent } from '../group-clone-dialog/group-clone-dialog.component';
 import { GroupManagerListComponent } from '../group-manager-list/group-manager-list.component';
 import { SortableListManagerLayoutComponent } from '../sortable-list-manager-layout/sortable-list-manager-layout.component';
 
@@ -104,6 +110,26 @@ export class GroupManagerComponent {
       .subscribe();
   }
 
+  onClone(group: FindingGroup): void {
+    const dialogRef: DynamicDialogRef = this.openCloneDialog('Clone Group', {
+      group: group,
+      scope: this.scope(),
+    });
+
+    dialogRef.onClose
+      .pipe(
+        filter<GroupCloneDialogOutput>(isNotNil),
+        tap((cloneOutput: GroupCloneDialogOutput): void => {
+          this.groupStore$.clone({
+            group: cloneOutput.group,
+            scopeId: cloneOutput.scope.id,
+          });
+        }),
+        take(1)
+      )
+      .subscribe();
+  }
+
   onDelete(eventData: EventData<FindingGroup>): void {
     this.confirmationService.confirm({
       target: eventData.event.target as EventTarget,
@@ -138,6 +164,22 @@ export class GroupManagerComponent {
       modal: true,
       closable: true,
       width: '25rem',
+      contentStyle: { overflow: 'auto' },
+      baseZIndex: 3000,
+      position: 'top',
+      data,
+    });
+  }
+
+  private openCloneDialog(
+    header: string,
+    data: GroupCloneDialogData
+  ): DynamicDialogRef {
+    return this.dialogService.open(GroupCloneDialogComponent, {
+      header,
+      modal: true,
+      closable: true,
+      width: '40rem',
       contentStyle: { overflow: 'auto' },
       baseZIndex: 3000,
       position: 'top',

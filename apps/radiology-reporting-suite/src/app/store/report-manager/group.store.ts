@@ -113,6 +113,37 @@ export const GroupStore = signalStore(
         )
       ),
 
+      clone: rxMethod<{ readonly group: FindingGroup; scopeId: string }>(
+        pipe(
+          store.setLoading('clone'),
+
+          exhaustMap(
+            (input: { readonly group: FindingGroup; scopeId: string }) =>
+              groupManagerService.clone$(input.group.id, input.scopeId).pipe(
+                map(
+                  (dto: FindingGroupDto): FindingGroup =>
+                    genericEntityMapper.mapFromDto<
+                      FindingGroup,
+                      FindingGroupDto
+                    >(dto)
+                ),
+                tap((result: FindingGroup): void => {
+                  if (input.group.scopeId === input.scopeId) {
+                    patchState(store, addEntity(result));
+                  }
+                }),
+
+                store.handleStatus({
+                  showSuccess: true,
+                  successMessage: `Successfully cloned group "${input.group.name}"`,
+                  showError: true,
+                  errorMessage: `Failed to clone group "${input.group.name}"`,
+                })
+              )
+          )
+        )
+      ),
+
       fetchByScopeId: rxMethod<Scope>(
         pipe(
           store.setLoading('fetchByScopeId'),

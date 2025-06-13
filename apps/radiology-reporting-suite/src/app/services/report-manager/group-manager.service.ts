@@ -42,4 +42,8 @@ export class GroupManagerService
   reorder$(sortOrderUpdateRequest: SortOrderUpdateDto): Observable<void> {
     return this.reportService.reorderFindingGroups$(sortOrderUpdateRequest);
   }
+
+  clone$(id: string, scopeId: string): Observable<FindingGroupDto> {
+    return this.reportService.cloneGroup$(id, scopeId);
+  }
 }

@@ -56,6 +56,8 @@ export class GroupManagerListComponent {
 
   readonly edit: OutputEmitterRef<FindingGroup> = output<FindingGroup>();
 
+  readonly clone: OutputEmitterRef<FindingGroup> = output<FindingGroup>();
+
   readonly delete: OutputEmitterRef<EventData<FindingGroup>> =
     output<EventData<FindingGroup>>();
 
@@ -89,6 +91,15 @@ export class GroupManagerListComponent {
       ): void => this.onEdit(item.value),
     },
     {
+      label: 'Clone',
+      icon: 'pi pi-clone',
+      command: (
+        _: MenuItemCommandEvent,
+        __: Event | null,
+        item: SortableListItem<FindingGroup>
+      ): void => this.onClone(item.value),
+    },
+    {
       label: 'Delete',
       icon: 'pi pi-trash',
       command: (
@@ -120,6 +131,10 @@ export class GroupManagerListComponent {
       event,
       data: group,
     });
+  }
+
+  onClone(group: FindingGroup): void {
+    this.clone.emit(group);
   }
 
   onReorder(item: ReadonlyArray<SortableListItem<FindingGroup>>): void {

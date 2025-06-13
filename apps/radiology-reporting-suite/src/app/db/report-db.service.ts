@@ -845,6 +845,13 @@ export class ReportDBService extends ReportBaseService {
     return this.cloneScopeByIdIntoTemplate$(scopeId, templateId);
   }
 
+  override cloneGroup$(
+    groupId: string,
+    scopeId: string
+  ): Observable<FindingGroupDto> {
+    return this.cloneGroupByIdIntoScope$(groupId, scopeId);
+  }
+
   override cloneFinding$(
     findingId: string,
     groupId: string,
@@ -1358,6 +1365,47 @@ export class ReportDBService extends ReportBaseService {
     );
   }
 
+  private cloneGroupByIdIntoScope$(
+    groupId: string,
+    scopeId: string
+  ): Observable<FindingGroupDto> {
+    return this.dbService
+      .getByID<FindingGroupDBModel>('findingGroups', groupId)
+      .pipe(
+        switchMap((originalGroup: FindingGroupDBModel) =>
+          this.dbService
+            .getAllByIndex<FindingGroupDBModel>(
+              'findingGroups',
+              'scopeId',
+              IDBKeyRange.only(scopeId)
+            )
+            .pipe(
+              switchMap((siblingGroups: FindingGroupDBModel[]) => {
+                const newSortOrder: number =
+                  findNextSortOrderWhenOptional(siblingGroups);
+
+                const newGroupId: string = this.generateId();
+
+                return this.createGroupInDb$({
+                  ...originalGroup,
+                  id: newGroupId,
+                  scopeId,
+                  sortOrder: newSortOrder,
+                }).pipe(
+                  mergeMap((newGroupDto: FindingGroupDto) =>
+                    this.cloneClassifiers$(
+                      groupId,
+                      newGroupDto.id,
+                      scopeId
+                    ).pipe(map(() => newGroupDto))
+                  )
+                );
+              })
+            )
+        )
+      );
+  }
+
   private cloneGroups$(
     cloneScopeId: string,
     scopeId: string
@@ -1622,6 +1670,19 @@ export class ReportDBService extends ReportBaseService {
       .add<ScopeDBModel>('scopes', dbModel)
       .pipe(
         map((data: ScopeDBModel): ScopeDto => this.mapScopeDBModelToDto(data))
+      );
+  }
+
+  private createGroupInDb$(
+    dbModel: FindingGroupDBModel
+  ): Observable<FindingGroupDto> {
+    return this.dbService
+      .add<FindingGroupDBModel>('findingGroups', dbModel)
+      .pipe(
+        map(
+          (data: FindingGroupDBModel): FindingGroupDto =>
+            this.mapFindingGroupDBModelToDto(data)
+        )
       );
   }
 
