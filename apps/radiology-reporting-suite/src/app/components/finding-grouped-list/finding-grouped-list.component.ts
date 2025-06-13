@@ -80,6 +80,7 @@ export class FindingGroupedListComponent {
       isDefault: false,
       scopeId: '',
       sortOrder: 0,
+      info: null,
       classifiers: Array.from(
         { length: 5 },
         (_: unknown, classifierIndex: number) => ({
@@ -89,6 +90,7 @@ export class FindingGroupedListComponent {
           sortOrder: 0,
           groupId: '',
           scopeId: '',
+          info: null,
           findings: Array.from(
             { length: 5 },
             (_: unknown, findingIndex: number) => ({
@@ -106,6 +108,7 @@ export class FindingGroupedListComponent {
               },
               impression: null,
               recommendation: null,
+              info: null,
             })
           ),
         })

@@ -21,6 +21,8 @@ export { SortableListMenuItem } from './sortable-list-menu-item.interface';
 export { TableCRUDRow } from './table-crud-row.interface';
 
 export { CommonDialogData } from './common-dialog-data.interface';
+export { CommonInfoDialogData } from './common-info-dialog-data.interface';
+
 export { DialogTemplateRendererData } from './dialog-template-renderer-data.interface';
 
 export { VariablesManagerDialogData } from './variables-manager-dialog-data.interface';

@@ -180,6 +180,7 @@ export class LegacyTemplateImportMapperService {
                     : classifierEntry.minOrder,
                 isDefault: classifierEntry.isDefault,
                 findings: findingImports,
+                info: null,
               });
             }
 
@@ -189,6 +190,7 @@ export class LegacyTemplateImportMapperService {
                 groupEntry.minOrder === Infinity ? 0 : groupEntry.minOrder,
               isDefault: groupEntry.isDefault,
               classifiers: classifierImports,
+              info: null,
             });
           }
 
@@ -265,6 +267,7 @@ export class LegacyTemplateImportMapperService {
       },
       impression,
       recommendation,
+      info: null,
       variables: (lfi.variables ?? []).map(
         (legacyVar: LegacyVariableImport): VariableImport =>
           this.mapLegacyVariableToVariableImport(legacyVar)

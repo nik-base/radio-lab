@@ -68,6 +68,21 @@ const reportDBConfig: DBConfig = {
           keypath: 'scopeId',
           options: { unique: false },
         },
+        {
+          name: 'info',
+          keypath: 'info',
+          options: { unique: false },
+        },
+        {
+          name: 'infoHTML',
+          keypath: 'infoHTML',
+          options: { unique: false },
+        },
+        {
+          name: 'infoJSON',
+          keypath: 'infoJSON',
+          options: { unique: false },
+        },
       ],
     },
     {
@@ -85,6 +100,21 @@ const reportDBConfig: DBConfig = {
         {
           name: 'groupId',
           keypath: 'groupId',
+          options: { unique: false },
+        },
+        {
+          name: 'info',
+          keypath: 'info',
+          options: { unique: false },
+        },
+        {
+          name: 'infoHTML',
+          keypath: 'infoHTML',
+          options: { unique: false },
+        },
+        {
+          name: 'infoJSON',
+          keypath: 'infoJSON',
           options: { unique: false },
         },
       ],
@@ -154,6 +184,21 @@ const reportDBConfig: DBConfig = {
         {
           name: 'isNormal',
           keypath: 'isNormal',
+          options: { unique: false },
+        },
+        {
+          name: 'info',
+          keypath: 'info',
+          options: { unique: false },
+        },
+        {
+          name: 'infoHTML',
+          keypath: 'infoHTML',
+          options: { unique: false },
+        },
+        {
+          name: 'infoJSON',
+          keypath: 'infoJSON',
           options: { unique: false },
         },
       ],

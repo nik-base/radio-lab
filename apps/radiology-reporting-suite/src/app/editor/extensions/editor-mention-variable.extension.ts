@@ -1,4 +1,17 @@
+import { CommandProps } from '@tiptap/core';
 import { Mention } from '@tiptap/extension-mention';
+
+declare module '@tiptap/core' {
+  interface Commands<ReturnType> {
+    disableSuggestions: {
+      disableSuggestions: () => ReturnType;
+    };
+
+    enableSuggestions: {
+      enableSuggestions: () => ReturnType;
+    };
+  }
+}
 
 // eslint-disable-next-line @typescript-eslint/typedef
 export const EditorMentionVariable = Mention.extend({
@@ -29,6 +42,38 @@ export const EditorMentionVariable = Mention.extend({
           };
         },
       },
+    };
+  },
+
+  addStorage() {
+    return {
+      suggestionsEnabled: true,
+    };
+  },
+
+  addCommands() {
+    return {
+      ...this.parent?.(),
+
+      disableSuggestions:
+        () =>
+        ({ editor }: CommandProps) => {
+          (
+            editor.storage[EditorMentionVariable.name] as {
+              suggestionsEnabled: boolean;
+            }
+          ).suggestionsEnabled = false;
+          return true;
+        },
+
+      enableSuggestions:
+        () =>
+        ({ editor }: CommandProps) => {
+          (
+            editor.storage['mention'] as { suggestionsEnabled: boolean }
+          ).suggestionsEnabled = true;
+          return true;
+        },
     };
   },
 });

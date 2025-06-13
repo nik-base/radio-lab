@@ -7,4 +7,5 @@ export interface FindingBaseDto {
   readonly description: EditorContentDto;
   readonly impression: EditorContentDto | null;
   readonly recommendation: EditorContentDto | null;
+  readonly info: EditorContentDto | null;
 }

@@ -34,10 +34,12 @@ export const RADIO_DEFAULT_GROUP = {
   name: 'Uncategorized',
   sortOrder: 0,
   isDefault: true,
+  info: null,
 } as const satisfies Omit<FindingGroupCreate, 'scopeId'>;
 
 export const RADIO_DEFAULT_CLASSIFIER = {
   name: 'Unclassified',
   sortOrder: 0,
   isDefault: true,
+  info: null,
 } as const satisfies Omit<FindingClassifierCreate, 'groupId' | 'scopeId'>;

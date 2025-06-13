@@ -15,13 +15,13 @@ import {
   SortOrderItem,
   SortOrderUpdate,
 } from '@app/models/domain';
-import { CommonDialogData, EventData } from '@app/models/ui';
+import { CommonInfoDialogData, EventData } from '@app/models/ui';
 import { ClassifierStore } from '@app/store/report-manager/classifier.store';
 import { isNotNil } from '@app/utils/functions/common.functions';
 import { findNextSortOrder } from '@app/utils/functions/order.functions';
 
 import { ClassifierManagerListComponent } from '../classifier-manager-list/classifier-manager-list.component';
-import { CommonManagerDialogComponent } from '../common-manager-dialog/common-manager-dialog.component';
+import { CommonManagerInfoDialogComponent } from '../common-manager-info-dialog/common-manager-info-dialog.component';
 import { SortableListManagerLayoutComponent } from '../sortable-list-manager-layout/sortable-list-manager-layout.component';
 
 @Component({
@@ -89,6 +89,7 @@ export class ClassifierManagerComponent {
       {
         mode: CHANGE_MODE.Update,
         name: classifier.name,
+        info: classifier.info,
       }
     );
 
@@ -136,13 +137,13 @@ export class ClassifierManagerComponent {
 
   private openManagerDialog(
     header: string,
-    data: CommonDialogData
+    data: CommonInfoDialogData
   ): DynamicDialogRef {
-    return this.dialogService.open(CommonManagerDialogComponent, {
+    return this.dialogService.open(CommonManagerInfoDialogComponent, {
       header,
       modal: true,
       closable: true,
-      width: '25rem',
+      width: '70rem',
       contentStyle: { overflow: 'auto' },
       baseZIndex: 3000,
       position: 'top',

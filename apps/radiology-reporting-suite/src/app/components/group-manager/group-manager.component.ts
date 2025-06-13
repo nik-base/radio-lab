@@ -16,7 +16,7 @@ import {
   SortOrderUpdate,
 } from '@app/models/domain';
 import {
-  CommonDialogData,
+  CommonInfoDialogData,
   EventData,
   GroupCloneDialogData,
   GroupCloneDialogOutput,
@@ -25,7 +25,7 @@ import { GroupStore } from '@app/store/report-manager/group.store';
 import { isNotNil } from '@app/utils/functions/common.functions';
 import { findNextSortOrder } from '@app/utils/functions/order.functions';
 
-import { CommonManagerDialogComponent } from '../common-manager-dialog/common-manager-dialog.component';
+import { CommonManagerInfoDialogComponent } from '../common-manager-info-dialog/common-manager-info-dialog.component';
 import { GroupCloneDialogComponent } from '../group-clone-dialog/group-clone-dialog.component';
 import { GroupManagerListComponent } from '../group-manager-list/group-manager-list.component';
 import { SortableListManagerLayoutComponent } from '../sortable-list-manager-layout/sortable-list-manager-layout.component';
@@ -92,6 +92,7 @@ export class GroupManagerComponent {
     const dialogRef: DynamicDialogRef = this.openManagerDialog('Edit Group', {
       mode: CHANGE_MODE.Update,
       name: group.name,
+      info: group.info,
     });
 
     dialogRef.onClose
@@ -157,13 +158,13 @@ export class GroupManagerComponent {
 
   private openManagerDialog(
     header: string,
-    data: CommonDialogData
+    data: CommonInfoDialogData
   ): DynamicDialogRef {
-    return this.dialogService.open(CommonManagerDialogComponent, {
+    return this.dialogService.open(CommonManagerInfoDialogComponent, {
       header,
       modal: true,
       closable: true,
-      width: '25rem',
+      width: '70rem',
       contentStyle: { overflow: 'auto' },
       baseZIndex: 3000,
       position: 'top',

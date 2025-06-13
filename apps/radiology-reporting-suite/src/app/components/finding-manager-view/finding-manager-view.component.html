@@ -67,6 +67,7 @@
           id="findingDescription"
           maxHeight="15rem"
           [suggestions]="variables()"
+          [suggestionsEnabled]="true"
           (variableClick)="onVariableClick($event)"
           formControlName="description">
         </radio-editor>
@@ -89,12 +90,14 @@
           id="findingImpression"
           maxHeight="10rem"
           [suggestions]="variables()"
+          suggestionsEnabled
           (variableClick)="onVariableClick($event)"
           formControlName="impression">
         </radio-editor>
       </div>
 
-      <div class="flex flex-col gap-2">
+      <!-- Not required for now -->
+      <!-- <div class="flex flex-col gap-2">
         <label for="findingRecommendation">Recommendation</label>
 
         <radio-editor
@@ -103,6 +106,13 @@
           [suggestions]="variables()"
           (variableClick)="onVariableClick($event)"
           formControlName="recommendation">
+        </radio-editor>
+      </div> -->
+
+      <div class="flex flex-col gap-2">
+        <label for="findingInfo">Info</label>
+
+        <radio-editor id="findingInfo" maxHeight="15rem" formControlName="info">
         </radio-editor>
       </div>
     </div>

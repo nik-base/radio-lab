@@ -260,6 +260,8 @@ export class FindingManagerViewComponent {
     this.formGroup.get('impression')?.setValue(finding.impression);
 
     this.formGroup.get('recommendation')?.setValue(finding.recommendation);
+
+    this.formGroup.get('info')?.setValue(finding.info);
   }
 
   private getFinding(): Finding {
@@ -286,6 +288,7 @@ export class FindingManagerViewComponent {
       }),
       impression: new FormControl<EditorContent | null>(null),
       recommendation: new FormControl<EditorContent | null>(null),
+      info: new FormControl<EditorContent | null>(null),
     });
 
     return formGroup as FormGroupModel<FindingBase>;

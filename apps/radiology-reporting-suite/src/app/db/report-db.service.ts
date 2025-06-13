@@ -2084,6 +2084,7 @@ export class ReportDBService extends ReportBaseService {
     group: FindingGroupBaseDto
   ): Omit<FindingGroupDBModel, 'id' | 'scopeId'> {
     return {
+      ...this.mapEditorContentToInfo(group.info),
       name: group.name,
       sortOrder: group.sortOrder,
       isDefault: group.isDefault,
@@ -2094,6 +2095,7 @@ export class ReportDBService extends ReportBaseService {
     classifier: FindingClassifierBaseDto
   ): Omit<FindingClassifierDBModel, 'id' | 'scopeId' | 'groupId'> {
     return {
+      ...this.mapEditorContentToInfo(classifier.info),
       name: classifier.name,
       sortOrder: classifier.sortOrder,
       isDefault: classifier.isDefault,
@@ -2199,7 +2201,7 @@ export class ReportDBService extends ReportBaseService {
     group: FindingGroupDBModel
   ): FindingGroupDto {
     return {
-      ...this.mapFindingGroupBaseDtoToDBModel(group),
+      ...this.mapFindingGroupDBModelToBaseDto(group),
       id: group.id,
       scopeId: group.scopeId,
     };
@@ -2209,7 +2211,7 @@ export class ReportDBService extends ReportBaseService {
     classifier: FindingClassifierDBModel
   ): FindingClassifierDto {
     return {
-      ...this.mapFindingClassifierBaseDtoToDBModel(classifier),
+      ...this.mapFindingClassifierDBModelToBaseDto(classifier),
       id: classifier.id,
       scopeId: classifier.scopeId,
       groupId: classifier.groupId,
@@ -2241,6 +2243,7 @@ export class ReportDBService extends ReportBaseService {
       ...this.mapEditorContentToFindingDescription(finding.description),
       ...this.mapEditorContentToImpression(finding.impression),
       ...this.mapEditorContentToRecommendation(finding.recommendation),
+      ...this.mapEditorContentToInfo(finding.info),
       name: finding.name,
       sortOrder: finding.sortOrder,
       isNormal: finding.isNormal,
@@ -2259,6 +2262,28 @@ export class ReportDBService extends ReportBaseService {
     };
   }
 
+  private mapFindingGroupDBModelToBaseDto(
+    group: FindingGroupDBModel
+  ): FindingGroupBaseDto {
+    return {
+      name: group.name,
+      isDefault: group.isDefault ?? false,
+      sortOrder: group.sortOrder ?? 0,
+      info: this.mapInfoToEditorContent(group),
+    };
+  }
+
+  private mapFindingClassifierDBModelToBaseDto(
+    classifier: FindingClassifierDBModel
+  ): FindingClassifierBaseDto {
+    return {
+      name: classifier.name,
+      isDefault: classifier.isDefault ?? false,
+      sortOrder: classifier.sortOrder ?? 0,
+      info: this.mapInfoToEditorContent(classifier),
+    };
+  }
+
   private mapFindingDBModelToBaseDto(finding: FindingDBModel): FindingBaseDto {
     return {
       name: finding.name,
@@ -2267,6 +2292,7 @@ export class ReportDBService extends ReportBaseService {
       description: this.mapFindingDescriptionToEditorContent(finding),
       impression: this.mapImpressionToEditorContent(finding),
       recommendation: this.mapRecommendationToEditorContent(finding),
+      info: this.mapInfoToEditorContent(finding),
     };
   }
 
@@ -2407,6 +2433,23 @@ export class ReportDBService extends ReportBaseService {
     };
   }
 
+  private mapInfoToEditorContent(
+    editorContent:
+      | FindingGroupDBModel
+      | FindingClassifierDBModel
+      | FindingDBModel
+  ): EditorContentDto | null {
+    if (!editorContent.infoHTML) {
+      return null;
+    }
+
+    return {
+      text: editorContent.info ?? '',
+      html: editorContent.infoHTML ?? '',
+      json: editorContent.infoJSON ?? '',
+    };
+  }
+
   private mapEditorContentToRecommendation(
     editorContent: EditorContentDto | null
   ): Pick<
@@ -2425,6 +2468,24 @@ export class ReportDBService extends ReportBaseService {
       recommendation: editorContent.text,
       recommendationHTML: editorContent.html,
       recommendationJSON: editorContent.json,
+    };
+  }
+
+  private mapEditorContentToInfo(
+    editorContent: EditorContentDto | null
+  ): Pick<FindingDBModel, 'info' | 'infoHTML' | 'infoJSON'> {
+    if (!editorContent) {
+      return {
+        info: undefined,
+        infoHTML: undefined,
+        infoJSON: undefined,
+      };
+    }
+
+    return {
+      info: editorContent.text,
+      infoHTML: editorContent.html,
+      infoJSON: editorContent.json,
     };
   }
 }
