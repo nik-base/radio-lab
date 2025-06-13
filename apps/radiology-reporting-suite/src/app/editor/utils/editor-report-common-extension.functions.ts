@@ -69,7 +69,10 @@ export function sanitizeHTML(html: string | null | undefined): string {
     return '';
   }
 
-  return DOMPurify.sanitize(html, { USE_PROFILES: { html: true } });
+  return DOMPurify.sanitize(html, {
+    USE_PROFILES: { html: true },
+    ADD_ATTR: ['colwidth'],
+  });
 }
 
 export function escapeHTML(html: string | null | undefined): string {
