@@ -1,0 +1,24 @@
+:host {
+  /* stylelint-disable-next-line selector-pseudo-element-no-unknown */
+  ::ng-deep {
+    .radio-info-button {
+      height: 31.6px;
+    }
+
+    .radio-info-split-button {
+      height: 2.6rem;
+    }
+
+    .radio-split-button {
+      p-button button {
+        border-start-end-radius: 0;
+        border-end-end-radius: 0;
+      }
+
+      p-splitbutton button {
+        border-start-start-radius: 0;
+        border-end-start-radius: 0;
+      }
+    }
+  }
+}

@@ -10,7 +10,22 @@
       [value]="[_findingGroups[0].id]">
       @for (findingGroup of _findingGroups; track findingGroup.id) {
         <p-accordionpanel [value]="findingGroup.id">
-          <p-accordion-header>{{ findingGroup.name }}</p-accordion-header>
+          <p-accordion-header>
+            <div class="flex flex-row gap-2">
+              <span class="content-center">{{ findingGroup.name }}</span>
+
+              @if (findingGroup.info | editorHasValue) {
+                <p-button
+                  icon="pi pi-info-circle"
+                  pTooltip="Info"
+                  tooltipPosition="bottom"
+                  [tooltipOptions]="tooltipOptions"
+                  [text]="true"
+                  [rounded]="true"
+                  (onClick)="onGroupInfoClick($event, findingGroup)" />
+              }
+            </div>
+          </p-accordion-header>
 
           <p-accordion-content>
             <div class="flex flex-row flex-wrap gap-2">
@@ -40,27 +55,78 @@
                     @let finding =
                       findingOrClassifier | castToType: findingType;
 
-                    <p-button
-                      [label]="findingOrClassifier.name"
-                      [rounded]="true"
-                      severity="secondary"
-                      (click)="onFindingClick(finding)" />
+                    @if (finding.info | editorHasValue) {
+                      <p-buttongroup>
+                        <p-button
+                          icon="pi pi-info-circle"
+                          styleClass="radio-info-button"
+                          pTooltip="Info"
+                          tooltipPosition="bottom"
+                          [tooltipOptions]="tooltipOptions"
+                          [outlined]="true"
+                          [rounded]="true"
+                          (onClick)="onFindingInfoClick(finding)" />
+
+                        <p-button
+                          [label]="findingOrClassifier.name"
+                          [rounded]="true"
+                          [outlined]="true"
+                          (click)="onFindingClick(finding)"
+                      /></p-buttongroup>
+                    } @else {
+                      <p-button
+                        [label]="findingOrClassifier.name"
+                        [rounded]="true"
+                        [outlined]="true"
+                        (click)="onFindingClick(finding)" />
+                    }
                   } @else {
                     @let classifier =
                       findingOrClassifier | castToType: classifierType;
 
-                    <p-splitbutton
-                      #classifierButton
-                      [label]="findingOrClassifier.name"
-                      [rounded]="true"
-                      severity="secondary"
-                      [model]="
-                        classifier
-                          | classifierToMenuItems
-                            : onFindingInClassifierClick
-                            : this
-                      "
-                      (onClick)="onClassifierClick($event, classifierButton)" />
+                    @if (classifier.info | editorHasValue) {
+                      <p-buttongroup class="radio-split-button">
+                        <p-button
+                          icon="pi pi-info-circle"
+                          pTooltip="Info"
+                          styleClass="radio-info-split-button"
+                          tooltipPosition="bottom"
+                          [tooltipOptions]="tooltipOptions"
+                          [outlined]="true"
+                          [rounded]="true"
+                          (onClick)="onClassifierInfoClick(classifier)" />
+
+                        <p-splitbutton
+                          #classifierButton
+                          [label]="findingOrClassifier.name"
+                          [rounded]="true"
+                          [outlined]="true"
+                          [model]="
+                            classifier
+                              | classifierToMenuItems
+                                : onFindingInClassifierClick
+                                : this
+                          "
+                          (onClick)="
+                            onClassifierClick($event, classifierButton)
+                          " />
+                      </p-buttongroup>
+                    } @else {
+                      <p-splitbutton
+                        #classifierButton
+                        [label]="findingOrClassifier.name"
+                        [rounded]="true"
+                        [outlined]="true"
+                        [model]="
+                          classifier
+                            | classifierToMenuItems
+                              : onFindingInClassifierClick
+                              : this
+                        "
+                        (onClick)="
+                          onClassifierClick($event, classifierButton)
+                        " />
+                    }
                   }
                 }
               }

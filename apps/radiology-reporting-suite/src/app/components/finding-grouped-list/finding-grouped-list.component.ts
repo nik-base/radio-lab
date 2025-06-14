@@ -2,29 +2,41 @@ import { CommonModule } from '@angular/common';
 import {
   Component,
   computed,
+  inject,
   input,
   InputSignal,
   output,
   OutputEmitterRef,
   Signal,
 } from '@angular/core';
+import { isNil } from 'lodash-es';
 import { AccordionModule } from 'primeng/accordion';
-import { ButtonModule } from 'primeng/button';
+import { TooltipOptions } from 'primeng/api';
+import { Button } from 'primeng/button';
+import { ButtonGroup } from 'primeng/buttongroup';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Skeleton } from 'primeng/skeleton';
 import { SplitButton } from 'primeng/splitbutton';
 import { TooltipModule } from 'primeng/tooltip';
 
+import { APP_TOOLTIP_OPTIONS } from '@app/constants';
 import {
+  EditorContent,
+  Finding,
   FindingClassifierData,
   FindingData,
   FindingGroupData,
 } from '@app/models/domain';
+import { InfoDialogData } from '@app/models/ui';
 import { CastToTypePipe } from '@app/pipes/case-to-type/cast-to-type.pipe';
 import { ClassifierToMenuItemsPipe } from '@app/pipes/classifier-to-menu-items/classifier-to-menu-items.pipe';
 import { ConcatTwoArraysPipe } from '@app/pipes/concat-two-arrays/concat-two-arrays.pipe';
+import { EditorHasValuePipe } from '@app/pipes/editor-has-value/editor-has-value.pipe';
 import { FilterArrayPipe } from '@app/pipes/filter-array/filter-array.pipe';
 import { FindInArrayPipe } from '@app/pipes/find-in-array/find-in-array.pipe';
 import { SortArrayPipe } from '@app/pipes/sort-array/sort-array.pipe';
+
+import { InfoDialogComponent } from '../info-dialog/info-dialog.component';
 
 @Component({
   selector: 'radio-finding-grouped-list',
@@ -33,7 +45,8 @@ import { SortArrayPipe } from '@app/pipes/sort-array/sort-array.pipe';
     CommonModule,
     AccordionModule,
     TooltipModule,
-    ButtonModule,
+    Button,
+    ButtonGroup,
     SplitButton,
     Skeleton,
     FilterArrayPipe,
@@ -42,10 +55,15 @@ import { SortArrayPipe } from '@app/pipes/sort-array/sort-array.pipe';
     SortArrayPipe,
     CastToTypePipe,
     ClassifierToMenuItemsPipe,
+    EditorHasValuePipe,
   ],
+  providers: [DialogService],
   templateUrl: './finding-grouped-list.component.html',
+  styleUrls: ['./finding-grouped-list.component.scss'],
 })
 export class FindingGroupedListComponent {
+  private readonly dialogService: DialogService = inject(DialogService);
+
   readonly findingGroups: InputSignal<FindingGroupData[]> =
     input.required<FindingGroupData[]>();
 
@@ -66,6 +84,8 @@ export class FindingGroupedListComponent {
   );
 
   protected readonly Object: typeof Object = Object;
+
+  protected readonly tooltipOptions: TooltipOptions = APP_TOOLTIP_OPTIONS;
 
   protected readonly findingType: FindingData = {} as FindingData;
 
@@ -128,5 +148,54 @@ export class FindingGroupedListComponent {
     event.preventDefault();
 
     setTimeout(() => splitButton.onDropdownButtonClick(event));
+  }
+
+  onGroupInfoClick(event: Event, group: FindingGroupData): void {
+    event.preventDefault();
+
+    event.stopPropagation();
+
+    this.showInfoDialog(group.name, group.info);
+  }
+
+  onFindingInfoClick(finding: Finding): void {
+    this.showInfoDialog(finding.name, finding.info);
+  }
+
+  onClassifierInfoClick(classifier: FindingClassifierData): void {
+    this.showInfoDialog(classifier.name, classifier.info);
+  }
+
+  private showInfoDialog(
+    name: string,
+    info: EditorContent | null
+  ): DynamicDialogRef | null {
+    if (isNil(info)) {
+      return null;
+    }
+
+    return this.openInfoDialog(`Info: ${name}`, {
+      name,
+      info,
+    });
+  }
+
+  private openInfoDialog(
+    header: string,
+    data: InfoDialogData
+  ): DynamicDialogRef {
+    return this.dialogService.open(InfoDialogComponent, {
+      header,
+      modal: false,
+      closable: true,
+      resizable: true,
+      draggable: true,
+      width: '40%',
+      height: '100%',
+      contentStyle: { overflow: 'auto' },
+      baseZIndex: 3000,
+      position: 'left',
+      data,
+    });
   }
 }

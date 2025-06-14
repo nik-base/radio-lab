@@ -84,6 +84,20 @@ export class EditorComponent implements OnInit {
 
   readonly maxHeight: InputSignal<string | undefined> = input<string>();
 
+  readonly hideToolbar: InputSignalWithTransform<boolean, unknown> = input<
+    boolean,
+    unknown
+  >(false, {
+    transform: booleanAttribute,
+  });
+
+  readonly readonly: InputSignalWithTransform<boolean, unknown> = input<
+    boolean,
+    unknown
+  >(false, {
+    transform: booleanAttribute,
+  });
+
   readonly suggestions: InputSignal<EditorMentionVariableItem[]> = input<
     EditorMentionVariableItem[]
   >([]);
@@ -278,6 +292,16 @@ export class EditorComponent implements OnInit {
       if (!suggestionsEnabled) {
         this.editor.chain().disableSuggestions().run();
       }
+    });
+
+    effect(() => {
+      const readonly: boolean = this.readonly();
+
+      if (!readonly) {
+        return;
+      }
+
+      this.editor.setEditable(!readonly);
     });
   }
 
