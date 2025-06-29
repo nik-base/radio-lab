@@ -15,6 +15,7 @@ import { VariableValue } from '@app/models/domain';
 import { VariableUI } from '@app/models/ui';
 import { ReportBuilderService } from '@app/services/report-builder/report-builder.service';
 import { isNotNil } from '@app/utils/functions/common.functions';
+import { orderBySortOrder } from '@app/utils/functions/order.functions';
 
 import { AppEntityState } from '../entity-state.interface';
 import { withRequestStatus } from '../utils/signal-store-features/with-request-status.store-feature';
@@ -43,9 +44,18 @@ export const ReportBuilderVariableValueStore = signalStore(
             return null;
           }
 
-          return variableMap.has(variableId)
-            ? (variableMap.get(variableId) ?? null)
-            : null;
+          if (!variableMap.has(variableId)) {
+            return null;
+          }
+
+          const variables: ReadonlyArray<VariableValue> | undefined =
+            variableMap.get(variableId);
+
+          if (isNil(variables)) {
+            return null;
+          }
+
+          return orderBySortOrder(variables);
         })
     ),
   })),

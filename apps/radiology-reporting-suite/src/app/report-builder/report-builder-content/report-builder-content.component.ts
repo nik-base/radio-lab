@@ -10,7 +10,6 @@ import {
   viewChild,
   WritableSignal,
 } from '@angular/core';
-import { isNil } from 'lodash-es';
 import { PanelModule } from 'primeng/panel';
 import { Splitter } from 'primeng/splitter';
 
@@ -78,38 +77,45 @@ export class ReportBuilderContentComponent implements AfterViewInit {
   }
 
   onNormalClick(scope: ScopeData): void {
-    const normalFinding: FindingData | null =
-      this.findNormalFindingInScope(scope);
+    const normalFindings: FindingData[] | null =
+      this.findNormalFindingsInScope(scope);
 
-    if (isNil(normalFinding)) {
+    if (!normalFindings?.length) {
       return;
     }
 
-    this.reportEditor().insertReportFinding({
-      scope,
-      finding: normalFinding,
-      scopeIndex: scope.sortOrder,
-    });
+    const normalFindingData: EditorFindingData[] = normalFindings.map(
+      (item: FindingData): EditorFindingData => ({
+        scope,
+        finding: item,
+        scopeIndex: scope.sortOrder,
+      })
+    );
+
+    this.reportEditor().insertReportFindings(normalFindingData);
   }
 
   insertAllNormalFindingsInEditor(): void {
     const scopes: ReadonlyArray<ScopeData> = this.templateData()?.scopes ?? [];
 
     const normalFindings: EditorFindingData[] = scopes
-      .map((scope: ScopeData): EditorFindingData | null => {
-        const finding: FindingData | null =
-          this.findNormalFindingInScope(scope);
+      .map((scope: ScopeData): EditorFindingData[] | null => {
+        const findings: FindingData[] | null =
+          this.findNormalFindingsInScope(scope);
 
-        if (!finding) {
+        if (!findings?.length) {
           return null;
         }
 
-        return {
-          scope,
-          finding,
-          scopeIndex: scope.sortOrder,
-        };
+        return findings.map(
+          (item: FindingData): EditorFindingData => ({
+            scope,
+            finding: item,
+            scopeIndex: scope.sortOrder,
+          })
+        );
       })
+      .flat()
       .filter(isNotNil);
 
     if (!normalFindings?.length) {
@@ -133,18 +139,20 @@ export class ReportBuilderContentComponent implements AfterViewInit {
     });
   }
 
-  private findNormalFindingInScope(scope: ScopeData): FindingData | null {
+  private findNormalFindingsInScope(scope: ScopeData): FindingData[] | null {
+    const normalFindings: FindingData[] = [];
+
     for (const group of scope.groups) {
       for (const classifier of group.classifiers) {
         for (const finding of classifier.findings) {
           if (finding.isNormal) {
-            return finding;
+            normalFindings.push(finding);
           }
         }
       }
     }
 
-    return null;
+    return normalFindings;
   }
 
   private insertReportProtocol(template: Template): void {

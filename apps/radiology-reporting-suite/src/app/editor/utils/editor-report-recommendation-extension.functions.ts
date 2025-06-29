@@ -27,6 +27,7 @@ export function insertRadioRecommendationInEditor(
     EDITOR_REPORT_ID.RadioReportRecommendations,
     EDITOR_REPORT_ATTRIBUTE_VALUES.Recommendation,
     EDITOR_REPORT_ATTRIBUTE_NAMES.RecommendationScopeIndex,
+    EDITOR_REPORT_ATTRIBUTE_NAMES.ImpressionGroupId,
     generateRecommendationHTML,
     generateFirstRecommendationHTML
   );
@@ -79,8 +80,13 @@ function generateRecommendationHTML(
     findingData.finding.id
   );
 
+  const groupId: string = generateEditorDataAttribute(
+    EDITOR_REPORT_ATTRIBUTE_NAMES.RecommendationGroupId,
+    findingData.finding.groupId
+  );
+
   return (
-    `<li ${radioItem} ${scopeIndex} ${isNormal} ${dataId}>` +
+    `<li ${radioItem} ${scopeIndex} ${isNormal} ${groupId} ${dataId}>` +
     sanitizeHTML(recommendationHTML) +
     `</li>`
   );

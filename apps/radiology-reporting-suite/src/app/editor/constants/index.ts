@@ -33,9 +33,12 @@ export const EDITOR_REPORT_ATTRIBUTE_NAMES = {
   ImpressionIndex: 'radioimpressionindex',
   RecommendationIndex: 'radiorecommendationindex',
   ScopeId: 'radioscopeid',
+  GroupId: 'radiogroupid',
   FindingId: 'radiofindingid',
   ImpressionId: 'radioimpressionid',
   RecommendationId: 'radiorecommendationid',
+  ImpressionGroupId: 'radioimpressiongroupid',
+  RecommendationGroupId: 'radiorecommendationgroupid',
   IsNormalFinding: 'radioisnormalfinding',
 } as const;
 
@@ -46,6 +49,7 @@ export const EDITOR_REPORT_ATTRIBUTE_VALUES = {
   ImpressionsSection: 'impressions-section',
   RecommendationsSection: 'recommendations-section',
   Scope: 'scope',
+  Group: 'group',
   Finding: 'finding',
   Impression: 'impression',
   Recommendation: 'recommendation',

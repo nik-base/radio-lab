@@ -27,6 +27,7 @@ export function insertRadioImpressionOrRecommendationInEditor(
   id: string,
   radioItemAttr: string,
   scopeIndexAttr: string,
+  groupIdAttr: string,
   generateHTML: (findingData: EditorFindingData, editorHTML: string) => string,
   generateFirstHTML: (
     findingData: EditorFindingData,
@@ -53,6 +54,7 @@ export function insertRadioImpressionOrRecommendationInEditor(
       existingScopeNodes,
       id,
       radioItemAttr,
+      groupIdAttr,
       generateHTML
     );
   }
@@ -211,6 +213,7 @@ function insertNodeInExistingScopeNodes(
   existingScopeNodes: NodePos[],
   id: string,
   radioItemAttr: string,
+  groupIdAttr: string,
   generateHTML: (findingData: EditorFindingData, editorHTML: string) => string
 ): ChainedCommands {
   const html: string | null = isNil(editorHTML)
@@ -221,17 +224,23 @@ function insertNodeInExistingScopeNodes(
 
   if (findingData.finding.isNormal) {
     // If normal finding than remove existing nodes and insert only normal node
-    return replaceNodeWithNormalNodeInScope(
+    return replaceNodeWithNormalNodeInGroup(
       editor,
       chain,
       html,
       existingScopeNodes,
       id,
-      radioItemAttr
+      findingData.finding.groupId,
+      radioItemAttr,
+      groupIdAttr
     );
   }
 
-  const normalNode: NodePos | null = tryGetNormalNode(existingScopeNodes);
+  const normalNode: NodePos | null = tryGetNormalNode(
+    existingScopeNodes,
+    groupIdAttr,
+    findingData.finding.groupId
+  );
 
   if (normalNode) {
     // If not normal finding and existing scope has any normal node. Remove normal node and insert the new node
@@ -250,6 +259,25 @@ function insertNodeInExistingScopeNodes(
     return chain();
   }
 
+  const existingGroupNodes: NodePos[] = existingScopeNodes.filter(
+    (node: NodePos): boolean =>
+      node.attributes[
+        generateEditorDataAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem)
+      ] === radioItemAttr &&
+      node.attributes[generateEditorDataAttributeName(groupIdAttr)] ===
+        findingData.finding.groupId
+  );
+
+  if (existingGroupNodes.length > 0) {
+    const lastGroupNode: NodePos =
+      existingGroupNodes[existingGroupNodes.length - 1];
+
+    return chain().insertContentAt(
+      lastGroupNode.pos + lastGroupNode.size - 1,
+      html
+    );
+  }
+
   // insert after the last node of the existing scope nodes
   return chain().insertContentAt(lastNode.pos + lastNode.size - 1, html);
 }
@@ -259,17 +287,17 @@ function replaceNormalNodeWithAbNormalNode(
   chain: () => ChainedCommands,
   html: string | null,
   normal: NodePos,
-  existingScopeNodes: NodePos[],
+  existingGroupNodes: NodePos[],
   id: string,
   radioItemAttr: string
 ): ChainedCommands {
   if (isNil(html)) {
-    return replaceNodeWhenScopeHasOneNode(
+    return replaceNodeWhenGroupHasOneNode(
       editor,
       chain,
       html,
       normal,
-      existingScopeNodes,
+      existingGroupNodes,
       id,
       radioItemAttr
     );
@@ -299,22 +327,22 @@ function insertFirstNodeAsLastItemInScope(
   return chain().insertContentAt(lastNode.pos + lastNode.size - 1, html);
 }
 
-function replaceNodeWhenScopeHasOneNode(
+function replaceNodeWhenGroupHasOneNode(
   editor: Editor,
   chain: () => ChainedCommands,
   html: string | null,
   firstNode: NodePos,
-  existingScopeNodes: NodePos[],
+  existingGroupNodes: NodePos[],
   id: string,
   radioItemAttr: string
 ): ChainedCommands {
   if (isNil(html)) {
-    return removeNodesInScope(
+    return removeNodesInGroup(
       editor,
       chain,
       firstNode,
       firstNode,
-      existingScopeNodes,
+      existingGroupNodes,
       id,
       radioItemAttr
     );
@@ -329,22 +357,22 @@ function replaceNodeWhenScopeHasOneNode(
     .insertContentAt(firstNode.pos - 1, html);
 }
 
-function removeNodesInScope(
+function removeNodesInGroup(
   editor: Editor,
   chain: () => ChainedCommands,
   firstNode: NodePos,
   lastNode: NodePos,
-  existingScopeNodes: NodePos[],
+  existingGroupNodes: NodePos[],
   id: string,
   radioItemAttr: string
 ): ChainedCommands {
-  const onlyCurrentScopeNodes: boolean = hasOnlyCurrentScopeNodes(
+  const onlyCurrentGroupNodes: boolean = hasOnlyCurrentGroupNodes(
     editor,
-    existingScopeNodes,
+    existingGroupNodes,
     radioItemAttr
   ); // Node to be removed are the only nodes in the report
 
-  if (onlyCurrentScopeNodes) {
+  if (onlyCurrentGroupNodes) {
     // Remove entire section since the nodes to be removed are the only nodes in the report
     return removeSection(editor, chain, firstNode, lastNode, id);
   }
@@ -380,51 +408,58 @@ function removeSection(
   });
 }
 
-function replaceNodeWithNormalNodeInScope(
+function replaceNodeWithNormalNodeInGroup(
   editor: Editor,
   chain: () => ChainedCommands,
   html: string | null,
-  existingScopeNodes: NodePos[],
+  existingNodes: NodePos[],
   id: string,
-  radioItemAttr: string
+  groupId: string,
+  radioItemAttr: string,
+  groupIdAttr: string
 ): ChainedCommands {
-  const existingNodes: NodePos[] = existingScopeNodes.filter(
+  const existingScopeNodes: NodePos[] = existingNodes.filter(
     (node: NodePos): boolean =>
       node.attributes[
         generateEditorDataAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem)
       ] === radioItemAttr
   );
 
-  if (!existingNodes?.length) {
+  const existingGroupNodes: NodePos[] = existingScopeNodes.filter(
+    (node: NodePos): boolean =>
+      node.attributes[generateEditorDataAttributeName(groupIdAttr)] === groupId
+  );
+
+  if (!existingGroupNodes?.length) {
     // first node in scope
-    return insertFirstNodeAsLastItemInScope(chain, html, existingScopeNodes);
+    return insertFirstNodeAsLastItemInScope(chain, html, existingNodes);
   }
 
-  const firstNode: NodePos = existingNodes[0];
+  const firstNode: NodePos = existingGroupNodes[0];
 
-  if (existingNodes.length === 1) {
+  if (existingGroupNodes.length === 1) {
     // Remove the only abnormal node and replace it with normal node
-    return replaceNodeWhenScopeHasOneNode(
+    return replaceNodeWhenGroupHasOneNode(
       editor,
       chain,
       html,
       firstNode,
-      existingNodes,
+      existingGroupNodes,
       id,
       radioItemAttr
     );
   }
 
-  const lastNode: NodePos = existingNodes[existingNodes.length - 1];
+  const lastNode: NodePos = existingGroupNodes[existingGroupNodes.length - 1];
 
   // Remove all the abnormal node and replace it with normal node
   if (isNil(html)) {
-    return removeNodesInScope(
+    return removeNodesInGroup(
       editor,
       chain,
       firstNode,
       lastNode,
-      existingScopeNodes,
+      existingGroupNodes,
       id,
       radioItemAttr
     );
@@ -439,9 +474,9 @@ function replaceNodeWithNormalNodeInScope(
     .insertContentAt(firstNode.pos - 1, html);
 }
 
-function hasOnlyCurrentScopeNodes(
+function hasOnlyCurrentGroupNodes(
   editor: Editor,
-  existingScopeNodes: NodePos[],
+  existingGroupNodes: NodePos[],
   radioItemAttr: string
 ): boolean {
   const allNodes: NodePos[] = editor.$doc.querySelectorAll(
@@ -453,13 +488,19 @@ function hasOnlyCurrentScopeNodes(
     }
   );
 
-  return allNodes.length === existingScopeNodes.length;
+  return allNodes.length === existingGroupNodes.length;
 }
 
-function tryGetNormalNode(existingScopeNodes: NodePos[]): NodePos | null {
+function tryGetNormalNode(
+  existingScopeNodes: NodePos[],
+  groupIdAttr: string,
+  groupId: string
+): NodePos | null {
   const normal: NodePos | null =
     existingScopeNodes.find(
       (node: NodePos): boolean =>
+        node.attributes[generateEditorDataAttributeName(groupIdAttr)] ===
+          groupId &&
         node.attributes[
           generateEditorDataAttributeName(
             EDITOR_REPORT_ATTRIBUTE_NAMES.IsNormalFinding
