@@ -27,8 +27,10 @@ export function replaceRadioVariableValueInNextTableCellForNoInEditor(
     return false;
   }
 
-  if (options.variableValue.toLocaleLowerCase() === 'no') {
-    // In table if current cell variable is set to "No" then set next cell variable to "-"
+  const noValues: string[] = ['no', 'free'];
+
+  if (noValues.includes(options.variableValue.toLocaleLowerCase())) {
+    // In table if current cell variable is set to "noValues" then set next cell variable to "-"
     return replaceVariableValueInNextTableCellForNo(chain, view, options);
   }
 
@@ -101,25 +103,41 @@ function replaceVariableValueInNextTableCellForNo(
     return false;
   }
 
-  const nextCellVariableElement: HTMLElement | null =
-    nextCellElement.querySelector('.radio-mention[data-type="mention"]');
+  const nextCellVariableElements: NodeListOf<HTMLElement> =
+    nextCellElement.querySelectorAll<HTMLElement>(
+      '.radio-mention[data-type="mention"]'
+    );
 
-  if (!nextCellVariableElement) {
+  if (!nextCellVariableElements?.length) {
     return false;
   }
 
-  const nextCellVariablePosition: number = view.posAtDOM(
-    nextCellVariableElement,
-    0
-  );
+  return replaceVariableValuesInNextCell(
+    chain,
+    view,
+    nextCellVariableElements
+  ).run();
+}
 
-  return chain()
-    .deleteRange({
-      from: nextCellVariablePosition,
-      to: nextCellVariablePosition + 1,
-    })
-    .insertContentAt(nextCellVariablePosition, '-')
-    .run();
+function replaceVariableValuesInNextCell(
+  chain: () => ChainedCommands,
+  view: EditorView,
+  elements: NodeListOf<HTMLElement>
+): ChainedCommands {
+  let command: ChainedCommands = chain();
+
+  for (let i: number = 0; i < elements.length; i++) {
+    const position: number = view.posAtDOM(elements[i], 0);
+
+    command = command
+      .deleteRange({
+        from: position,
+        to: position + 1,
+      })
+      .insertContentAt(position, '-');
+  }
+
+  return command;
 }
 
 function insertVariableValueForFinding(

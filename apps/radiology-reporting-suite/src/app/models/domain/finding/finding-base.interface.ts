@@ -7,4 +7,5 @@ export interface FindingBase {
   readonly description: EditorContent;
   readonly impression: EditorContent | null;
   readonly recommendation: EditorContent | null;
+  readonly info: EditorContent | null;
 }

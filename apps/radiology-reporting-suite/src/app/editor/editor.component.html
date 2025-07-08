@@ -5,7 +5,9 @@
       !!hostControlDirective?.control?.invalid &&
       !!hostControlDirective?.control?.dirty,
   }">
-  <radio-editor-toolbar [editor]="editor"></radio-editor-toolbar>
+  @if (!hideToolbar()) {
+    <radio-editor-toolbar [editor]="editor"></radio-editor-toolbar>
+  }
 
   <tiptap-editor class="grow h-full min-h-0" [editor]="editor"></tiptap-editor>
 </div>

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import {
+  booleanAttribute,
   Component,
   DestroyRef,
   effect,
@@ -8,6 +9,7 @@ import {
   Injector,
   input,
   InputSignal,
+  InputSignalWithTransform,
   OnInit,
   output,
   OutputEmitterRef,
@@ -82,9 +84,28 @@ export class EditorComponent implements OnInit {
 
   readonly maxHeight: InputSignal<string | undefined> = input<string>();
 
+  readonly hideToolbar: InputSignalWithTransform<boolean, unknown> = input<
+    boolean,
+    unknown
+  >(false, {
+    transform: booleanAttribute,
+  });
+
+  readonly readonly: InputSignalWithTransform<boolean, unknown> = input<
+    boolean,
+    unknown
+  >(false, {
+    transform: booleanAttribute,
+  });
+
   readonly suggestions: InputSignal<EditorMentionVariableItem[]> = input<
     EditorMentionVariableItem[]
   >([]);
+
+  readonly suggestionsEnabled: InputSignalWithTransform<boolean, unknown> =
+    input<boolean, unknown>(false, {
+      transform: booleanAttribute,
+    });
 
   readonly variableClick: OutputEmitterRef<EditorMentionVariableClickEventData> =
     output<EditorMentionVariableClickEventData>();
@@ -263,6 +284,24 @@ export class EditorComponent implements OnInit {
   constructor() {
     effect((): void => {
       this._maxHeight = this.maxHeight();
+    });
+
+    effect((): void => {
+      const suggestionsEnabled: boolean = this.suggestionsEnabled();
+
+      if (!suggestionsEnabled) {
+        this.editor.chain().disableSuggestions().run();
+      }
+    });
+
+    effect(() => {
+      const readonly: boolean = this.readonly();
+
+      if (!readonly) {
+        return;
+      }
+
+      this.editor.setEditable(!readonly);
     });
   }
 

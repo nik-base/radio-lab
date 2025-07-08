@@ -7,6 +7,7 @@ import { Observable, lastValueFrom } from 'rxjs';
 import tippy, { GetReferenceClientRect, Instance, Props } from 'tippy.js';
 
 import { EditorMentionVariableSuggestionsComponent } from '../components/editor-mention-variable-suggestions/editor-mention-variable-suggestions.component';
+import { EditorMentionVariable } from '../extensions/editor-mention-variable.extension';
 import {
   EditorMentionVariableItem,
   EditorMentionVariableNodeAttributes,
@@ -50,6 +51,13 @@ export const generateEditorMentionVariableConfig = (
       }):
         | EditorMentionVariableItem[]
         | Promise<EditorMentionVariableItem[]> => {
+        const storage: { suggestionsEnabled: boolean } | undefined =
+          getEditorSuggestionsEnabledFromStorage(editor);
+
+        if (storage && !storage.suggestionsEnabled) {
+          return [];
+        }
+
         const obs$: Observable<EditorMentionVariableItem[]> = suggestions$(
           query,
           editor
@@ -72,6 +80,13 @@ export const generateEditorMentionVariableConfig = (
               EditorMentionVariableNodeAttributes
             >
           ) => {
+            const storage: { suggestionsEnabled: boolean } | undefined =
+              getEditorSuggestionsEnabledFromStorage(props.editor);
+
+            if (storage && !storage.suggestionsEnabled) {
+              return;
+            }
+
             renderer = new AngularRenderer(
               EditorMentionVariableSuggestionsComponent,
               injector,
@@ -100,6 +115,13 @@ export const generateEditorMentionVariableConfig = (
               EditorMentionVariableNodeAttributes
             >
           ) => {
+            const storage: { suggestionsEnabled: boolean } | undefined =
+              getEditorSuggestionsEnabledFromStorage(props.editor);
+
+            if (storage && !storage.suggestionsEnabled) {
+              return;
+            }
+
             renderer.updateProps({ props });
 
             if (popup?.length) {
@@ -124,3 +146,11 @@ export const generateEditorMentionVariableConfig = (
     },
   };
 };
+
+function getEditorSuggestionsEnabledFromStorage(
+  editor: Editor
+): { suggestionsEnabled: boolean } | undefined {
+  return editor.storage[EditorMentionVariable.name] as
+    | { suggestionsEnabled: boolean }
+    | undefined;
+}

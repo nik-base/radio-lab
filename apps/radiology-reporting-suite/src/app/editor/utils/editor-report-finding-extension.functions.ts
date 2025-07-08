@@ -36,6 +36,7 @@ export function insertRadioFindingInEditor(
   if (existingScopeSection) {
     // Scope section already exists
     return insertFindingInExistingScope(
+      editor,
       chain,
       findingData,
       existingScopeSection
@@ -126,43 +127,73 @@ function insertFirstFindingInReport(
 }
 
 function insertFindingInExistingScope(
+  editor: Editor,
   chain: () => ChainedCommands,
   findingData: EditorFindingData,
   existingScopeSection: NodePos
+): ChainedCommands {
+  const existingGroupSection: NodePos | null = editor.$doc.querySelector(
+    EDITOR_REPORT_EXTENSION_NODE_NAME,
+    {
+      [generateEditorDataAttributeName(EDITOR_REPORT_ATTRIBUTE_NAMES.GroupId)]:
+        findingData.finding.groupId,
+    }
+  );
+
+  if (existingGroupSection) {
+    return insertFindingInExistingGroup(
+      chain,
+      findingData,
+      existingGroupSection
+    );
+  }
+
+  const html: string = generateFirstFindingInGroupHTML(findingData);
+
+  const lastChild: NodePos =
+    existingScopeSection.lastChild ?? existingScopeSection;
+
+  return chain().insertContentAt(lastChild.pos + lastChild.size - 1, html);
+}
+
+function insertFindingInExistingGroup(
+  chain: () => ChainedCommands,
+  findingData: EditorFindingData,
+  existingGroupSection: NodePos
 ): ChainedCommands {
   const html: string = generateFindingHTML(findingData.finding);
 
   if (findingData.finding.isNormal) {
     // If normal finding than remove existing findings and insert only normal finding
-    return replaceWithNormalFindingInScope(chain, html, existingScopeSection);
+    return replaceWithNormalFindingInGroup(chain, html, existingGroupSection);
   }
 
   const normalFinding: NodePos | null =
-    tryGetNormalFinding(existingScopeSection);
+    tryGetNormalFinding(existingGroupSection);
 
   if (normalFinding) {
-    // If not normal finding and existing scope has any normal finding. Remove normal finding and insert the new finding
+    // If not normal finding and existing group has any normal finding. Remove normal finding and insert the new finding
     return replaceNormalFindingWithAbNormalFinding(chain, html, normalFinding);
   }
 
-  // If finding is not normal and there are no existing normal findings in scope
-  return appendFindingInScope(chain, html, existingScopeSection);
+  // If finding is not normal and there are no existing normal findings in group
+  return appendFindingInGroup(chain, html, existingGroupSection);
 }
 
-function appendFindingInScope(
+function appendFindingInGroup(
   chain: () => ChainedCommands,
   html: string,
-  existingScopeSection: NodePos
+  existingGroupSection: NodePos
 ): ChainedCommands {
-  const lastChild: NodePos | null = existingScopeSection.lastChild;
+  const lastChild: NodePos | null = existingGroupSection.lastChild;
 
   if (lastChild) {
-    // Add finding as the last item in the scope section
+    // Add finding as the last item in the group section
     return chain().insertContentAt(lastChild.pos + lastChild.size - 1, html);
   }
 
-  // Add finding as the first item in the scope section
-  return chain().insertContentAt(existingScopeSection.pos, html);
+  // Add finding as the first item in the group section
+  return chain().insertContentAt(existingGroupSection.pos, html);
 }
 
 function replaceNormalFindingWithAbNormalFinding(
@@ -178,12 +209,12 @@ function replaceNormalFindingWithAbNormalFinding(
     .insertContentAt(normalFinding.pos - 1, html);
 }
 
-function replaceWithNormalFindingInScope(
+function replaceWithNormalFindingInGroup(
   chain: () => ChainedCommands,
   html: string,
-  existingScopeSection: NodePos
+  existingGroupSection: NodePos
 ): ChainedCommands {
-  const existingFindings: NodePos[] = existingScopeSection.querySelectorAll(
+  const existingFindings: NodePos[] = existingGroupSection.querySelectorAll(
     EDITOR_REPORT_EXTENSION_NODE_NAME,
     {
       [generateEditorDataAttributeName(
@@ -193,8 +224,8 @@ function replaceWithNormalFindingInScope(
   );
 
   if (!existingFindings?.length) {
-    // first finding in scope
-    return appendFindingInScope(chain, html, existingScopeSection);
+    // first finding in group
+    return appendFindingInGroup(chain, html, existingGroupSection);
   }
 
   const firstFinding: NodePos = existingFindings[0];
@@ -220,8 +251,8 @@ function replaceWithNormalFindingInScope(
     .insertContentAt(firstFinding.pos - 1, html);
 }
 
-function tryGetNormalFinding(existingScopeSection: NodePos): NodePos | null {
-  const normalFinding: NodePos | null = existingScopeSection.querySelector(
+function tryGetNormalFinding(existingGroupSection: NodePos): NodePos | null {
+  const normalFinding: NodePos | null = existingGroupSection.querySelector(
     EDITOR_REPORT_EXTENSION_NODE_NAME,
     {
       [generateEditorDataAttributeName(
@@ -272,6 +303,26 @@ function generateFirstFindingInScopeHTML(
   return (
     `<div ${radioItem} ${scopeIndex} ${dataId}>` +
     `<p><b>${escapeAndSanitizeHTML(findingData.scope.name)}</b></p>` +
+    generateFirstFindingInGroupHTML(findingData) +
+    `</div>`
+  );
+}
+
+function generateFirstFindingInGroupHTML(
+  findingData: EditorFindingData
+): string {
+  const radioItem: string = generateEditorDataAttribute(
+    EDITOR_REPORT_ATTRIBUTE_NAMES.RadioItem,
+    EDITOR_REPORT_ATTRIBUTE_VALUES.Group
+  );
+
+  const dataId: string = generateEditorDataAttribute(
+    EDITOR_REPORT_ATTRIBUTE_NAMES.GroupId,
+    findingData.finding.groupId
+  );
+
+  return (
+    `<div ${radioItem} ${dataId}>` +
     generateFindingHTML(findingData.finding) +
     `</div>`
   );

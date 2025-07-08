@@ -39,7 +39,7 @@ export class EditorVariableReplaceService {
   }
 
   replaceInJson(
-    json: string | null | undefined,
+    json: string | null | undefined | JSONContent,
     idsMap: Map<string, string>
   ): string | undefined {
     if (isNil(json)) {
@@ -47,7 +47,9 @@ export class EditorVariableReplaceService {
     }
 
     const jsonContent: JSONContent =
-      this.jsonService.parseSafe<JSONContent>(json);
+      typeof json === 'string'
+        ? this.jsonService.parseSafe<JSONContent>(json)
+        : json;
 
     this.tryReplaceVariableIds(jsonContent, idsMap);
 

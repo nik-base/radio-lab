@@ -253,6 +253,13 @@ export class ReportApiService extends ReportBaseService {
     throw new Error('Method not implemented.');
   }
 
+  override cloneGroup$(
+    groupId: string,
+    scopeId: string
+  ): Observable<FindingGroupDto> {
+    throw new Error('Method not implemented.');
+  }
+
   override cloneFinding$(
     findingId: string,
     groupId: string,

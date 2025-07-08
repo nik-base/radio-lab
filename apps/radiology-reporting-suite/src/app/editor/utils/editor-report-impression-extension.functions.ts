@@ -27,6 +27,7 @@ export function insertRadioImpressionInEditor(
     EDITOR_REPORT_ID.RadioReportImpressions,
     EDITOR_REPORT_ATTRIBUTE_VALUES.Impression,
     EDITOR_REPORT_ATTRIBUTE_NAMES.ImpressionScopeIndex,
+    EDITOR_REPORT_ATTRIBUTE_NAMES.ImpressionGroupId,
     generateImpressionHTML,
     generateFirstImpressionHTML
   );
@@ -79,8 +80,13 @@ function generateImpressionHTML(
     findingData.finding.id
   );
 
+  const groupId: string = generateEditorDataAttribute(
+    EDITOR_REPORT_ATTRIBUTE_NAMES.ImpressionGroupId,
+    findingData.finding.groupId
+  );
+
   return (
-    `<li ${radioItem} ${scopeIndex} ${isNormal} ${dataId}>` +
+    `<li ${radioItem} ${scopeIndex} ${isNormal} ${groupId} ${dataId}>` +
     sanitizeHTML(impressionHTML) +
     `</li>`
   );

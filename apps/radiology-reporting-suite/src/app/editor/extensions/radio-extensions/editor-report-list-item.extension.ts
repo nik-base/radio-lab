@@ -31,6 +31,12 @@ export const EditorReportListItem: Node<ListItemOptions> = ListItem.extend({
         EDITOR_REPORT_ATTRIBUTE_NAMES.RecommendationId
       )]: {},
       [generateEditorDataAttributeName(
+        EDITOR_REPORT_ATTRIBUTE_NAMES.ImpressionGroupId
+      )]: {},
+      [generateEditorDataAttributeName(
+        EDITOR_REPORT_ATTRIBUTE_NAMES.RecommendationGroupId
+      )]: {},
+      [generateEditorDataAttributeName(
         EDITOR_REPORT_ATTRIBUTE_NAMES.IsNormalFinding
       )]: {},
     };

@@ -17,6 +17,7 @@
     [selectedGroup]="groupStore$.current()"
     (edit)="onEdit($event)"
     (delete)="onDelete($event)"
+    (clone)="onClone($event)"
     (reorder)="onReorder($event)"
     (changed)="onChange($event)">
   </radio-group-manager-list>
