@@ -4,5 +4,10 @@
     .radio-icon-only-file-upload .p-button-label {
       display: none; /* Hide the label text */
     }
+
+    .radio-icon-only-file-upload button {
+      padding-top: 0.6rem;
+      padding-bottom: 0.6rem;
+    }
   }
 }

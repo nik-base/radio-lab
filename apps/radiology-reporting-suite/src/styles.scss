@@ -28,6 +28,10 @@ html > body {
   min-width: 0;
 }
 
+.radio-button-sm-padding {
+  padding: var(--p-button-sm-padding-y) var(--p-button-sm-padding-x);
+}
+
 .flex-basis-auto {
   flex-basis: auto;
 }

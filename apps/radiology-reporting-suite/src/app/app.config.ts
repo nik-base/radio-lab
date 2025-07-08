@@ -13,7 +13,7 @@ import { appRoutes } from './app.routes';
 import { ReportDBModule } from './db/report-db.module';
 import { ReportDBService } from './db/report-db.service';
 import { ReportBaseService } from './services/report-base.service';
-import { AURA_LIGHT_BLUE } from './themes/aura-light-blue.theme';
+import { THEME_AURA_BLUE } from './themes/aura-blue.theme';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -22,7 +22,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {
-        preset: AURA_LIGHT_BLUE,
+        preset: THEME_AURA_BLUE,
         options: {
           darkModeSelector: 'none',
           cssLayer: {
