@@ -49,7 +49,7 @@ jobs:
           free -h
 
       - name: Install Dependencies
-        run: corepack use pnpm@`pnpm -v` && pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - run: npx playwright install --with-deps
       - uses: nrwl/nx-set-shas@v4
