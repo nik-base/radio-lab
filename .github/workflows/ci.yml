@@ -49,8 +49,9 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      - run: npx playwright install --with-deps
-      - uses: nrwl/nx-set-shas@v4
+      # enable after writing e2e tests
+      # - run: npx playwright install --with-deps
+      # - uses: nrwl/nx-set-shas@v4
 
       # Prepend any command with "nx-cloud record --" to record its logs to Nx Cloud
       # - run: npx nx-cloud record -- echo Hello World
