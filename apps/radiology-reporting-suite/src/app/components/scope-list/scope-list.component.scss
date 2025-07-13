@@ -1,4 +1,8 @@
 :host {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
   /* stylelint-disable-next-line selector-pseudo-element-no-unknown */
   ::ng-deep {
     .p-listbox {

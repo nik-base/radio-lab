@@ -4,6 +4,7 @@
       icon="pi pi-plus"
       pTooltip="Create Classifier"
       tooltipPosition="bottom"
+      styleClass="radio-button-sm-padding"
       [outlined]="true"
       [disabled]="classifierStore$.isFetching()"
       (onClick)="onCreate()" />
@@ -22,4 +23,4 @@
   </radio-classifier-manager-list>
 </radio-sortable-list-manager-layout>
 
-<p-confirmPopup />
+<p-confirmpopup />

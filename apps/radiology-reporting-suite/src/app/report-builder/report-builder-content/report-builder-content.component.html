@@ -18,29 +18,31 @@
       </ng-template>
 
       <ng-template #panel>
-        <p-panel
-          class="flex w-full h-full p-2"
-          styleClass="w-full h-full overflow-auto">
-          <ng-template #header>
-            <div class="flex items-center gap-2 font-semibold text-gray-500">
-              Findings
-            </div>
-          </ng-template>
+        <div class="flex flex-col w-full h-full p-2">
+          <p-panel
+            class="flex flex-col w-full h-full p-2"
+            styleClass="w-full h-full overflow-auto">
+            <ng-template #header>
+              <div class="flex items-center gap-2 font-semibold text-gray-500">
+                Findings
+              </div>
+            </ng-template>
 
-          @if (selectedScope()) {
-            <radio-finding-grouped-list
-              class="w-full"
-              [isLoading]="_isLoading"
-              [findingGroups]="groupedFindings()"
-              (selection)="onFindingSelection($event)">
-            </radio-finding-grouped-list>
-          } @else {
-            <div class="flex flex-col gap-2 w-full items-center p-8">
-              <span class="material-symbols-outlined">touch_app</span>
-              <span>Please select a scope to see findings</span>
-            </div>
-          }
-        </p-panel>
+            @if (selectedScope()) {
+              <radio-finding-grouped-list
+                class="w-full"
+                [isLoading]="_isLoading"
+                [findingGroups]="groupedFindings()"
+                (selection)="onFindingSelection($event)">
+              </radio-finding-grouped-list>
+            } @else {
+              <div class="flex flex-col gap-2 w-full items-center p-8">
+                <span class="material-symbols-outlined">touch_app</span>
+                <span>Please select a scope to see findings</span>
+              </div>
+            }
+          </p-panel>
+        </div>
       </ng-template>
     </p-splitter>
   </ng-template>
