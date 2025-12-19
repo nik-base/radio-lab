@@ -16,7 +16,7 @@
             [suggestions]="filteredGroups"
             (completeMethod)="filterGroups($event)"
             (onSelect)="onGroupSelect($event)"
-            field="name" />
+            optionLabel="name" />
 
           <label for="group">Group</label>
         </p-floatlabel>
@@ -39,7 +39,7 @@
             appendTo="body"
             [suggestions]="filteredClassifiers"
             (completeMethod)="filterClassifiers($event)"
-            field="name" />
+            optionLabel="name" />
 
           <label for="group">Classifier</label>
         </p-floatlabel>

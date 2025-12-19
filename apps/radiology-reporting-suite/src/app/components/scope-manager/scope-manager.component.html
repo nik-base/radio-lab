@@ -4,6 +4,7 @@
       icon="pi pi-plus"
       pTooltip="Create Scope"
       tooltipPosition="bottom"
+      styleClass="radio-button-sm-padding"
       [outlined]="true"
       [disabled]="scopeStore$.isFetching()"
       (onClick)="onCreate()" />
@@ -23,4 +24,4 @@
   </radio-scope-manager-list>
 </radio-sortable-list-manager-layout>
 
-<p-confirmPopup />
+<p-confirmpopup />
