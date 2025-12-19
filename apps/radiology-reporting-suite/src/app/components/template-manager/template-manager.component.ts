@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   Component,
   inject,
@@ -42,9 +41,7 @@ import { TemplateManagerListComponent } from '../template-manager-list/template-
 
 @Component({
   selector: 'radio-template-manager',
-  standalone: true,
   imports: [
-    CommonModule,
     TooltipModule,
     ButtonModule,
     ConfirmPopupModule,

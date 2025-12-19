@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   Component,
   computed,
@@ -26,15 +25,7 @@ import { ScopeData } from '@app/models/domain';
 
 @Component({
   selector: 'radio-scope-list',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    ListboxModule,
-    TooltipModule,
-    ButtonModule,
-    Skeleton,
-  ],
+  imports: [FormsModule, ListboxModule, TooltipModule, ButtonModule, Skeleton],
   templateUrl: './scope-list.component.html',
   styleUrls: ['./scope-list.component.scss'],
 })

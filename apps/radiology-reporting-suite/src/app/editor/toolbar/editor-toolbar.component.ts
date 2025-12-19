@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, computed, input, InputSignal, Signal } from '@angular/core';
 import { Editor } from '@tiptap/core';
 import { DividerModule } from 'primeng/divider';
@@ -23,9 +22,7 @@ import { EditorSelectorFontFamilyComponent } from './selector-font-family/editor
 
 @Component({
   selector: 'radio-editor-toolbar',
-  standalone: true,
   imports: [
-    CommonModule,
     ToolbarModule,
     DividerModule,
     EditorButtonBoldComponent,

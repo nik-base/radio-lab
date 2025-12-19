@@ -1,18 +1,21 @@
 import {
   Directive,
-  HostBinding,
-  HostListener,
   InputSignal,
   OutputEmitterRef,
   input,
   output,
 } from '@angular/core';
+import { Booleanish } from 'primeng/ts-helpers';
 
 import { EditorToolbarItemContext } from '../models/editor-toolbar-item-context.interface';
 
 @Directive({
   selector: '[radioEditorItalic]',
-  standalone: true,
+  host: {
+    '[attr.disabled]': 'disabled',
+    '[attr.isactive]': 'isActive',
+    '(click)': 'onClick()',
+  },
 })
 export class EditorItalicDirective {
   readonly context: InputSignal<EditorToolbarItemContext | undefined> =
@@ -21,8 +24,7 @@ export class EditorItalicDirective {
   readonly clicked: OutputEmitterRef<EditorToolbarItemContext | undefined> =
     output<EditorToolbarItemContext | undefined>();
 
-  @HostBinding('attr.disabled')
-  get disabled(): boolean {
+  get disabled(): Booleanish {
     const context: EditorToolbarItemContext | undefined = this.context();
 
     if (!context) {
@@ -39,7 +41,6 @@ export class EditorItalicDirective {
     return disabled;
   }
 
-  @HostBinding('attr.isactive')
   get isActive(): boolean {
     const context: EditorToolbarItemContext | undefined = this.context();
 
@@ -52,7 +53,7 @@ export class EditorItalicDirective {
     return isActive;
   }
 
-  @HostListener('click') onClick(): void {
+  protected onClick(): void {
     this.run();
 
     this.clicked.emit(this.context());

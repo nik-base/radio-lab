@@ -6,7 +6,6 @@ import { VariableValue } from '@app/models/domain';
 
 @Component({
   selector: 'radio-variable-values-viewer',
-  standalone: true,
   imports: [TableModule, SkeletonModule],
   templateUrl: './variable-values-viewer.component.html',
   styleUrls: ['./variable-values-viewer.component.scss'],

@@ -4,7 +4,6 @@ import {
   Component,
   DestroyRef,
   effect,
-  HostBinding,
   inject,
   Injector,
   input,
@@ -68,7 +67,6 @@ import { generateEditorMentionVariableConfig } from './utils/editor-extension.fu
 
 @Component({
   selector: 'radio-editor',
-  standalone: true,
   imports: [
     CommonModule,
     ContextMenu,
@@ -78,6 +76,9 @@ import { generateEditorMentionVariableConfig } from './utils/editor-extension.fu
   hostDirectives: [HostControlDirective],
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.scss'],
+  host: {
+    '[style.--editor-max-height]': 'maxHeight()',
+  },
 })
 export class EditorComponent implements OnInit {
   private readonly injector: Injector = inject(Injector);
@@ -111,9 +112,6 @@ export class EditorComponent implements OnInit {
     output<EditorMentionVariableClickEventData>();
 
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
-
-  @HostBinding('style.--editor-max-height')
-  private _maxHeight: string | undefined;
 
   protected readonly tableContextMenu: Signal<ContextMenu> =
     viewChild.required<ContextMenu>('tableContextMenu');
@@ -282,10 +280,6 @@ export class EditorComponent implements OnInit {
   private hostControlChangesSubscription: Subscription | undefined;
 
   constructor() {
-    effect((): void => {
-      this._maxHeight = this.maxHeight();
-    });
-
     effect((): void => {
       const suggestionsEnabled: boolean = this.suggestionsEnabled();
 

@@ -29,7 +29,6 @@ import { ReportBuilderEditorComponent } from '../report-builder-editor/report-bu
 
 @Component({
   selector: 'radio-report-builder-content',
-  standalone: true,
   imports: [
     ScopeListComponent,
     FindingGroupedListComponent,

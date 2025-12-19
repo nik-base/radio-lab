@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, inject, Signal, viewChild } from '@angular/core';
 import { Popover, PopoverModule } from 'primeng/popover';
 
@@ -10,9 +9,7 @@ import { EditorTableGridSelectorComponent } from '../table-grid-selector/editor-
 
 @Component({
   selector: 'radio-editor-button-table',
-  standalone: true,
   imports: [
-    CommonModule,
     EditorButtonBaseComponent,
     EditorTableGridSelectorComponent,
     PopoverModule,

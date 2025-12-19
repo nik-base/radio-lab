@@ -20,7 +20,6 @@ import { TableCRUDComponent } from '../table-crud/table-crud.component';
 
 @Component({
   selector: 'radio-variable-value-manager',
-  standalone: true,
   imports: [TableCRUDComponent],
   templateUrl: './variable-value-manager.component.html',
 })

@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { SelectModule } from 'primeng/select';
@@ -13,8 +12,7 @@ import {
 
 @Component({
   selector: 'radio-editor-selector-font-family',
-  standalone: true,
-  imports: [CommonModule, FormsModule, SelectModule, TooltipModule],
+  imports: [FormsModule, SelectModule, TooltipModule],
   hostDirectives: [
     {
       directive: EditorFontFamilyDirective,

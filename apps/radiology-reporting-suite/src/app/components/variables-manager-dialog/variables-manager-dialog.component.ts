@@ -19,7 +19,6 @@ import { VariablesManagerComponent } from '../variables-manager/variables-manage
 
 @Component({
   selector: 'radio-variables-manager-dialog',
-  standalone: true,
   imports: [ButtonModule, DialogLayoutComponent, VariablesManagerComponent],
   templateUrl: './variables-manager-dialog.component.html',
 })

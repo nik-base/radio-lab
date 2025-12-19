@@ -12,7 +12,6 @@ import { EditorToolbarItemContext } from '../models/editor-toolbar-item-context.
 
 @Directive({
   selector: '[radioEditorFontFamily]',
-  standalone: true,
 })
 export class EditorFontFamilyDirective {
   readonly context: InputSignal<

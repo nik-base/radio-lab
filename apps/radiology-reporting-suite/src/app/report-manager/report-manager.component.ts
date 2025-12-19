@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -26,9 +25,7 @@ import { GroupManagerComponent } from '../components/group-manager/group-manager
 
 @Component({
   selector: 'radio-report-manager',
-  standalone: true,
   imports: [
-    CommonModule,
     TemplateManagerComponent,
     ScopeManagerComponent,
     FindingManagerComponent,

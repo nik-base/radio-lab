@@ -7,7 +7,6 @@ import { DialogTemplateRendererData } from '@app/models/ui';
 
 @Component({
   selector: 'radio-dialog-template-renderer',
-  standalone: true,
   imports: [CommonModule],
   template: `
     @if (template) {

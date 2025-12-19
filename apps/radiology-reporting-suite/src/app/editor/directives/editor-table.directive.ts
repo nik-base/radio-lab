@@ -11,7 +11,6 @@ import { EditorToolbarItemContext } from '../models/editor-toolbar-item-context.
 
 @Directive({
   selector: '[radioEditorTable]',
-  standalone: true,
 })
 export class EditorTableDirective {
   readonly context: InputSignal<EditorToolbarItemContext | undefined> =

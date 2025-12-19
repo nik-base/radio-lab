@@ -30,7 +30,6 @@ import { ReportBuilderEditorStore } from '@app/store/report-builder/report-build
 
 @Component({
   selector: 'radio-report-builder-editor',
-  standalone: true,
   imports: [
     ReactiveFormsModule,
     EditorComponent,

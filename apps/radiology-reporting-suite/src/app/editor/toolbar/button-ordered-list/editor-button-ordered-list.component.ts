@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 
 import { EditorOrderedListDirective } from '@app/editor/directives/editor-ordered-list.directive';
@@ -7,8 +6,7 @@ import { EditorButtonBaseComponent } from '../button-base/editor-button-base.com
 
 @Component({
   selector: 'radio-editor-button-ordered-list',
-  standalone: true,
-  imports: [CommonModule, EditorButtonBaseComponent],
+  imports: [EditorButtonBaseComponent],
   hostDirectives: [
     {
       directive: EditorOrderedListDirective,

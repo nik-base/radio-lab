@@ -13,7 +13,6 @@ import { EditorTableGridOutput } from '@app/editor/models';
 
 @Component({
   selector: 'radio-editor-table-grid-selector',
-  standalone: true,
   imports: [AutofocusDirective],
   templateUrl: './editor-table-grid-selector.component.html',
   styleUrls: ['./editor-table-grid-selector.component.scss'],

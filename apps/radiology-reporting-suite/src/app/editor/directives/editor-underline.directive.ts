@@ -1,7 +1,5 @@
 import {
   Directive,
-  HostBinding,
-  HostListener,
   InputSignal,
   OutputEmitterRef,
   input,
@@ -12,7 +10,11 @@ import { EditorToolbarItemContext } from '../models/editor-toolbar-item-context.
 
 @Directive({
   selector: '[radioEditorUnderline]',
-  standalone: true,
+  host: {
+    '[attr.disabled]': 'disabled',
+    '[attr.isactive]': 'isActive',
+    '(click)': 'onClick()',
+  },
 })
 export class EditorUnderlineDirective {
   readonly context: InputSignal<EditorToolbarItemContext | undefined> =
@@ -21,7 +23,6 @@ export class EditorUnderlineDirective {
   readonly clicked: OutputEmitterRef<EditorToolbarItemContext | undefined> =
     output<EditorToolbarItemContext | undefined>();
 
-  @HostBinding('attr.disabled')
   get disabled(): boolean {
     const context: EditorToolbarItemContext | undefined = this.context();
 
@@ -39,7 +40,6 @@ export class EditorUnderlineDirective {
     return disabled;
   }
 
-  @HostBinding('attr.isactive')
   get isActive(): boolean {
     const context: EditorToolbarItemContext | undefined = this.context();
 
@@ -52,7 +52,7 @@ export class EditorUnderlineDirective {
     return isActive;
   }
 
-  @HostListener('click') onClick(): void {
+  protected onClick(): void {
     this.run();
 
     this.clicked.emit(this.context());

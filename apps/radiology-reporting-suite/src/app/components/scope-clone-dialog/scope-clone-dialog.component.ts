@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   AfterViewInit,
   Component,
@@ -30,9 +29,7 @@ import { TemplateManagerListComponent } from '../template-selector/template-sele
 
 @Component({
   selector: 'radio-scope-clone-dialog',
-  standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     InputTextModule,
     TooltipModule,

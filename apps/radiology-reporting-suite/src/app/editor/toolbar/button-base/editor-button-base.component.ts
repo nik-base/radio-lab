@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   booleanAttribute,
   Component,
@@ -13,8 +12,7 @@ import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'radio-editor-button-base',
-  standalone: true,
-  imports: [CommonModule, ButtonModule, TooltipModule],
+  imports: [ButtonModule, TooltipModule],
   templateUrl: './editor-button-base.component.html',
 })
 export class EditorButtonBaseComponent {

@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   Component,
   computed,
@@ -40,9 +39,7 @@ import { InfoDialogComponent } from '../info-dialog/info-dialog.component';
 
 @Component({
   selector: 'radio-finding-grouped-list',
-  standalone: true,
   imports: [
-    CommonModule,
     AccordionModule,
     TooltipModule,
     Button,

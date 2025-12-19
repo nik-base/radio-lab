@@ -4,9 +4,9 @@ env:
 
 on:
   push:
-    branches:
-      - master
+    branches: [master, main, feat/**]
   pull_request:
+    branches: [master, main]
 
 permissions:
   actions: read
@@ -34,7 +34,7 @@ jobs:
       # Cache pnpm store
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: 'pnpm'
           cache-dependency-path: '**/pnpm-lock.yaml'
 

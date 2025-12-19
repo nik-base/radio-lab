@@ -28,7 +28,6 @@ import { isNilOrEmpty, isNotNil } from '@app/utils/functions/common.functions';
 
 @Component({
   selector: 'radio-template-selector',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,

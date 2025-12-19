@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   AfterViewInit,
   Component,
@@ -39,9 +38,7 @@ import { DynamicTemplateRendererComponent } from '../dialog-template-renderer/di
 
 @Component({
   selector: 'radio-finding-clone-dialog',
-  standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     ButtonModule,
     Message,

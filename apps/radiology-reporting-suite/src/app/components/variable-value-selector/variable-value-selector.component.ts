@@ -26,7 +26,6 @@ import { isNilOrEmpty, isNotNil } from '@app/utils/functions/common.functions';
 
 @Component({
   selector: 'radio-variable-value-selector',
-  standalone: true,
   imports: [
     FormsModule,
     InputTextModule,

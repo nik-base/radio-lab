@@ -17,7 +17,6 @@ import { EditorToolbarItemContext } from '../models/editor-toolbar-item-context.
 
 @Directive({
   selector: '[radioEditorFontSize]',
-  standalone: true,
 })
 export class EditorFontSizeDirective {
   readonly context: InputSignal<

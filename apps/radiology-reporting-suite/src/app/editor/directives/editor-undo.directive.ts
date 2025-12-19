@@ -1,7 +1,5 @@
 import {
   Directive,
-  HostBinding,
-  HostListener,
   InputSignal,
   OutputEmitterRef,
   input,
@@ -12,7 +10,10 @@ import { EditorToolbarItemContext } from '../models/editor-toolbar-item-context.
 
 @Directive({
   selector: '[radioEditorUndo]',
-  standalone: true,
+  host: {
+    '[attr.disabled]': 'disabled',
+    '(click)': 'onClick()',
+  },
 })
 export class EditorUndoDirective {
   readonly context: InputSignal<EditorToolbarItemContext | undefined> =
@@ -21,7 +22,6 @@ export class EditorUndoDirective {
   readonly clicked: OutputEmitterRef<EditorToolbarItemContext | undefined> =
     output<EditorToolbarItemContext | undefined>();
 
-  @HostBinding('attr.disabled')
   get disabled(): boolean {
     const context: EditorToolbarItemContext | undefined = this.context();
 
@@ -39,7 +39,7 @@ export class EditorUndoDirective {
     return disabled;
   }
 
-  @HostListener('click') onClick(): void {
+  protected onClick(): void {
     this.run();
 
     this.clicked.emit(this.context());

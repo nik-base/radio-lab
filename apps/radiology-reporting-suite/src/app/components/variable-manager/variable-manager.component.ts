@@ -19,7 +19,6 @@ import { TableCRUDComponent } from '../table-crud/table-crud.component';
 
 @Component({
   selector: 'radio-variable-manager',
-  standalone: true,
   imports: [TableCRUDComponent],
   templateUrl: './variable-manager.component.html',
 })

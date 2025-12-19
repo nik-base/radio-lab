@@ -24,7 +24,6 @@ import { EditorMentionVariableService } from '@app/editor/services/editor-mentio
   selector: 'radio-editor-mention-suggestions',
   templateUrl: './editor-mention-variable-suggestions.component.html',
   imports: [ListboxModule, SkeletonModule],
-  standalone: true,
 })
 export class EditorMentionVariableSuggestionsComponent extends AngularNodeViewComponent {
   readonly listBox: Signal<Listbox> = viewChild.required<Listbox>('listBox');

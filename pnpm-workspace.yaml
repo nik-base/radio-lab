@@ -7,6 +7,7 @@ onlyBuiltDependencies:
   - '@swc/core'
   - '@tailwindcss/oxide'
   - esbuild
+  - less
   - lmdb
   - msgpackr-extract
   - nx

@@ -27,7 +27,6 @@ import { filter, tap } from 'rxjs';
 
 @Directive({
   selector: '[radioHostControl]',
-  standalone: true,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

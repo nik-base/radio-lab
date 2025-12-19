@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   AfterViewInit,
   Component,
@@ -32,9 +31,7 @@ import { DynamicTemplateRendererComponent } from '../dialog-template-renderer/di
 
 @Component({
   selector: 'radio-template-manager-dialog',
-  standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     InputTextModule,
     TooltipModule,

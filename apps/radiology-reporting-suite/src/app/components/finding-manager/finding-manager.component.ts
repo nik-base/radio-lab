@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   Component,
   effect,
@@ -45,9 +44,7 @@ import { SortableListManagerLayoutComponent } from '../sortable-list-manager-lay
 
 @Component({
   selector: 'radio-finding-manager',
-  standalone: true,
   imports: [
-    CommonModule,
     TooltipModule,
     ButtonModule,
     ConfirmPopupModule,

@@ -22,7 +22,6 @@ import { TableCRUDRow } from '@app/models/ui';
 
 @Component({
   selector: 'radio-table-crud',
-  standalone: true,
   imports: [
     FormsModule,
     TableModule,

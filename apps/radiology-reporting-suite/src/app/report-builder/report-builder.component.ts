@@ -27,7 +27,6 @@ import { ReportBuilderContentComponent } from './report-builder-content/report-b
 
 @Component({
   selector: 'radio-report-builder',
-  standalone: true,
   imports: [
     CommonModule,
     TemplateManagerListComponent,

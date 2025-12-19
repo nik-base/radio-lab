@@ -1,7 +1,5 @@
 import {
   Directive,
-  HostBinding,
-  HostListener,
   InputSignal,
   OutputEmitterRef,
   input,
@@ -12,7 +10,10 @@ import { EditorToolbarItemContext } from '../models/editor-toolbar-item-context.
 
 @Directive({
   selector: '[radioEditorBulletedList]',
-  standalone: true,
+  host: {
+    '[attr.isactive]': 'isActive',
+    '(click)': 'onClick()',
+  },
 })
 export class EditorBulletedListDirective {
   readonly context: InputSignal<EditorToolbarItemContext | undefined> =
@@ -21,7 +22,6 @@ export class EditorBulletedListDirective {
   readonly clicked: OutputEmitterRef<EditorToolbarItemContext | undefined> =
     output<EditorToolbarItemContext | undefined>();
 
-  @HostBinding('attr.isactive')
   get isActive(): boolean {
     const context: EditorToolbarItemContext | undefined = this.context();
 
@@ -34,7 +34,7 @@ export class EditorBulletedListDirective {
     return isActive;
   }
 
-  @HostListener('click') onClick(): void {
+  protected onClick(): void {
     this.run();
 
     this.clicked.emit(this.context());

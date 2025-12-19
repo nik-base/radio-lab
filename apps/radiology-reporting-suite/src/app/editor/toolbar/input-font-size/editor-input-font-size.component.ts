@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
@@ -16,8 +15,7 @@ import {
 
 @Component({
   selector: 'radio-editor-input-font-size',
-  standalone: true,
-  imports: [CommonModule, FormsModule, InputNumberModule, TooltipModule],
+  imports: [FormsModule, InputNumberModule, TooltipModule],
   hostDirectives: [
     {
       directive: EditorFontSizeDirective,

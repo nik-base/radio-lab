@@ -9,7 +9,6 @@ import { VariablesListComponent } from '../variables-list/variables-list.compone
 
 @Component({
   selector: 'radio-variables-manager',
-  standalone: true,
   imports: [
     VariableManagerComponent,
     VariableValueManagerComponent,

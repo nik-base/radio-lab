@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, inject, input, InputSignal } from '@angular/core';
 import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -26,9 +25,7 @@ import { SortableListManagerLayoutComponent } from '../sortable-list-manager-lay
 
 @Component({
   selector: 'radio-classifier-manager',
-  standalone: true,
   imports: [
-    CommonModule,
     TooltipModule,
     ButtonModule,
     ConfirmPopupModule,

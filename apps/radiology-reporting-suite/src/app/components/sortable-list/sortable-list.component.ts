@@ -22,7 +22,6 @@ import { SortableListMenuItem } from '@app/models/ui/sortable-list-menu-item.int
 
 @Component({
   selector: 'radio-sortable-list',
-  standalone: true,
   imports: [
     CommonModule,
     ListboxModule,

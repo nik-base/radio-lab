@@ -21,7 +21,6 @@ import { VariableStore } from '@app/store/report-manager/variable-store';
 
 @Component({
   selector: 'radio-variables-list',
-  standalone: true,
   imports: [
     ListboxModule,
     ButtonModule,

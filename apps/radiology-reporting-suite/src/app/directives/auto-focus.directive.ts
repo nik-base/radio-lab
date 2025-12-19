@@ -10,7 +10,6 @@ import {
 
 @Directive({
   selector: '[radioAutofocus]',
-  standalone: true,
 })
 export class AutofocusDirective {
   private readonly elementRef: ElementRef<HTMLElement> = inject(

@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   Component,
   computed,
@@ -26,9 +25,7 @@ import { SortableListComponent } from '../sortable-list/sortable-list.component'
 
 @Component({
   selector: 'radio-classifier-manager-list',
-  standalone: true,
   imports: [
-    CommonModule,
     OrderListModule,
     TooltipModule,
     ButtonModule,

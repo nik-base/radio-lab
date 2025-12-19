@@ -3,7 +3,6 @@ import { RouterModule } from '@angular/router';
 import { ToastModule } from 'primeng/toast';
 
 @Component({
-  standalone: true,
   imports: [RouterModule, ToastModule],
   selector: 'radio-root',
   templateUrl: './app.component.html',

@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   Component,
   computed,
@@ -58,9 +57,7 @@ import { VariablesManagerDialogComponent } from '../variables-manager-dialog/var
 
 @Component({
   selector: 'radio-finding-manager-view',
-  standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     TooltipModule,
     ButtonModule,
