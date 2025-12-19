@@ -18,15 +18,13 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Editor, EditorEvents, Extension, Extensions } from '@tiptap/core';
 import { FontFamily } from '@tiptap/extension-font-family';
-import { History } from '@tiptap/extension-history';
 import { Italic } from '@tiptap/extension-italic';
 import { MentionOptions } from '@tiptap/extension-mention';
-import Paragraph from '@tiptap/extension-paragraph';
-import { TableCell } from '@tiptap/extension-table-cell';
-import { TableHeader } from '@tiptap/extension-table-header';
-import { TableRow } from '@tiptap/extension-table-row';
+import { Paragraph } from '@tiptap/extension-paragraph';
+import { TableCell, TableHeader, TableRow } from '@tiptap/extension-table';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { Underline } from '@tiptap/extension-underline';
+import { UndoRedo } from '@tiptap/extensions';
 import { Node } from '@tiptap/pm/model';
 import { EditorState } from '@tiptap/pm/state';
 import { EditorView } from '@tiptap/pm/view';
@@ -212,7 +210,7 @@ export class EditorComponent implements OnInit {
     EditorBold,
     Italic,
     Underline,
-    History,
+    UndoRedo,
     EditorTextAlign,
     EditorNodeAlign,
     EditorBulletedList.configure({

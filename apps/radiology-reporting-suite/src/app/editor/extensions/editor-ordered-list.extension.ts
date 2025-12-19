@@ -1,10 +1,6 @@
 import { Node } from '@tiptap/core';
-import {
-  OrderedList,
-  OrderedListOptions,
-} from '@tiptap/extension-ordered-list';
+import { OrderedList, OrderedListOptions } from '@tiptap/extension-list';
 
-// https://www.npmjs.com/package/tiptap-extension-ordered-list
 export const EditorOrderedList: Node<OrderedListOptions, unknown> =
   OrderedList.extend({
     content: 'listItem*',

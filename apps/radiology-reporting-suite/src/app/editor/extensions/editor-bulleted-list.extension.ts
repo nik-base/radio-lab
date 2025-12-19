@@ -1,7 +1,6 @@
 import { Node } from '@tiptap/core';
-import { BulletList, BulletListOptions } from '@tiptap/extension-bullet-list';
+import { BulletList, BulletListOptions } from '@tiptap/extension-list';
 
-// https://www.npmjs.com/package/tiptap-extension-bullet-list
 export const EditorBulletedList: Node<BulletListOptions, unknown> =
   BulletList.extend({
     content: 'listItem*',

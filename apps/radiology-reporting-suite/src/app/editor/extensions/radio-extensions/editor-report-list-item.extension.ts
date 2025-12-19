@@ -1,5 +1,5 @@
 import { Node } from '@tiptap/core';
-import { ListItem, ListItemOptions } from '@tiptap/extension-list-item';
+import { ListItem, ListItemOptions } from '@tiptap/extension-list';
 
 import { EDITOR_REPORT_ATTRIBUTE_NAMES } from '@app/editor/constants';
 import { generateEditorDataAttributeName } from '@app/editor/utils/editor-report-common-extension.functions';
