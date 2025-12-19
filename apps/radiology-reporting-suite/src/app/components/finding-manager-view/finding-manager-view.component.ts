@@ -294,7 +294,7 @@ export class FindingManagerViewComponent {
   private openManageVariablesDialog(
     header: string,
     data: VariablesManagerDialogData
-  ): DynamicDialogRef {
+  ): DynamicDialogRef<VariablesManagerDialogComponent> | null {
     return this.dialogService.open(VariablesManagerDialogComponent, {
       header,
       modal: true,

@@ -59,7 +59,9 @@ export const EditorMentionVariable = Mention.extend({
         () =>
         ({ editor }: CommandProps) => {
           (
-            editor.storage[EditorMentionVariable.name] as {
+            (editor.storage as unknown as Record<string, unknown>)[
+              EditorMentionVariable.name
+            ] as {
               suggestionsEnabled: boolean;
             }
           ).suggestionsEnabled = false;
@@ -70,7 +72,9 @@ export const EditorMentionVariable = Mention.extend({
         () =>
         ({ editor }: CommandProps) => {
           (
-            editor.storage['mention'] as { suggestionsEnabled: boolean }
+            (editor.storage as unknown as Record<string, unknown>)[
+              'mention'
+            ] as { suggestionsEnabled: boolean }
           ).suggestionsEnabled = true;
           return true;
         },

@@ -61,12 +61,14 @@ export class GroupManagerComponent {
   }
 
   onCreate(): void {
-    const dialogRef: DynamicDialogRef = this.openManagerDialog(
-      'Create New Group',
-      {
+    const dialogRef: DynamicDialogRef<CommonManagerInfoDialogComponent> | null =
+      this.openManagerDialog('Create New Group', {
         mode: CHANGE_MODE.Create,
-      }
-    );
+      });
+
+    if (!dialogRef) {
+      return;
+    }
 
     dialogRef.onClose
       .pipe(
@@ -86,11 +88,16 @@ export class GroupManagerComponent {
   }
 
   onEdit(group: FindingGroup): void {
-    const dialogRef: DynamicDialogRef = this.openManagerDialog('Edit Group', {
-      mode: CHANGE_MODE.Update,
-      name: group.name,
-      info: group.info,
-    });
+    const dialogRef: DynamicDialogRef<CommonManagerInfoDialogComponent> | null =
+      this.openManagerDialog('Edit Group', {
+        mode: CHANGE_MODE.Update,
+        name: group.name,
+        info: group.info,
+      });
+
+    if (!dialogRef) {
+      return;
+    }
 
     dialogRef.onClose
       .pipe(
@@ -109,10 +116,15 @@ export class GroupManagerComponent {
   }
 
   onClone(group: FindingGroup): void {
-    const dialogRef: DynamicDialogRef = this.openCloneDialog('Clone Group', {
-      group: group,
-      scope: this.scope(),
-    });
+    const dialogRef: DynamicDialogRef<GroupCloneDialogComponent> | null =
+      this.openCloneDialog('Clone Group', {
+        group: group,
+        scope: this.scope(),
+      });
+
+    if (!dialogRef) {
+      return;
+    }
 
     dialogRef.onClose
       .pipe(
@@ -156,7 +168,7 @@ export class GroupManagerComponent {
   private openManagerDialog(
     header: string,
     data: CommonInfoDialogData
-  ): DynamicDialogRef {
+  ): DynamicDialogRef<CommonManagerInfoDialogComponent> | null {
     return this.dialogService.open(CommonManagerInfoDialogComponent, {
       header,
       modal: true,
@@ -172,7 +184,7 @@ export class GroupManagerComponent {
   private openCloneDialog(
     header: string,
     data: GroupCloneDialogData
-  ): DynamicDialogRef {
+  ): DynamicDialogRef<GroupCloneDialogComponent> | null {
     return this.dialogService.open(GroupCloneDialogComponent, {
       header,
       modal: true,

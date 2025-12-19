@@ -61,12 +61,14 @@ export class ScopeManagerComponent {
   }
 
   onCreate(): void {
-    const dialogRef: DynamicDialogRef = this.openManagerDialog(
-      'Create New Scope',
-      {
+    const dialogRef: DynamicDialogRef<CommonManagerDialogComponent> | null =
+      this.openManagerDialog('Create New Scope', {
         mode: CHANGE_MODE.Create,
-      }
-    );
+      });
+
+    if (!dialogRef) {
+      return;
+    }
 
     dialogRef.onClose
       .pipe(
@@ -86,10 +88,15 @@ export class ScopeManagerComponent {
   }
 
   onEdit(scope: Scope): void {
-    const dialogRef: DynamicDialogRef = this.openManagerDialog('Edit Scope', {
-      mode: CHANGE_MODE.Update,
-      scope,
-    });
+    const dialogRef: DynamicDialogRef<CommonManagerDialogComponent> | null =
+      this.openManagerDialog('Edit Scope', {
+        mode: CHANGE_MODE.Update,
+        scope,
+      });
+
+    if (!dialogRef) {
+      return;
+    }
 
     dialogRef.onClose
       .pipe(
@@ -108,10 +115,15 @@ export class ScopeManagerComponent {
   }
 
   onClone(scope: Scope): void {
-    const dialogRef: DynamicDialogRef = this.openCloneDialog('Clone Scope', {
-      scope: scope,
-      template: this.template(),
-    });
+    const dialogRef: DynamicDialogRef<ScopeCloneDialogComponent> | null =
+      this.openCloneDialog('Clone Scope', {
+        scope: scope,
+        template: this.template(),
+      });
+
+    if (!dialogRef) {
+      return;
+    }
 
     dialogRef.onClose
       .pipe(
@@ -155,7 +167,7 @@ export class ScopeManagerComponent {
   private openManagerDialog(
     header: string,
     data: ScopeManagerDialogData
-  ): DynamicDialogRef {
+  ): DynamicDialogRef<CommonManagerDialogComponent> | null {
     return this.dialogService.open(CommonManagerDialogComponent, {
       header,
       modal: true,
@@ -174,7 +186,7 @@ export class ScopeManagerComponent {
   private openCloneDialog(
     header: string,
     data: ScopeCloneDialogData
-  ): DynamicDialogRef {
+  ): DynamicDialogRef<ScopeCloneDialogComponent> | null {
     return this.dialogService.open(ScopeCloneDialogComponent, {
       header,
       modal: true,

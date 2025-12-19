@@ -162,12 +162,17 @@ export class FindingManagerComponent {
   }
 
   onClone(finding: Finding): void {
-    const dialogRef: DynamicDialogRef = this.openCloneDialog('Clone Finding', {
-      finding: finding,
-      scope: this.scope(),
-      group: this.group(),
-      classifier: this.classifier(),
-    });
+    const dialogRef: DynamicDialogRef<FindingCloneDialogComponent> | null =
+      this.openCloneDialog('Clone Finding', {
+        finding: finding,
+        scope: this.scope(),
+        group: this.group(),
+        classifier: this.classifier(),
+      });
+
+    if (!dialogRef) {
+      return;
+    }
 
     dialogRef.onClose
       .pipe(
@@ -212,7 +217,7 @@ export class FindingManagerComponent {
   private openCloneDialog(
     header: string,
     data: FindingCloneDialogData
-  ): DynamicDialogRef {
+  ): DynamicDialogRef<FindingCloneDialogComponent> | null {
     return this.dialogService.open(FindingCloneDialogComponent, {
       header,
       modal: true,

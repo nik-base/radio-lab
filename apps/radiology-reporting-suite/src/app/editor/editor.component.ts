@@ -201,7 +201,8 @@ export class EditorComponent implements OnInit {
       orderedList: false,
       paragraph: false,
       listItem: false,
-      history: false,
+      undoRedo: false,
+      underline: false,
     }) as Extension,
     Paragraph.configure({
       HTMLAttributes: {
@@ -457,7 +458,10 @@ export class EditorComponent implements OnInit {
   private setEditorContent(editor: Editor, html: string | null) {
     editor
       ?.chain()
-      .setContent(html, false, { preserveWhitespace: 'full' })
+      .setContent(html, {
+        emitUpdate: false,
+        parseOptions: { preserveWhitespace: 'full' },
+      })
       .run();
   }
 

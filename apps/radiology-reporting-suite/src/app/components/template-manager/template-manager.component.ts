@@ -76,9 +76,14 @@ export class TemplateManagerComponent {
   }
 
   onCreate(): void {
-    const dialogRef: DynamicDialogRef = this.openDialog('Create New Template', {
-      mode: CHANGE_MODE.Create,
-    });
+    const dialogRef: DynamicDialogRef<TemplateManagerDialogComponent> | null =
+      this.openDialog('Create New Template', {
+        mode: CHANGE_MODE.Create,
+      });
+
+    if (!dialogRef) {
+      return;
+    }
 
     dialogRef.onClose
       .pipe(
@@ -97,10 +102,15 @@ export class TemplateManagerComponent {
   }
 
   onEdit(template: Template): void {
-    const dialogRef: DynamicDialogRef = this.openDialog('Edit Template', {
-      mode: CHANGE_MODE.Update,
-      template,
-    });
+    const dialogRef: DynamicDialogRef<TemplateManagerDialogComponent> | null =
+      this.openDialog('Edit Template', {
+        mode: CHANGE_MODE.Update,
+        template,
+      });
+
+    if (!dialogRef) {
+      return;
+    }
 
     dialogRef.onClose
       .pipe(
@@ -207,7 +217,7 @@ export class TemplateManagerComponent {
   private openDialog(
     header: string,
     data: TemplateManagerDialogData
-  ): DynamicDialogRef {
+  ): DynamicDialogRef<TemplateManagerDialogComponent> | null {
     return this.dialogService.open(TemplateManagerDialogComponent, {
       header,
       modal: true,

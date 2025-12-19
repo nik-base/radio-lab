@@ -55,12 +55,14 @@ export class ClassifierManagerComponent {
   }
 
   onCreate(): void {
-    const dialogRef: DynamicDialogRef = this.openManagerDialog(
-      'Create New Classifier',
-      {
+    const dialogRef: DynamicDialogRef<CommonManagerInfoDialogComponent> | null =
+      this.openManagerDialog('Create New Classifier', {
         mode: CHANGE_MODE.Create,
-      }
-    );
+      });
+
+    if (!dialogRef) {
+      return;
+    }
 
     dialogRef.onClose
       .pipe(
@@ -81,14 +83,16 @@ export class ClassifierManagerComponent {
   }
 
   onEdit(classifier: FindingClassifier): void {
-    const dialogRef: DynamicDialogRef = this.openManagerDialog(
-      'Edit Classifier',
-      {
+    const dialogRef: DynamicDialogRef<CommonManagerInfoDialogComponent> | null =
+      this.openManagerDialog('Edit Classifier', {
         mode: CHANGE_MODE.Update,
         name: classifier.name,
         info: classifier.info,
-      }
-    );
+      });
+
+    if (!dialogRef) {
+      return;
+    }
 
     dialogRef.onClose
       .pipe(
@@ -135,7 +139,7 @@ export class ClassifierManagerComponent {
   private openManagerDialog(
     header: string,
     data: CommonInfoDialogData
-  ): DynamicDialogRef {
+  ): DynamicDialogRef<CommonManagerInfoDialogComponent> | null {
     return this.dialogService.open(CommonManagerInfoDialogComponent, {
       header,
       modal: true,

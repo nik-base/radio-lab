@@ -180,7 +180,7 @@ export class FindingGroupedListComponent {
   private openInfoDialog(
     header: string,
     data: InfoDialogData
-  ): DynamicDialogRef {
+  ): DynamicDialogRef<InfoDialogComponent> | null {
     return this.dialogService.open(InfoDialogComponent, {
       header,
       modal: false,

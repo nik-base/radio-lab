@@ -150,7 +150,7 @@ export const generateEditorMentionVariableConfig = (
 function getEditorSuggestionsEnabledFromStorage(
   editor: Editor
 ): { suggestionsEnabled: boolean } | undefined {
-  return editor.storage[EditorMentionVariable.name] as
-    | { suggestionsEnabled: boolean }
-    | undefined;
+  return (editor.storage as unknown as Record<string, unknown>)[
+    EditorMentionVariable.name
+  ] as { suggestionsEnabled: boolean } | undefined;
 }
